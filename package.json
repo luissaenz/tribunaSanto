@@ -10,6 +10,7 @@
     "typecheck": "astro check",
     "lint": "eslint .",
     "test": "vitest run",
+    "corpus:inventory": "tsx scripts/corpus/inventory.ts",
     "seo:policy": "tsx scripts/seo/check-policy.ts",
     "seo:jsonld": "tsx scripts/seo/check-jsonld.ts",
     "seo:sitemaps": "tsx scripts/seo/check-sitemaps.ts",
