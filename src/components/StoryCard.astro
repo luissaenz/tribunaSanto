@@ -1,0 +1,115 @@
+---
+import type { DemoStory } from '../data/demo-articles.js';
+
+interface Props {
+  story: DemoStory;
+}
+
+const { story } = Astro.props;
+const { article, presentation } = story;
+
+const formattedDate = new Intl.DateTimeFormat('es-AR', {
+  timeZone: 'America/Argentina/Buenos_Aires',
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit'
+}).format(new Date(article.publishedAt));
+---
+
+<article class="story-card">
+  <div class="card-image-wrapper">
+    <a href={`/demo/${presentation.demoId}/`} tabindex="-1" aria-hidden="true">
+      <img
+        src={presentation.image.src}
+        alt={presentation.image.alt}
+        width="400"
+        height="225"
+        class="card-image"
+      />
+    </a>
+  </div>
+  <div class="card-content">
+    <span class="provisional-badge">{presentation.provisionalTag}</span>
+    <h3 class="card-headline">
+      <a href={`/demo/${presentation.demoId}/`} class="headline-link">
+        {article.headline}
+      </a>
+    </h3>
+    {article.dek && <p class="card-dek">{article.dek}</p>}
+    <div class="card-meta">
+      <span class="byline">Por {article.byline}</span>
+      <span class="meta-sep">·</span>
+      <time datetime={article.publishedAt} class="editorial-timestamp">{formattedDate}</time>
+    </div>
+  </div>
+</article>
+
+<style>
+  .story-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .card-image-wrapper {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #000;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-headline {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .headline-link {
+    color: var(--color-ink);
+  }
+
+  .headline-link:hover {
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+
+  .card-dek {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+
+  .card-meta {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-top: 1px solid #f0eee9;
+    padding-top: 0.65rem;
+  }
+
+  .meta-sep {
+    color: var(--color-border);
+  }
+</style>
