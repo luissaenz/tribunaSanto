@@ -1,0 +1,28 @@
+---
+import BlockTitle from '../story/BlockTitle.astro';
+import StoryCard from '../story/StoryCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+---
+
+<section class="numbered" aria-labelledby="rail-recent-title" data-block="rail-recent-numbered">
+  <BlockTitle title="Lo último" id="rail-recent-title" compact />
+  <ol role="list">
+    {stories.map((story, i) => (
+      <li><StoryCard story={story} variant="numbered" index={i + 1} level={3} /></li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .numbered li + li {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-soft);
+  }
+</style>

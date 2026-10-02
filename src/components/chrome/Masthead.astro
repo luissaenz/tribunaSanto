@@ -1,0 +1,54 @@
+---
+// Marca provisional en texto: la identidad visual definitiva está fuera de alcance.
+interface Props {
+  home?: boolean;
+}
+
+const { home = false } = Astro.props;
+---
+
+<div class="masthead" data-block="masthead">
+  <div class="container masthead__content">
+    {home ? (
+      <h1 class="masthead__brand">Tribuna Santo</h1>
+    ) : (
+      <a href="/" class="masthead__brand masthead__link" aria-label="Volver a la portada de Tribuna Santo">
+        Tribuna Santo
+      </a>
+    )}
+    <p class="masthead__tagline">Diario deportivo y actualidad albirroja</p>
+  </div>
+</div>
+
+<style>
+  .masthead {
+    background: var(--color-surface);
+    padding-block: var(--space-5);
+  }
+
+  .masthead__content {
+    text-align: center;
+  }
+
+  .masthead__brand {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-brand);
+  }
+
+  .masthead__link:hover {
+    color: var(--color-brand-dark);
+    text-decoration: none;
+  }
+
+  .masthead__tagline {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+</style>

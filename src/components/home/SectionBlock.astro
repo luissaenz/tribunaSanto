@@ -1,0 +1,98 @@
+---
+// Bloque de sección de portada con cuatro variantes de composición:
+// destacada + lista, destacada + tiles (2 ó 4), grilla de titulares
+// (3 ó 6) y lista + destacada.
+import BlockTitle from '../story/BlockTitle.astro';
+import StoryCard from '../story/StoryCard.astro';
+import type { ResolvedSectionBlock } from '../../presentation/composition.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  block: ResolvedSectionBlock;
+}
+
+const { block } = Astro.props;
+const section = getSection(block.sectionId);
+const [feature, ...rest] = block.stories;
+const titleId = `bloque-${section.slug}`;
+---
+
+<section
+  class:list={['section-block', `section-block--${block.variant}`]}
+  aria-labelledby={titleId}
+  data-block="section-block"
+  data-variant={block.variant}
+>
+  <BlockTitle title={section.label} id={titleId} href={routes.section(section.id)} />
+
+  {block.variant === 'feature-list' && (
+    <div class="section-block__split">
+      <StoryCard story={feature} variant="feature" />
+      <ul class="section-block__stack" role="list">
+        {rest.map((story) => <li><StoryCard story={story} variant="accent" level={3} /></li>)}
+      </ul>
+    </div>
+  )}
+
+  {block.variant === 'feature-tiles' && (
+    <div class="section-block__split">
+      <StoryCard story={feature} variant="feature" />
+      <ul class="section-block__tiles" role="list">
+        {rest.map((story) => <li><StoryCard story={story} variant="tile" level={3} /></li>)}
+      </ul>
+    </div>
+  )}
+
+  {block.variant === 'headline-grid' && (
+    <ul class="grid grid--3 section-block__headlines" role="list">
+      {block.stories.map((story) => <li><StoryCard story={story} variant="headline" level={3} /></li>)}
+    </ul>
+  )}
+
+  {block.variant === 'list-feature' && (
+    <div class="section-block__split section-block__split--reverse">
+      <ul class="section-block__stack" role="list">
+        {rest.map((story) => <li><StoryCard story={story} variant="thumb-end" level={3} showDek /></li>)}
+      </ul>
+      <StoryCard story={feature} variant="feature" />
+    </div>
+  )}
+</section>
+
+<style>
+  .section-block__split {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .section-block__stack > li + li {
+    margin-top: var(--space-4);
+  }
+
+  .section-block__tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .section-block__headlines > li {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-3);
+  }
+
+  @media (min-width: 48rem) {
+    .section-block__split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    /* En mobile la destacada va primero también en la variante invertida. */
+    .section-block__split--reverse > :global(article) {
+      order: -1;
+    }
+  }
+</style>

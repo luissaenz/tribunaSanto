@@ -1,0 +1,66 @@
+---
+// Columna principal + columna lateral (no fija). Proporción 3/4 + 1/4 desde lg (64rem);
+// `railFirst` coloca la columna lateral a la izquierda (también primera en DOM).
+interface Props {
+  railFirst?: boolean;
+  railLabel: string;
+}
+
+const { railFirst = false, railLabel } = Astro.props;
+---
+
+<div class:list={['rail-layout', { 'rail-layout--rail-first': railFirst }]} data-block="rail">
+  {railFirst && (
+    <aside class="rail-layout__rail" aria-label={railLabel}>
+      <div class="rail-layout__inner">
+        <slot name="rail" />
+      </div>
+    </aside>
+  )}
+  <div class="rail-layout__main">
+    <slot />
+  </div>
+  {!railFirst && (
+    <aside class="rail-layout__rail" aria-label={railLabel}>
+      <div class="rail-layout__inner">
+        <slot name="rail" />
+      </div>
+    </aside>
+  )}
+</div>
+
+<style>
+  .rail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--rail-gap);
+  }
+
+  .rail-layout__main > :global(* + *) {
+    margin-top: var(--space-8);
+  }
+
+  .rail-layout__inner > :global(* + *) {
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 64rem) {
+    .rail-layout {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+      gap: var(--space-7);
+      align-items: start;
+    }
+
+    .rail-layout--rail-first {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    }
+
+  }
+
+  @media (max-width: 63.99rem) {
+    /* En mobile la columna lateral siempre va después del contenido principal. */
+    .rail-layout--rail-first .rail-layout__rail {
+      order: 2;
+    }
+  }
+</style>
