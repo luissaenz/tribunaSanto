@@ -1,12 +1,13 @@
 import { z } from 'zod';
+import { InstantSchema } from './shared.js';
 import {
-  DomainRefSchema,
-  InstantSchema
-} from './shared.js';
+  SourceRefSchema,
+  SourceDocumentRefSchema
+} from './identity.js';
 
 export const SourceSchema = z.object({
   kind: z.literal('SOURCE'),
-  ref: DomainRefSchema,
+  ref: SourceRefSchema,
   name: z.string().min(1)
 });
 
@@ -14,8 +15,8 @@ export type Source = Readonly<z.infer<typeof SourceSchema>>;
 
 export const SourceDocumentSchema = z.object({
   kind: z.literal('SOURCE_DOCUMENT'),
-  ref: DomainRefSchema,
-  sourceRef: DomainRefSchema,
+  ref: SourceDocumentRefSchema,
+  sourceRef: SourceRefSchema,
   title: z.string().min(1).optional(),
   content: z.string().min(1),
   publishedAt: InstantSchema.optional()

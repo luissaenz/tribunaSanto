@@ -5,40 +5,48 @@ import {
   ArticleSchema,
   ArticleRevisionSchema
 } from '../../src/domain/index.js';
+import {
+  EVENT_REF,
+  CLAIM_REF,
+  STORY_REF,
+  ENTITY_REF,
+  ARTICLE_REF,
+  ARTICLE_REVISION_REF
+} from './fixtures/refs.js';
 
 describe('Editorial domain invariants', () => {
   const validEvent = {
     kind: 'EVENT',
-    ref: 'evt-1',
+    ref: EVENT_REF,
     label: 'Firma de nuevo contrato',
-    claimRefs: ['claim-1']
+    claimRefs: [CLAIM_REF]
   };
 
   const validStory = {
     kind: 'STORY',
-    ref: 'sty-1',
+    ref: STORY_REF,
     workingTitle: 'Refuerzo clave para el Santo',
     angle: 'Impacto táctico de la nueva incorporación',
-    eventRefs: ['evt-1'],
-    claimRefs: ['claim-1'],
-    entityRefs: ['ent-player-1']
+    eventRefs: [EVENT_REF],
+    claimRefs: [CLAIM_REF],
+    entityRefs: [ENTITY_REF]
   };
 
   const validArticle = {
     kind: 'ARTICLE',
-    ref: 'art-1',
-    storyRef: 'sty-1'
+    ref: ARTICLE_REF,
+    storyRef: STORY_REF
   };
 
   const validRevision = {
     kind: 'ARTICLE_REVISION',
-    ref: 'rev-1',
-    articleRef: 'art-1',
+    ref: ARTICLE_REVISION_REF,
+    articleRef: ARTICLE_REF,
     revisionNumber: 1,
     headline: 'San Martín confirmó su nuevo refuerzo',
     dek: 'El mediocampista selló su vínculo con el club hasta 2027.',
     body: 'En la sede de La Ciudadela se llevó a cabo la firma oficial...',
-    claimRefs: ['claim-1']
+    claimRefs: [CLAIM_REF]
   };
 
   it('keeps Event Story Article and ArticleRevision structurally distinct', () => {
@@ -61,22 +69,22 @@ describe('Editorial domain invariants', () => {
     // Story without eventRefs and without claimRefs must fail
     const ungroundedStory = {
       kind: 'STORY',
-      ref: 'sty-unfounded',
+      ref: STORY_REF,
       workingTitle: 'Historia sin fuentes',
       angle: 'Especulación pura',
       eventRefs: [],
       claimRefs: [],
-      entityRefs: ['ent-1']
+      entityRefs: [ENTITY_REF]
     };
     expect(StorySchema.safeParse(ungroundedStory).success).toBe(false);
 
     // Story with only eventRefs passes
     const storyWithEvent = {
       kind: 'STORY',
-      ref: 'sty-event',
+      ref: STORY_REF,
       workingTitle: 'Historia con evento',
       angle: 'Ángulo',
-      eventRefs: ['evt-1'],
+      eventRefs: [EVENT_REF],
       claimRefs: [],
       entityRefs: []
     };
@@ -85,11 +93,11 @@ describe('Editorial domain invariants', () => {
     // Story with only claimRefs passes
     const storyWithClaim = {
       kind: 'STORY',
-      ref: 'sty-claim',
+      ref: STORY_REF,
       workingTitle: 'Historia con claim',
       angle: 'Ángulo',
       eventRefs: [],
-      claimRefs: ['claim-1'],
+      claimRefs: [CLAIM_REF],
       entityRefs: []
     };
     expect(StorySchema.safeParse(storyWithClaim).success).toBe(true);

@@ -21,7 +21,8 @@
     "db:check": "docker compose exec postgres pg_isready -U tribuna_santo -d tribuna_santo"
   },
   "dependencies": {
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

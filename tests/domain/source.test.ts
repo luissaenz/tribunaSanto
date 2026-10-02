@@ -3,18 +3,22 @@ import {
   SourceSchema,
   SourceDocumentSchema
 } from '../../src/domain/index.js';
+import {
+  SOURCE_REF,
+  SOURCE_DOCUMENT_REF
+} from './fixtures/refs.js';
 
 describe('Source and SourceDocument domain invariants', () => {
   const validSource = {
     kind: 'SOURCE',
-    ref: 'src-1',
+    ref: SOURCE_REF,
     name: 'La Gaceta de Tucumán'
   };
 
   const validSourceDocument = {
     kind: 'SOURCE_DOCUMENT',
-    ref: 'doc-1',
-    sourceRef: 'src-1',
+    ref: SOURCE_DOCUMENT_REF,
+    sourceRef: SOURCE_REF,
     title: 'Entrenamiento de San Martín',
     content: 'San Martín completó una nueva jornada de entrenamiento en La Ciudadela.',
     publishedAt: '2026-10-02T10:00:00Z'

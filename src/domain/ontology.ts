@@ -1,12 +1,17 @@
 import { z } from 'zod';
-import {
-  DomainRefSchema,
-  TemporalExtentSchema
-} from './shared.js';
+import { TemporalExtentSchema } from './shared.js';
 import {
   EpistemicStateSchema,
   ClaimEvidenceSchema
 } from './epistemology.js';
+import {
+  EntityRefSchema,
+  EventRefSchema,
+  RelationRefSchema,
+  ClaimRefSchema,
+  StoryRefSchema,
+  ArticleRefSchema
+} from './identity.js';
 
 export const EntityKindSchema = z.enum([
   'PERSON',
@@ -22,7 +27,7 @@ export type EntityKind = z.infer<typeof EntityKindSchema>;
 
 export const EntitySchema = z.object({
   kind: z.literal('ENTITY'),
-  ref: DomainRefSchema,
+  ref: EntityRefSchema,
   entityKind: EntityKindSchema,
   name: z.string().min(1)
 });
@@ -31,10 +36,10 @@ export type Entity = Readonly<z.infer<typeof EntitySchema>>;
 
 export const EventSchema = z.object({
   kind: z.literal('EVENT'),
-  ref: DomainRefSchema,
+  ref: EventRefSchema,
   label: z.string().min(1),
-  claimRefs: z.array(DomainRefSchema).min(1),
-  entityRefs: z.array(DomainRefSchema).default([]),
+  claimRefs: z.array(ClaimRefSchema).min(1),
+  entityRefs: z.array(EntityRefSchema).default([]),
   time: TemporalExtentSchema.optional()
 });
 
@@ -43,19 +48,19 @@ export type Event = Readonly<z.infer<typeof EventSchema>>;
 export const RelationEndpointSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('ENTITY'),
-    ref: DomainRefSchema
+    ref: EntityRefSchema
   }),
   z.object({
     kind: z.literal('EVENT'),
-    ref: DomainRefSchema
+    ref: EventRefSchema
   }),
   z.object({
     kind: z.literal('STORY'),
-    ref: DomainRefSchema
+    ref: StoryRefSchema
   }),
   z.object({
     kind: z.literal('ARTICLE'),
-    ref: DomainRefSchema
+    ref: ArticleRefSchema
   })
 ]);
 
@@ -63,7 +68,7 @@ export type RelationEndpoint = Readonly<z.infer<typeof RelationEndpointSchema>>;
 
 export const RelationSchema = z.object({
   kind: z.literal('RELATION'),
-  ref: DomainRefSchema,
+  ref: RelationRefSchema,
   predicate: z.string().min(1),
   from: RelationEndpointSchema,
   to: RelationEndpointSchema,

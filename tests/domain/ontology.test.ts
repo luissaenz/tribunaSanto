@@ -5,6 +5,13 @@ import {
   EventSchema,
   RelationSchema
 } from '../../src/domain/index.js';
+import {
+  ENTITY_REF,
+  ENTITY_REF_2,
+  EVENT_REF,
+  RELATION_REF,
+  CLAIM_REF
+} from './fixtures/refs.js';
 
 describe('Ontology domain invariants', () => {
   it('accepts the base entity kinds and rejects unknown kinds', () => {
@@ -21,7 +28,7 @@ describe('Ontology domain invariants', () => {
     for (const kind of allowedKinds) {
       const entity = {
         kind: 'ENTITY',
-        ref: `ent-${kind.toLowerCase()}-1`,
+        ref: ENTITY_REF,
         entityKind: kind,
         name: `Test ${kind}`
       };
@@ -33,7 +40,7 @@ describe('Ontology domain invariants', () => {
     // Unknown kind rejected
     const unknownEntity = {
       kind: 'ENTITY',
-      ref: 'ent-unknown-1',
+      ref: ENTITY_REF,
       entityKind: 'TOURNAMENT_STAGE',
       name: 'Semifinales'
     };
@@ -45,20 +52,20 @@ describe('Ontology domain invariants', () => {
     // Empty claimRefs must fail
     const ungroundedEvent = {
       kind: 'EVENT',
-      ref: 'evt-1',
+      ref: EVENT_REF,
       label: 'Entrenamiento matutino',
       claimRefs: [],
-      entityRefs: ['ent-team-1']
+      entityRefs: [ENTITY_REF]
     };
     expect(EventSchema.safeParse(ungroundedEvent).success).toBe(false);
 
     // Event with at least one claimRef passes
     const groundedEvent = {
       kind: 'EVENT',
-      ref: 'evt-1',
+      ref: EVENT_REF,
       label: 'Entrenamiento matutino',
-      claimRefs: ['claim-1'],
-      entityRefs: ['ent-team-1'],
+      claimRefs: [CLAIM_REF],
+      entityRefs: [ENTITY_REF],
       time: {
         type: 'INSTANT',
         value: '2026-10-02T09:00:00Z'
@@ -71,15 +78,15 @@ describe('Ontology domain invariants', () => {
   it('requires Relation provenance and epistemic state', () => {
     const validRelation = {
       kind: 'RELATION',
-      ref: 'rel-1',
+      ref: RELATION_REF,
       predicate: 'plays_in',
       from: {
         kind: 'ENTITY',
-        ref: 'ent-player-1'
+        ref: ENTITY_REF
       },
       to: {
         kind: 'ENTITY',
-        ref: 'ent-team-1'
+        ref: ENTITY_REF_2
       },
       epistemicState: 'FACT',
       evidence: [
@@ -106,7 +113,7 @@ describe('Ontology domain invariants', () => {
       ...validRelation,
       from: {
         kind: 'UNKNOWN_ENDPOINT',
-        ref: 'unknown-1'
+        ref: ENTITY_REF
       }
     };
     expect(RelationSchema.safeParse(relationWithUnknownEndpoint).success).toBe(false);

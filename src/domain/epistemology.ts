@@ -1,9 +1,15 @@
 import { z } from 'zod';
 import {
-  DomainRefSchema,
   InstantSchema,
   TemporalExtentSchema
 } from './shared.js';
+import {
+  SourceDocumentRefSchema,
+  ClaimRefSchema,
+  EntityRefSchema,
+  EventRefSchema,
+  DomainRefSchema
+} from './identity.js';
 
 export const EpistemicStateSchema = z.enum([
   'FACT',
@@ -41,7 +47,7 @@ export const ClaimValueSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('ENTITY_REF'),
-    ref: DomainRefSchema
+    ref: EntityRefSchema
   }),
   z.object({
     type: z.literal('COMPOSITE'),
@@ -62,7 +68,7 @@ export type ClaimValue = Readonly<z.infer<typeof ClaimValueSchema>>;
 export const ClaimEvidenceSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('SOURCE_DOCUMENT'),
-    sourceDocumentRef: DomainRefSchema
+    sourceDocumentRef: SourceDocumentRefSchema
   }),
   z.object({
     type: z.literal('STRUCTURED_DATA'),
@@ -71,7 +77,7 @@ export const ClaimEvidenceSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('CLAIM_DERIVATION'),
-    claimRefs: z.array(DomainRefSchema).min(1)
+    claimRefs: z.array(ClaimRefSchema).min(1)
   }),
   z.object({
     type: z.literal('PROCESS'),
@@ -85,11 +91,11 @@ export type ClaimEvidence = Readonly<z.infer<typeof ClaimEvidenceSchema>>;
 export const ClaimSubjectSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('ENTITY'),
-    ref: DomainRefSchema
+    ref: EntityRefSchema
   }),
   z.object({
     kind: z.literal('EVENT'),
-    ref: DomainRefSchema
+    ref: EventRefSchema
   })
 ]);
 
@@ -97,12 +103,12 @@ export type ClaimSubject = Readonly<z.infer<typeof ClaimSubjectSchema>>;
 
 const ClaimBaseSchema = z.object({
   kind: z.literal('CLAIM'),
-  ref: DomainRefSchema,
+  ref: ClaimRefSchema,
   subject: ClaimSubjectSchema,
   predicate: z.string().min(1),
   value: ClaimValueSchema,
   validTime: TemporalExtentSchema.optional(),
-  contextEntityRefs: z.array(DomainRefSchema).default([]),
+  contextEntityRefs: z.array(EntityRefSchema).default([]),
   evidence: z.array(ClaimEvidenceSchema).min(1),
   epistemicState: EpistemicStateSchema
 });
