@@ -1,0 +1,58 @@
+{
+  "$schema": "./policy.schema.json",
+  "version": 1,
+  "singleTenant": true,
+  "rendering": "static",
+  "newsArticle": {
+    "requiredFields": [
+      "headline",
+      "datePublished",
+      "dateModified",
+      "author",
+      "publisher",
+      "image"
+    ],
+    "authorTypes": ["Person"],
+    "publisherTypes": ["Organization"]
+  },
+  "newsSitemap": {
+    "maxAgeHours": 48,
+    "publicationNameRequired": true,
+    "publicationLanguageRequired": true
+  },
+  "canonical": {
+    "mustBeAbsolute": true,
+    "mustBeUnique": true
+  },
+  "metadata": {
+    "metaDescriptionRequired": true,
+    "openGraphRequired": true,
+    "twitterCardRequired": true
+  },
+  "images": {
+    "dimensionsRequired": true,
+    "altRequiredForInformative": true,
+    "preferredFormats": ["image/avif", "image/webp"]
+  },
+  "headings": {
+    "singleH1": true,
+    "semanticHierarchy": true
+  },
+  "internalLinking": {
+    "supportedEntityRelations": [
+      "news <-> club",
+      "news <-> competition",
+      "news <-> category"
+    ],
+    "breadcrumbs": ["BreadcrumbList"]
+  },
+  "performance": {
+    "htmlFirst": true,
+    "noUnnecessaryHydration": true
+  },
+  "aiSearch": {
+    "distinguishSearchFromTrainingCrawlers": true,
+    "trainingCrawlersOutOfScope": true,
+    "disallowEquatingGptBotWithSearch": true
+  }
+}

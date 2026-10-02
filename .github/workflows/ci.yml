@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  certify-foundation:
+    name: Certify Foundation and SEO Invariants
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies (clean install)
+        run: npm ci
+
+      - name: Validate Docker Compose configuration
+        env:
+          POSTGRES_PASSWORD: ci_ephemeral_validation_pwd
+        run: docker compose -f docker-compose.yml config
+
+      - name: Start isolated PostgreSQL 17 service
+        run: |
+          CI_PWD=$(openssl rand -hex 16)
+          echo "POSTGRES_PASSWORD=${CI_PWD}" >> "$GITHUB_ENV"
+          POSTGRES_PASSWORD="${CI_PWD}" docker compose -f docker-compose.yml up -d
+
+      - name: Wait for PostgreSQL healthcheck
+        run: |
+          echo "Waiting for PostgreSQL service to report healthy..."
+          for i in {1..30}; do
+            STATUS=$(docker inspect --format='{{json .State.Health.Status}}' tribuna_santo_postgres 2>/dev/null || echo '"starting"')
+            if [ "$STATUS" = '"healthy"' ]; then
+              echo "PostgreSQL is healthy after ${i} checks."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Timeout waiting for PostgreSQL service healthcheck."
+          docker compose logs postgres
+          exit 1
+
+      - name: Verify PostgreSQL connectivity (db:check)
+        run: npm run db:check
+
+      - name: Run complete certification gate (lint, typecheck, test, build, seo:gate)
+        run: npm run gate
+
+      - name: Teardown PostgreSQL service and cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml down -v

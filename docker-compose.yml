@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: tribuna_santo_postgres
+    environment:
+      POSTGRES_DB: tribuna_santo
+      POSTGRES_USER: tribuna_santo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in environment}
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - tribuna_santo_pg17_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tribuna_santo -d tribuna_santo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  tribuna_santo_pg17_data:
+    name: tribuna_santo_pg17_data
