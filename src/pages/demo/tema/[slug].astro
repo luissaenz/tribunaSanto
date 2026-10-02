@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/chrome/Breadcrumb.astro';
+import RailLayout from '../../../components/layout/RailLayout.astro';
+import ListingHeader from '../../../components/listing/ListingHeader.astro';
+import RiverList from '../../../components/listing/RiverList.astro';
+import StandardRail from '../../../components/rail/StandardRail.astro';
+import { site } from '../../../presentation/site.js';
+import { topics, type Topic } from '../../../presentation/taxonomy.js';
+import { storiesWithTopic } from '../../../presentation/queries.js';
+
+export function getStaticPaths() {
+  return topics
+    .filter((topic) => storiesWithTopic(site.stories, topic.id).length > 0)
+    .map((topic) => ({ params: { slug: topic.slug }, props: { topic } }));
+}
+
+interface Props {
+  topic: Topic;
+}
+
+const { topic } = Astro.props;
+const tagged = storiesWithTopic(site.stories, topic.id);
+---
+
+<BaseLayout title={`${topic.label} — Tribuna Santo`} description={`Notas de Tribuna Santo sobre ${topic.label.toLowerCase()}.`}
+  editionInstant={site.editionInstant}
+>
+  <Breadcrumb items={[{ label: 'Temas' }, { label: topic.label }]} />
+  <div class="container listing-page">
+    <RailLayout railLabel="Más noticias">
+      <ListingHeader title={topic.label} count={tagged.length} kicker="Tema" />
+      <RiverList stories={tagged} />
+      <Fragment slot="rail">
+        <StandardRail stories={site.stories} />
+      </Fragment>
+    </RailLayout>
+  </div>
+</BaseLayout>
+
+<style>
+  .listing-page {
+    padding-top: var(--space-6);
+  }
+
+  .listing-page :global(.rail-layout__main > * + *) {
+    margin-top: var(--space-6);
+  }
+</style>

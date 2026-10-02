@@ -16,7 +16,7 @@ const updated = article.modifiedAt !== article.publishedAt;
   <div class="container article-meta__content">
     <p class="article-meta__byline">Por <strong>{article.byline}</strong></p>
     <p>
-      Publicado <time datetime={article.publishedAt} class="editorial-timestamp">{formatLongDate(article.publishedAt)}</time>
+      Publicado <time datetime={article.publishedAt}>{formatLongDate(article.publishedAt)}</time>
     </p>
     {updated && (
       <p>

@@ -262,20 +262,3 @@ ul[role="list"], ol[role="list"] {
 .block-title--compact .block-title__label {
   font-size: var(--text-lg);
 }
-
-/* ---------- WEB.1 (se retira al conectar la arquitectura de bloques) ---------- */
-
-.provisional-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-brand);
-  margin-bottom: 0.35rem;
-}
-
-.editorial-timestamp {
-  font-size: 0.8rem;
-  color: var(--color-muted);
-}
