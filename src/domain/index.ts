@@ -1,10 +1,42 @@
 export {
-  DomainRefSchema,
-  type DomainRef,
   InstantSchema,
   TemporalExtentSchema,
   type TemporalExtent
 } from './shared.js';
+
+export {
+  DomainRefSchema,
+  type DomainRef,
+  SourceRefSchema,
+  type SourceRef,
+  SourceDocumentRefSchema,
+  type SourceDocumentRef,
+  ClaimRefSchema,
+  type ClaimRef,
+  EntityRefSchema,
+  type EntityRef,
+  EventRefSchema,
+  type EventRef,
+  RelationRefSchema,
+  type RelationRef,
+  StoryRefSchema,
+  type StoryRef,
+  ArticleRefSchema,
+  type ArticleRef,
+  ArticleRevisionRefSchema,
+  type ArticleRevisionRef,
+  generateSourceRef,
+  generateSourceDocumentRef,
+  generateClaimRef,
+  generateEntityRef,
+  generateEventRef,
+  generateRelationRef,
+  generateStoryRef,
+  generateArticleRef,
+  generateArticleRevisionRef,
+  ExternalIdentitySchema,
+  type ExternalIdentity
+} from './identity.js';
 
 export {
   SourceSchema,

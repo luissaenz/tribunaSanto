@@ -4,21 +4,28 @@ import {
   ClaimValueSchema,
   EpistemicStateSchema
 } from '../../src/domain/index.js';
+import {
+  CLAIM_REF,
+  CLAIM_REF_2,
+  ENTITY_REF,
+  ENTITY_REF_2,
+  SOURCE_DOCUMENT_REF
+} from './fixtures/refs.js';
 
 describe('Epistemic domain invariants', () => {
   const baseClaim = {
     kind: 'CLAIM',
-    ref: 'claim-1',
+    ref: CLAIM_REF,
     subject: {
       kind: 'ENTITY',
-      ref: 'ent-san-martin'
+      ref: ENTITY_REF
     },
     predicate: 'founded_in',
     value: {
       type: 'TEXT',
       value: '1909'
     },
-    contextEntityRefs: ['ent-tucuman']
+    contextEntityRefs: [ENTITY_REF_2]
   };
 
   it('rejects FACT without direct evidence', () => {
@@ -30,7 +37,7 @@ describe('Epistemic domain invariants', () => {
         {
           type: 'PROCESS',
           process: 'ner-extractor',
-          inputRefs: ['doc-raw-text']
+          inputRefs: [SOURCE_DOCUMENT_REF]
         }
       ]
     };
@@ -44,7 +51,7 @@ describe('Epistemic domain invariants', () => {
       evidence: [
         {
           type: 'CLAIM_DERIVATION',
-          claimRefs: ['claim-0']
+          claimRefs: [CLAIM_REF_2]
         }
       ]
     };
@@ -57,7 +64,7 @@ describe('Epistemic domain invariants', () => {
       evidence: [
         {
           type: 'SOURCE_DOCUMENT',
-          sourceDocumentRef: 'doc-acta-fundacion'
+          sourceDocumentRef: SOURCE_DOCUMENT_REF
         }
       ]
     };
@@ -96,7 +103,7 @@ describe('Epistemic domain invariants', () => {
         evidence: [
           {
             type: 'SOURCE_DOCUMENT',
-            sourceDocumentRef: 'doc-opinion-piece'
+            sourceDocumentRef: SOURCE_DOCUMENT_REF
           }
         ]
       };
@@ -110,7 +117,7 @@ describe('Epistemic domain invariants', () => {
         evidence: [
           {
             type: 'CLAIM_DERIVATION',
-            claimRefs: ['claim-premise-1']
+            claimRefs: [CLAIM_REF_2]
           }
         ]
       };
@@ -124,7 +131,7 @@ describe('Epistemic domain invariants', () => {
           {
             type: 'PROCESS',
             process: 'correlation-engine',
-            inputRefs: ['claim-1', 'claim-2']
+            inputRefs: [CLAIM_REF, CLAIM_REF_2]
           }
         ]
       };
@@ -139,7 +146,7 @@ describe('Epistemic domain invariants', () => {
       { type: 'BOOLEAN', value: true },
       { type: 'INSTANT', value: '2026-10-02T12:00:00Z' },
       { type: 'INTERVAL', start: '2026-10-02T10:00:00Z', end: '2026-10-02T12:00:00Z' },
-      { type: 'ENTITY_REF', ref: 'ent-123' },
+      { type: 'ENTITY_REF', ref: ENTITY_REF },
       {
         type: 'COMPOSITE',
         fields: {

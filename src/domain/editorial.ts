@@ -1,14 +1,21 @@
 import { z } from 'zod';
-import { DomainRefSchema } from './shared.js';
+import {
+  StoryRefSchema,
+  ArticleRefSchema,
+  ArticleRevisionRefSchema,
+  EventRefSchema,
+  ClaimRefSchema,
+  EntityRefSchema
+} from './identity.js';
 
 export const StorySchema = z.object({
   kind: z.literal('STORY'),
-  ref: DomainRefSchema,
+  ref: StoryRefSchema,
   workingTitle: z.string().min(1),
   angle: z.string().min(1),
-  eventRefs: z.array(DomainRefSchema).default([]),
-  claimRefs: z.array(DomainRefSchema).default([]),
-  entityRefs: z.array(DomainRefSchema).default([])
+  eventRefs: z.array(EventRefSchema).default([]),
+  claimRefs: z.array(ClaimRefSchema).default([]),
+  entityRefs: z.array(EntityRefSchema).default([])
 }).superRefine((story, ctx) => {
   if (
     story.eventRefs.length === 0 &&
@@ -25,21 +32,21 @@ export type Story = Readonly<z.infer<typeof StorySchema>>;
 
 export const ArticleSchema = z.object({
   kind: z.literal('ARTICLE'),
-  ref: DomainRefSchema,
-  storyRef: DomainRefSchema
+  ref: ArticleRefSchema,
+  storyRef: StoryRefSchema
 });
 
 export type Article = Readonly<z.infer<typeof ArticleSchema>>;
 
 export const ArticleRevisionSchema = z.object({
   kind: z.literal('ARTICLE_REVISION'),
-  ref: DomainRefSchema,
-  articleRef: DomainRefSchema,
+  ref: ArticleRevisionRefSchema,
+  articleRef: ArticleRefSchema,
   revisionNumber: z.number().int().positive(),
   headline: z.string().min(1),
   dek: z.string().min(1).optional(),
   body: z.string().min(1),
-  claimRefs: z.array(DomainRefSchema).default([])
+  claimRefs: z.array(ClaimRefSchema).default([])
 });
 
 export type ArticleRevision = Readonly<z.infer<typeof ArticleRevisionSchema>>;

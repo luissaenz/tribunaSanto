@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-export const DomainRefSchema = z.string().min(1).brand<'DomainRef'>();
-
-export type DomainRef = z.infer<typeof DomainRefSchema>;
-
 export const InstantSchema = z.string().datetime({ offset: true });
 
 export const TemporalExtentSchema = z.discriminatedUnion('type', [
