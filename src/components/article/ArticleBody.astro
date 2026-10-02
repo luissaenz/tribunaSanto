@@ -1,0 +1,83 @@
+---
+// Cuerpo del artículo. Todo el texto se interpola escapado; nunca se inyecta HTML crudo.
+import { parseArticleBody } from '../../presentation/article-body.js';
+
+interface Props {
+  body: string;
+}
+
+const { body } = Astro.props;
+const blocks = parseArticleBody(body);
+---
+
+<div class="article-body" data-block="article-body">
+  {blocks.map((block) =>
+    block.type === 'subheading' ? (
+      <h2 id={block.id} class="article-body__subheading">{block.text}</h2>
+    ) : block.type === 'quote' ? (
+      <figure class="article-body__quote">
+        <blockquote><p>{block.text}</p></blockquote>
+        {block.attribution && <figcaption>— {block.attribution}</figcaption>}
+      </figure>
+    ) : (
+      <p class="article-paragraph">{block.text}</p>
+    )
+  )}
+</div>
+
+<style>
+  .article-body {
+    max-width: var(--prose-max);
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--color-ink-soft);
+  }
+
+  .article-paragraph + .article-paragraph,
+  .article-body > * + * {
+    margin-top: 1.4em;
+  }
+
+  .article-body__subheading {
+    position: relative;
+    font-family: var(--font-sans);
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--color-ink);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--color-border-soft);
+  }
+
+  .article-body__subheading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 3rem;
+    height: 2px;
+    background: var(--color-brand);
+  }
+
+  .article-body__quote {
+    border-left: var(--rule-heavy) solid var(--color-brand);
+    background: var(--color-surface);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .article-body__quote blockquote {
+    font-size: var(--text-xl);
+    font-style: italic;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.5;
+  }
+
+  .article-body__quote figcaption {
+    margin-top: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

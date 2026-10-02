@@ -1,32 +1,69 @@
 ---
-import EditorialLayout from '../../layouts/EditorialLayout.astro';
-import ArticleView from '../../components/ArticleView.astro';
-import { demoStories, type DemoStory } from '../../data/demo-articles.js';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/chrome/Breadcrumb.astro';
+import RailLayout from '../../components/layout/RailLayout.astro';
+import ArticleHero from '../../components/article/ArticleHero.astro';
+import ArticleMeta from '../../components/article/ArticleMeta.astro';
+import ArticleBody from '../../components/article/ArticleBody.astro';
+import ArticleTags from '../../components/article/ArticleTags.astro';
+import ShareLinks from '../../components/article/ShareLinks.astro';
+import RelatedStories from '../../components/article/RelatedStories.astro';
+import StandardRail from '../../components/rail/StandardRail.astro';
+import { site } from '../../presentation/site.js';
+import type { WebStory } from '../../presentation/story.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { relatedStories } from '../../presentation/queries.js';
+import { routes } from '../../presentation/routes.js';
 
 export function getStaticPaths() {
-  return demoStories.map((story) => ({
-    params: {
-      id: story.presentation.demoId
-    },
-    props: {
-      story
-    }
+  return site.stories.map((story) => ({
+    params: { id: story.presentation.demoId },
+    props: { story }
   }));
 }
 
 interface Props {
-  story: DemoStory;
+  story: WebStory;
 }
 
 const { story } = Astro.props;
+const { article, presentation } = story;
+const section = getSection(presentation.sectionId);
+const related = relatedStories(site.stories, story, 3);
+const canonical = new URL(routes.article(story), Astro.site).href;
 ---
 
-<EditorialLayout
-  home={false}
-  title={`${story.article.headline} — Tribuna Santo`}
-  description={story.article.dek || 'Artículo editorial de Tribuna Santo'}
+<BaseLayout
+  current={presentation.sectionId}
+  title={`${article.headline} — Tribuna Santo`}
+  description={article.dek || 'Artículo editorial de Tribuna Santo'}
+  ogType="article"
+  image={presentation.image.src}
 >
-  <main>
-    <ArticleView story={story} />
-  </main>
-</EditorialLayout>
+  <Breadcrumb items={[{ label: section.label, href: routes.section(section.id) }, { label: article.headline }]} />
+  <article class="article-page">
+    <ArticleHero story={story} />
+    <ArticleMeta story={story} />
+    <div class="container article-page__columns">
+      <RailLayout railLabel="Más noticias">
+        <ArticleBody body={article.body} />
+        <ArticleTags topicIds={presentation.topicIds} />
+        <ShareLinks url={canonical} title={article.headline} />
+        {related.length > 0 && <RelatedStories stories={related} />}
+        <Fragment slot="rail">
+          <StandardRail stories={site.stories} exclude={[story]} currentSection={section.id} withFutureSlot />
+        </Fragment>
+      </RailLayout>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page__columns {
+    padding-top: var(--space-7);
+  }
+
+  .article-page__columns :global(.rail-layout__main > * + *) {
+    margin-top: var(--space-6);
+  }
+</style>

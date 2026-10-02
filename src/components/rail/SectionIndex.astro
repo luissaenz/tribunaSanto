@@ -1,0 +1,65 @@
+---
+import BlockTitle from '../story/BlockTitle.astro';
+import type { SectionCount } from '../../presentation/queries.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  counts: readonly SectionCount[];
+  current?: SectionId;
+}
+
+const { counts, current } = Astro.props;
+---
+
+<section class="section-index" aria-labelledby="section-index-title" data-block="rail-section-index">
+  <BlockTitle title="Secciones" id="section-index-title" compact />
+  <ul role="list">
+    {counts.map(({ sectionId, count }) => (
+      <li>
+        <a
+          href={routes.section(sectionId)}
+          class="section-index__link"
+          aria-current={sectionId === current ? 'true' : undefined}
+        >
+          <span>{getSection(sectionId).label}</span>
+          <span class="section-index__count">
+            {count}<span class="visually-hidden"> notas</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .section-index ul {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .section-index li {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .section-index__link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: var(--space-2);
+    font-weight: 600;
+  }
+
+  .section-index__link:hover,
+  .section-index__link[aria-current] {
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+
+  .section-index__count {
+    background: var(--color-ink);
+    color: var(--color-on-dark);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+  }
+</style>

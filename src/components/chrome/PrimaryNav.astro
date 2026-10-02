@@ -1,0 +1,79 @@
+---
+// Navegación principal. Sin JS: en mobile es una franja desplazable horizontalmente.
+import { sections, type SectionId } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  current?: SectionId | 'home' | 'latest';
+}
+
+const { current } = Astro.props;
+const items = [
+  { key: 'home', label: 'Inicio', href: routes.home() },
+  ...sections.map((s) => ({ key: s.id as string, label: s.label, href: routes.section(s.id) })),
+  { key: 'latest', label: 'Últimas', href: routes.latest() }
+];
+---
+
+<nav class="primary-nav" aria-label="Navegación principal" data-block="primary-nav">
+  <div class="container">
+    <ul class="primary-nav__list" role="list">
+      {items.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class="primary-nav__link"
+            aria-current={item.key === current ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .primary-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-ink);
+    color: var(--color-on-dark);
+  }
+
+  .primary-nav__list {
+    display: flex;
+    gap: var(--space-5);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .primary-nav__link {
+    display: block;
+    padding-block: var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+  }
+
+  .primary-nav__link:hover {
+    text-decoration: none;
+    color: #fff;
+    border-bottom-color: var(--color-on-dark-muted);
+  }
+
+  .primary-nav__link[aria-current='page'] {
+    border-bottom-color: var(--color-brand);
+    color: #fff;
+  }
+
+  @media (min-width: 64rem) {
+    .primary-nav__list {
+      gap: var(--space-6);
+    }
+  }
+</style>

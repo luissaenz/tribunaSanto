@@ -1,0 +1,53 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/chrome/Breadcrumb.astro';
+import RailLayout from '../../components/layout/RailLayout.astro';
+import ListingHeader from '../../components/listing/ListingHeader.astro';
+import RiverList from '../../components/listing/RiverList.astro';
+import Pagination from '../../components/listing/Pagination.astro';
+import StandardRail from '../../components/rail/StandardRail.astro';
+import { site } from '../../presentation/site.js';
+import type { WebStory } from '../../presentation/story.js';
+import { newestFirst } from '../../presentation/queries.js';
+import { LATEST_PAGE_SIZE, routes } from '../../presentation/routes.js';
+
+export const getStaticPaths = (({ paginate }) =>
+  paginate([...newestFirst(site.stories)], { pageSize: LATEST_PAGE_SIZE })) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<WebStory>;
+}
+
+const { page } = Astro.props;
+const hrefs = Array.from({ length: page.lastPage }, (_, i) => routes.latest(i + 1));
+const suffix = page.currentPage > 1 ? ` — Página ${page.currentPage}` : '';
+---
+
+<BaseLayout
+  current="latest"
+  title={`Últimas noticias${suffix} — Tribuna Santo`}
+  description="Todas las notas de Tribuna Santo en orden cronológico."
+>
+  <Breadcrumb items={page.currentPage > 1 ? [{ label: 'Últimas', href: routes.latest() }, { label: `Página ${page.currentPage}` }] : [{ label: 'Últimas' }]} />
+  <div class="container listing-page">
+    <RailLayout railLabel="Más noticias">
+      <ListingHeader title={`Últimas noticias${suffix}`} count={page.total} />
+      <RiverList stories={page.data} />
+      <Pagination current={page.currentPage} hrefs={hrefs} />
+      <Fragment slot="rail">
+        <StandardRail stories={site.stories} exclude={page.data} />
+      </Fragment>
+    </RailLayout>
+  </div>
+</BaseLayout>
+
+<style>
+  .listing-page {
+    padding-top: var(--space-6);
+  }
+
+  .listing-page :global(.rail-layout__main > * + *) {
+    margin-top: var(--space-6);
+  }
+</style>

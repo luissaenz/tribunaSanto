@@ -1,0 +1,58 @@
+---
+import { getTopic, type TopicId } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  topicIds: readonly TopicId[];
+}
+
+const { topicIds } = Astro.props;
+---
+
+<nav class="article-tags" aria-labelledby="article-tags-title" data-block="article-tags">
+  <h2 id="article-tags-title" class="article-tags__label">Temas</h2>
+  <ul role="list" class="article-tags__list">
+    {topicIds.map((id) => (
+      <li><a class="article-tags__tag" href={routes.topic(id)}>{getTopic(id).label}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .article-tags__label {
+    font-size: var(--text-sm);
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .article-tags__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .article-tags__tag {
+    display: inline-block;
+    border: 2px solid var(--color-ink);
+    padding: 0.2rem 0.75rem;
+    font-size: var(--text-xs);
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .article-tags__tag:hover {
+    background: var(--color-ink);
+    color: var(--color-on-dark);
+    text-decoration: none;
+  }
+</style>

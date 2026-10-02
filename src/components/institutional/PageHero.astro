@@ -1,0 +1,43 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+  lead?: string;
+}
+
+const { kicker, title, lead } = Astro.props;
+---
+
+<header class="page-hero" data-block="page-hero">
+  <div class="container container--narrow page-hero__content">
+    <span class="kicker kicker--solid">{kicker}</span>
+    <h1 class="page-hero__title">{title}</h1>
+    {lead && <p class="page-hero__lead">{lead}</p>}
+  </div>
+</header>
+
+<style>
+  .page-hero {
+    background: var(--color-ink);
+    color: var(--color-on-dark);
+  }
+
+  .page-hero__content {
+    padding-block: var(--space-8);
+  }
+
+  .page-hero__title {
+    margin-top: var(--space-3);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .page-hero__lead {
+    margin-top: var(--space-3);
+    max-width: 40rem;
+    color: var(--color-on-dark-muted);
+  }
+</style>

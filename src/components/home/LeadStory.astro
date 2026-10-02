@@ -1,0 +1,16 @@
+---
+// Historia principal estática. Reemplaza el carrusel del corpus: un único
+// titular dominante es más claro, accesible y no requiere JS.
+import StoryCard from '../story/StoryCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+
+interface Props {
+  story: WebStory;
+}
+
+const { story } = Astro.props;
+---
+
+<section class="lead-story" aria-label="Noticia principal" data-block="lead-story">
+  <StoryCard story={story} variant="overlay" size="lg" level={2} eager />
+</section>

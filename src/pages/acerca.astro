@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/chrome/Breadcrumb.astro';
+import PageHero from '../components/institutional/PageHero.astro';
+import Prose from '../components/institutional/Prose.astro';
+import { routes } from '../presentation/routes.js';
+---
+
+<BaseLayout
+  title="Acerca del proyecto — Tribuna Santo"
+  description="Qué es Tribuna Santo y en qué etapa de construcción se encuentra."
+>
+  <Breadcrumb items={[{ label: 'Acerca del proyecto' }]} narrow />
+  <PageHero
+    kicker="Institucional"
+    title="Acerca del proyecto"
+    lead="Tribuna Santo es un medio deportivo digital autónomo dedicado a San Martín de Tucumán, en construcción."
+  />
+  <Prose>
+    <p>
+      Esta versión de la web es una demostración estructural. Las notas que se ven en portada,
+      secciones y temas son ficticias y existen sólo para validar la arquitectura editorial.
+    </p>
+    <h2>Qué se está construyendo</h2>
+    <ul>
+      <li>Una portada con jerarquía y densidad propias de un diario.</li>
+      <li>Páginas de artículo con estructura editorial completa.</li>
+      <li>Espacios reservados para datos deportivos, métricas y gráficos que llegarán en próximos arcos.</li>
+    </ul>
+    <h2>Cómo seguir</h2>
+    <p>
+      Las <a href={routes.latest()}>últimas noticias</a> muestran todas las notas de demostración en orden cronológico.
+    </p>
+  </Prose>
+</BaseLayout>

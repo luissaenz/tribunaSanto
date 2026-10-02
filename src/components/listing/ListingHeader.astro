@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string;
+  count: number;
+  description?: string;
+  kicker?: string;
+}
+
+const { title, count, description, kicker } = Astro.props;
+---
+
+<header class="listing-header" data-block="listing-header">
+  <div class="block-title">
+    <h1 class="block-title__label listing-header__title">
+      {kicker && <span class="visually-hidden">{kicker}: </span>}{title}
+    </h1>
+    <p class="listing-header__count">{count} {count === 1 ? 'nota' : 'notas'}</p>
+  </div>
+  {description && <p class="listing-header__desc">{description}</p>}
+</header>
+
+<style>
+  .listing-header__title {
+    font-size: var(--text-2xl);
+    padding-inline: var(--space-5);
+  }
+
+  .listing-header__count {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .listing-header__desc {
+    margin-top: calc(-1 * var(--space-2));
+    color: var(--color-muted);
+  }
+</style>

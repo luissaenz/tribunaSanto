@@ -1,0 +1,78 @@
+---
+// Selección editorial numerada. El corpus usa "más populares"; sin métricas
+// reales de audiencia, WEB.2 lo modela como selección explícita de composición.
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+---
+
+<section class="picks" aria-labelledby="picks-title" data-block="editor-picks">
+  <h2 id="picks-title" class="picks__title">Recomendadas</h2>
+  <ol class="picks__list" role="list">
+    {stories.map((story, i) => (
+      <li class="picks__item">
+        <span class="picks__index" aria-hidden="true">{i + 1}</span>
+        <div>
+          <h3 class="picks__headline"><a href={routes.article(story)}>{story.article.headline}</a></h3>
+          {story.article.dek && <p class="picks__dek">{story.article.dek}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .picks {
+    background: var(--color-ink);
+    color: var(--color-on-dark);
+    padding: var(--space-5);
+  }
+
+  .picks__title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--color-on-dark-muted);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .picks__item {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .picks__item + .picks__item {
+    margin-top: var(--space-4);
+  }
+
+  .picks__index {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--color-brand);
+  }
+
+  .picks__headline {
+    font-size: var(--text-base);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .picks__headline a:hover {
+    color: #fff;
+  }
+
+  .picks__dek {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-on-dark-muted);
+  }
+</style>

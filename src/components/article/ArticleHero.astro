@@ -1,0 +1,111 @@
+---
+// Imagen a sangre con degradado; antetítulo, H1 y bajada superpuestos.
+import type { WebStory } from '../../presentation/story.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  story: WebStory;
+}
+
+const { story } = Astro.props;
+const { article, presentation } = story;
+const section = getSection(presentation.sectionId);
+---
+
+<header class="article-hero" data-block="article-hero">
+  <figure class="article-hero__figure">
+    <img
+      class="article-hero__img"
+      src={presentation.image.src}
+      alt={presentation.image.alt}
+      width={presentation.image.width}
+      height={presentation.image.height}
+      loading="eager"
+      decoding="async"
+    />
+    <figcaption class="visually-hidden">{presentation.image.alt}</figcaption>
+  </figure>
+  <div class="article-hero__overlay">
+    <div class="container article-hero__content">
+      <a class="kicker kicker--solid" href={routes.section(section.id)}>{section.label}</a>
+      <h1 class="article-hero__headline">{article.headline}</h1>
+      {article.dek && <p class="article-hero__dek">{article.dek}</p>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .article-hero {
+    position: relative;
+    background: var(--color-ink);
+    overflow: hidden;
+  }
+
+  .article-hero__figure {
+    aspect-ratio: 16 / 9;
+  }
+
+  .article-hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Mobile: texto debajo de la imagen; desde md se superpone con degradado. */
+  .article-hero__overlay {
+    background: var(--color-ink);
+  }
+
+  .article-hero__content {
+    padding-block: var(--space-5) var(--space-6);
+    color: #fff;
+  }
+
+  .article-hero__content .kicker:hover {
+    background: var(--color-brand-dark);
+    text-decoration: none;
+  }
+
+  .article-hero__headline {
+    margin-top: var(--space-3);
+    max-width: 48rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .article-hero__dek {
+    margin-top: var(--space-3);
+    max-width: 44rem;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--color-on-dark);
+  }
+
+  @media (min-width: 48rem) {
+    .article-hero__figure {
+      aspect-ratio: 16 / 9;
+    }
+
+    .article-hero__overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      background: linear-gradient(to top, rgb(0 0 0 / 0.95), rgb(0 0 0 / 0.6) 50%, rgb(0 0 0 / 0.2));
+    }
+
+    .article-hero__content {
+      padding-top: var(--space-8);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .article-hero__figure {
+      aspect-ratio: 16 / 5;
+    }
+  }
+</style>
