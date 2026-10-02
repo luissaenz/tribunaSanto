@@ -17,3 +17,16 @@ Medio deportivo digital autónomo dedicado a la cobertura de San Martín de Tucu
 - `npm run preview`: Previsualiza el build estático.
 - `npm run typecheck`: Valida tipos TypeScript y plantillas Astro.
 - `npm run lint`: Ejecuta el linter ESLint.
+- `npm run db:up`: Inicia el contenedor PostgreSQL 17 dedicado en segundo plano.
+- `npm run db:down`: Detiene el contenedor PostgreSQL 17 preservando el volumen de datos.
+- `npm run db:check`: Verifica el estado de salud y conectividad de PostgreSQL.
+
+## Configuración de Base de Datos Local
+
+Copiar `.env.example` a `.env` y configurar `POSTGRES_PASSWORD`:
+```bash
+cp .env.example .env
+# Asignar un password seguro en .env
+npm run db:up
+npm run db:check
+```
