@@ -1,0 +1,85 @@
+---
+// Cuerpo del artículo. Todo el texto se interpola escapado; nunca se inyecta HTML crudo.
+import { parseArticleBody } from '../../presentation/article-body.js';
+
+interface Props {
+  body: string;
+}
+
+const { body } = Astro.props;
+const blocks = parseArticleBody(body);
+---
+
+<div class="article-body" data-block="article-body">
+  {blocks.map((block) =>
+    block.type === 'subheading' ? (
+      <h2 id={block.id} class="article-body__subheading">{block.text}</h2>
+    ) : block.type === 'quote' ? (
+      <figure class="article-body__quote">
+        <blockquote><p>{block.text}</p></blockquote>
+        {block.attribution && <figcaption>— {block.attribution}</figcaption>}
+      </figure>
+    ) : (
+      <p class="article-paragraph">{block.text}</p>
+    )
+  )}
+</div>
+
+<style>
+  .article-body {
+    max-width: var(--prose-max);
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--color-ink-soft);
+  }
+
+  .article-paragraph + .article-paragraph,
+  .article-body > * + * {
+    margin-top: 1.4em;
+  }
+
+  /* Subtítulo sin adorno: jerarquía por tamaño, peso y aire. */
+  .article-body__subheading {
+    margin-top: 1.8em;
+    font-family: var(--font-sans);
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+
+  /* Cita destacada: filetes finos arriba y abajo, comilla de apertura en color de marca. */
+  .article-body__quote {
+    margin-block: 2em;
+    padding-block: var(--space-5);
+    border-top: var(--hairline) solid var(--color-border);
+    border-bottom: var(--hairline) solid var(--color-border);
+  }
+
+  .article-body__quote blockquote::before {
+    content: '“';
+    display: block;
+    font-size: 3.5rem;
+    line-height: 0.6;
+    margin-bottom: var(--space-2);
+    color: var(--color-brand);
+  }
+
+  .article-body__quote blockquote {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .article-body__quote figcaption {
+    margin-top: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+  }
+</style>

@@ -1,13 +1,32 @@
+/*
+ * Tribuna Santo — tokens y primitivas de layout (WEB.2).
+ *
+ * La geometría (ancho de contenido, proporciones de columnas, cortes
+ * responsive) se dedujo del inventario estructural del corpus de referencia.
+ * Paleta, tipografía y ornamento son propios y provisionales (identidad
+ * visual definitiva fuera de alcance).
+ *
+ * Cortes responsive (no pueden usar custom properties en @media):
+ *   sm 40rem · md 48rem · lg 64rem · xl 80rem
+ */
+
 :root {
+  /* Color — paleta provisional heredada de WEB.1 */
   --color-brand: #b5121b;
   --color-brand-dark: #7f0d14;
   --color-ink: #151515;
+  --color-ink-soft: #2b2926;
   --color-muted: #66615b;
   --color-background: #f6f4ef;
   --color-surface: #ffffff;
+  --color-surface-alt: #efece5;
   --color-border: #d9d5ce;
+  --color-border-soft: #ebe8e2;
+  --color-on-dark: #f3f1ec;
+  --color-on-dark-muted: #b4afa6;
   --color-focus: #005fcc;
 
+  /* Tipografía del sistema: titulares serif, texto sans */
   --font-sans:
     system-ui,
     -apple-system,
@@ -17,13 +36,42 @@
     Helvetica,
     Arial,
     sans-serif;
-
   --font-serif:
     Georgia,
     "Times New Roman",
     serif;
+  --font-display: var(--font-serif);
 
-  --content-max: 76rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Ritmo vertical */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+
+  /* Geometría */
+  --content-max: 80rem;
+  --prose-max: 46rem;
+  --narrow-max: 56rem;
+  --gutter: 1rem;
+  --grid-gap: 1.5rem;
+  --rail-gap: 2rem;
+  --thumb-w: 6rem;
+  --thumb-sm-w: 5rem;
+  --hairline: 1px;
+  --radius-pill: 999px;
 }
 
 *, *::before, *::after {
@@ -66,26 +114,151 @@ img, svg {
   height: auto;
 }
 
+ul[role="list"], ol[role="list"] {
+  list-style: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -3rem;
+  z-index: 100;
+  background: var(--color-ink);
+  color: var(--color-on-dark);
+  padding: var(--space-2) var(--space-4);
+}
+
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+/* ---------- Primitivas de layout ---------- */
+
 .container {
   width: 100%;
   max-width: var(--content-max);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
-.provisional-badge {
+.container--narrow {
+  max-width: var(--narrow-max);
+}
+
+/* Grilla responsive de N columnas: 1 → 2 (md) → N (lg). */
+.grid {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 48rem) {
+  .grid--2, .grid--3, .grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Átomos editoriales ---------- */
+
+/* Antetítulo: sólo texto, sin etiqueta rellena. */
+.kicker {
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: var(--text-xs);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--color-brand);
-  margin-bottom: 0.35rem;
 }
 
-.editorial-timestamp {
-  font-size: 0.8rem;
+.kicker--on-dark {
+  color: var(--color-on-dark);
+}
+
+.meta {
+  font-size: var(--text-xs);
   color: var(--color-muted);
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.headline a:hover {
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+.media {
+  display: block;
+  overflow: hidden;
+  background: var(--color-ink);
+  aspect-ratio: 16 / 9;
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Título de bloque: título en tinta seguido de un filete fino en línea que
+ * ocupa el espacio restante, y enlace opcional al final.
+ */
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.block-title::after {
+  content: '';
+  order: 1;
+  flex: 1;
+  height: var(--hairline);
+  background: var(--color-border);
+}
+
+.block-title__label {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.block-title__more {
+  order: 2;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-brand);
+  white-space: nowrap;
+}
+
+.block-title--compact .block-title__label {
+  font-size: var(--text-lg);
 }

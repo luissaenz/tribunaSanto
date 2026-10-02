@@ -1,0 +1,298 @@
+---
+// Tarjeta de historia única con variantes (catálogo en src/presentation/blocks.ts).
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { formatShortDate } from '../../presentation/format.js';
+
+export type StoryCardVariant =
+  | 'overlay'
+  | 'feature'
+  | 'tile'
+  | 'headline'
+  | 'accent'
+  | 'thumb'
+  | 'thumb-end'
+  | 'river'
+  | 'numbered'
+  | 'compact';
+
+interface Props {
+  story: WebStory;
+  variant: StoryCardVariant;
+  level?: 2 | 3 | 4;
+  index?: number;
+  showDek?: boolean;
+  showKicker?: boolean;
+  size?: 'lg' | 'md';
+  eager?: boolean;
+}
+
+const {
+  story,
+  variant,
+  level = 3,
+  index,
+  showDek = ['overlay', 'feature', 'headline', 'accent', 'river'].includes(variant),
+  showKicker = ['overlay', 'river'].includes(variant),
+  size = 'md',
+  eager = false
+} = Astro.props;
+
+const { article, presentation } = story;
+const href = routes.article(story);
+const section = getSection(presentation.sectionId);
+const Heading = `h${level}` as 'h2' | 'h3' | 'h4';
+const hasMedia = ['overlay', 'feature', 'tile', 'thumb', 'thumb-end', 'river'].includes(variant);
+const date = formatShortDate(article.publishedAt);
+---
+
+<article class:list={['card', `card--${variant}`, `card--${size}`]}>
+  {variant === 'numbered' && index !== undefined && (
+    <span class="card__index" aria-hidden="true">{index}</span>
+  )}
+
+  {hasMedia && (
+    <a href={href} class="card__media media" tabindex="-1" aria-hidden="true">
+      <img
+        src={presentation.image.src}
+        alt={presentation.image.alt}
+        width={presentation.image.width}
+        height={presentation.image.height}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    </a>
+  )}
+
+  <div class="card__body">
+    {variant === 'compact' && (
+      <time class="meta card__date-top" datetime={article.publishedAt}>{date}</time>
+    )}
+    {showKicker && (
+      <span class:list={['kicker', { 'kicker--on-dark': variant === 'overlay' }]}>{section.label}</span>
+    )}
+    <Heading class="headline card__title">
+      <a href={href}>{article.headline}</a>
+    </Heading>
+    {showDek && article.dek && <p class="card__dek">{article.dek}</p>}
+    {variant === 'river' ? (
+      <p class="meta card__meta">
+        <span>Por {article.byline}</span>
+        <span aria-hidden="true">|</span>
+        <time datetime={article.publishedAt}>{date}</time>
+      </p>
+    ) : variant === 'overlay' ? (
+      <p class="meta card__meta">
+        <span>Por {article.byline}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={article.publishedAt}>{date}</time>
+      </p>
+    ) : variant !== 'compact' && variant !== 'tile' ? (
+      <p class="meta card__meta">
+        <time datetime={article.publishedAt}>{date}</time>
+      </p>
+    ) : null}
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    min-width: 0;
+  }
+
+  .card__title {
+    font-size: var(--text-lg);
+  }
+
+  .card__dek {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    line-height: 1.45;
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  /* overlay: imagen con degradado y texto encima */
+  .card--overlay .card__media {
+    aspect-ratio: 4 / 3.4;
+  }
+
+  .card--overlay .card__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: var(--space-5);
+    color: var(--color-on-dark);
+    background: linear-gradient(to top, rgb(0 0 0 / 0.9), rgb(0 0 0 / 0.55) 60%, transparent);
+  }
+
+  .card--overlay .card__title {
+    color: #fff;
+    font-size: var(--text-2xl);
+    margin-top: var(--space-2);
+  }
+
+  .card--overlay.card--lg .card__title {
+    font-size: clamp(var(--text-2xl), 3.2vw, var(--text-4xl));
+  }
+
+  .card--overlay .card__title a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .card--overlay .card__dek,
+  .card--overlay .card__meta {
+    color: var(--color-on-dark-muted);
+  }
+
+  .card--overlay .card__dek {
+    font-size: var(--text-base);
+    display: none;
+  }
+
+  @media (min-width: 40rem) {
+    .card--overlay .card__media {
+      aspect-ratio: 16 / 10;
+    }
+
+    .card--overlay .card__dek {
+      display: block;
+    }
+  }
+
+  /* feature: imagen arriba, título grande */
+  .card--feature .card__media {
+    margin-bottom: var(--space-3);
+  }
+
+  .card--feature .card__title {
+    font-size: clamp(var(--text-xl), 2.2vw, var(--text-2xl));
+  }
+
+  .card--feature .card__dek {
+    font-size: var(--text-base);
+  }
+
+  /* tile: imagen + título corto (grilla 2×2) */
+  .card--tile .card__media {
+    margin-bottom: var(--space-2);
+  }
+
+  .card--tile .card__title {
+    font-size: var(--text-sm);
+    line-height: 1.3;
+  }
+
+  /* accent: regla lateral */
+  /* accent: titulares apilados separados por filete fino superior */
+  .card--accent {
+    border-top: var(--hairline) solid var(--color-border);
+    padding-top: var(--space-3);
+  }
+
+  .card--accent .card__title {
+    font-size: var(--text-base);
+  }
+
+  @media (min-width: 80rem) {
+    .card--accent .card__title {
+      font-size: var(--text-lg);
+    }
+  }
+
+  /* thumb / thumb-end: miniatura lateral */
+  .card--thumb,
+  .card--thumb-end {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .card--thumb-end {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card--thumb .card__media,
+  .card--thumb-end .card__media {
+    flex: none;
+    width: var(--thumb-w);
+    aspect-ratio: 3 / 2;
+  }
+
+  .card--thumb .card__body,
+  .card--thumb-end .card__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card--thumb .card__title,
+  .card--thumb-end .card__title {
+    font-size: var(--text-base);
+  }
+
+  /* river: imagen 1/3 + texto 2/3 desde sm */
+  .card--river {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card--river .card__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card--river .card__title {
+    font-size: clamp(var(--text-xl), 2vw, var(--text-2xl));
+    margin-top: var(--space-1);
+  }
+
+  @media (min-width: 40rem) {
+    .card--river {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: var(--space-5);
+    }
+  }
+
+  /* numbered: índice grande + titular */
+  .card--numbered {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .card__index {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-xl);
+    line-height: 1.1;
+    color: var(--color-brand);
+    min-width: 1.4ch;
+  }
+
+  .card--numbered .card__title {
+    font-size: var(--text-sm);
+    line-height: 1.35;
+  }
+
+  /* compact: fecha arriba + titular */
+  .card--compact .card__title {
+    font-size: var(--text-base);
+    margin-top: var(--space-1);
+  }
+
+  .card--headline .card__title {
+    font-size: var(--text-lg);
+  }
+</style>

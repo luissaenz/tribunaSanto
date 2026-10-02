@@ -13,3 +13,7 @@
 2. **Cero Dependencia de Runtime**: Ningún script, subagente o biblioteca de `claude-seo` forma parte del `package.json`, del bundle de Astro ni del código productivo de Tribuna Santo.
 3. **Subordinación Metodológica**: Las directivas de `claude-seo` están subordinadas a las reglas del repositorio y al proceso normativo Skill 1 → Skill 2 → Skill 3.
 4. **Independencia Normativa**: La fuente normativa interna del proyecto es `seo/policy.json` y sus gates ejecutables en TypeScript.
+
+## Disponibilidad verificada
+
+- **WEB.2 (entorno remoto de ejecución)**: `~/.claude/skills/seo/` no existe; `claude-seo` no estaba instalado. Las decisiones SEO de WEB.2 se apoyaron exclusivamente en `.claude/skills/tribuna-seo`, `seo/policy.json` y `docs/seo/`. La instalación global descripta arriba debe verificarse en cada entorno; no puede asumirse.

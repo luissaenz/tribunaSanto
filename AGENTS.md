@@ -42,3 +42,4 @@ Las reglas SEO no son opcionales ni dependen de la memoria del agente.
 
 - Referencias estructurales editoriales y funcionales: consultar `docs/references.md`.
 - Provenance de tooling auxiliar upstream: consultar `docs/seo/upstream.md`.
+- Ingeniería inversa editorial (WEB.2), catálogo de bloques y reglas del corpus `/web`: consultar `docs/web2/README.md`. `/web` es material de análisis local y no versionado: nunca importarlo, copiarlo ni servirlo.

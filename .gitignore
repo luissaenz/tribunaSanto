@@ -31,3 +31,6 @@ coverage/
 # Temp
 tmp/
 temp/
+
+# Corpus de referencia (WEB.2): sólo copia local de investigación, nunca versionado
+/web/

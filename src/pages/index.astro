@@ -1,105 +1,81 @@
 ---
-import EditorialLayout from '../layouts/EditorialLayout.astro';
-import PrimaryStory from '../components/PrimaryStory.astro';
-import StoryCard from '../components/StoryCard.astro';
-import LatestNews from '../components/LatestNews.astro';
-import SportsSidebar from '../components/SportsSidebar.astro';
-import { demoStories } from '../data/demo-articles.js';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RailLayout from '../components/layout/RailLayout.astro';
+import LeadStory from '../components/home/LeadStory.astro';
+import TrendingList from '../components/home/TrendingList.astro';
+import SectionBlock from '../components/home/SectionBlock.astro';
+import LatestGrid from '../components/home/LatestGrid.astro';
+import EditorPicks from '../components/rail/EditorPicks.astro';
+import CompactList from '../components/rail/CompactList.astro';
+import VisualStories from '../components/rail/VisualStories.astro';
+import FutureSlot from '../components/rail/FutureSlot.astro';
+import Pagination from '../components/listing/Pagination.astro';
+import { site } from '../presentation/site.js';
+import { futureSlots } from '../presentation/future-modules.js';
+import { storiesWithTopic } from '../presentation/queries.js';
+import { LATEST_PAGE_SIZE, routes } from '../presentation/routes.js';
 
-const leadStory = demoStories.find((story) => story.presentation.role === 'lead');
-const secondaryStories = demoStories.filter((story) => story.presentation.role === 'secondary');
-const latestStories = demoStories.filter((story) => story.presentation.role === 'latest');
-
-if (!leadStory) {
-  throw new Error('WEB.1 demo requires exactly one lead story');
-}
+const { home, stories } = site;
+const agenda = storiesWithTopic(stories, 'agenda').slice(0, 4);
+const latestPages = Math.ceil(stories.length / LATEST_PAGE_SIZE);
+const latestHrefs = Array.from({ length: latestPages }, (_, i) => routes.latest(i + 1));
 ---
 
-<EditorialLayout
+<BaseLayout
   home={true}
+  editionInstant={site.editionInstant}
+  current="home"
   title="Tribuna Santo — Diario deportivo de San Martín de Tucumán"
   description="Primer medio deportivo digital autónomo dedicado a la cobertura integral de San Martín de Tucumán."
 >
-  <main class="container homepage-main">
-    <div class="editorial-grid">
-      <section id="san-martin" class="primary-column" aria-label="Noticias destacadas">
-        <PrimaryStory story={leadStory} />
-
-        <div class="secondary-section-header">
-          <h2 class="section-title">Más noticias del Santo</h2>
-        </div>
-
-        <div class="secondary-grid">
-          {secondaryStories.map((story) => (
-            <StoryCard story={story} />
-          ))}
-        </div>
-      </section>
-
-      <div class="sidebar-column">
-        <section id="actualidad" class="latest-section" aria-label="Últimas noticias">
-          <LatestNews stories={latestStories} />
-        </section>
-
-        <aside id="club" class="sports-section" aria-label="Información deportiva">
-          <SportsSidebar />
-        </aside>
-      </div>
+  <div class="container home">
+    <div class="home__top">
+      <LeadStory story={home.lead} />
+      <TrendingList title="En agenda" stories={home.trending} />
     </div>
-  </main>
-</EditorialLayout>
+
+    <RailLayout railLabel="Recomendadas y datos deportivos">
+      {home.primaryBand.map((block) => <SectionBlock block={block} />)}
+      <Fragment slot="rail">
+        <EditorPicks stories={home.picks} />
+        <FutureSlot spec={futureSlots.nextMatch} />
+        <FutureSlot spec={futureSlots.standings} />
+        <CompactList title="Agenda" id="agenda-title" href={routes.topic('agenda')} stories={agenda} />
+      </Fragment>
+    </RailLayout>
+
+    <RailLayout railFirst railLabel="Historias visuales y gráficos">
+      <Fragment slot="rail">
+        <VisualStories stories={home.visual} />
+        <FutureSlot spec={futureSlots.matchGraphic} />
+        <FutureSlot spec={futureSlots.squadMetrics} />
+      </Fragment>
+      {home.secondaryBand.map((block) => <SectionBlock block={block} />)}
+      <LatestGrid stories={home.latest}>
+        <Pagination current={1} hrefs={latestHrefs} label="Más noticias" />
+      </LatestGrid>
+    </RailLayout>
+  </div>
+</BaseLayout>
 
 <style>
-  .homepage-main {
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
+  .home {
+    padding-top: var(--space-5);
   }
 
-  .editorial-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  .home > :global(* + *) {
+    margin-top: var(--space-8);
   }
 
-  .secondary-section-header {
-    border-bottom: 2px solid var(--color-ink);
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.35rem;
-  }
-
-  .section-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-ink);
-  }
-
-  .secondary-grid {
+  .home__top {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  /* Tablet */
-  @media (min-width: 48rem) {
-    .secondary-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  /* Desktop */
-  @media (min-width: 72rem) {
-    .editorial-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2.5rem;
-      align-items: start;
-    }
-
-    .secondary-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
+  @media (min-width: 64rem) {
+    .home__top {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     }
   }
 </style>

@@ -1,0 +1,53 @@
+---
+// Layout base de la web demo (WEB.2).
+//
+// Todas las páginas de WEB.2 contienen exclusivamente contenido ficticio y
+// rutas provisionales: se emiten siempre como `noindex, nofollow` y sin
+// canonical, OpenGraph ni Twitter Cards. No existe prop para habilitar la
+// indexación; esa decisión corresponde a un ciclo SEO futuro.
+import '../styles/global.css';
+import UtilityBar from '../components/chrome/UtilityBar.astro';
+import Masthead from '../components/chrome/Masthead.astro';
+import PrimaryNav from '../components/chrome/PrimaryNav.astro';
+import SiteFooter from '../components/chrome/SiteFooter.astro';
+import type { SectionId } from '../presentation/taxonomy.js';
+
+interface Props {
+  title: string;
+  description: string;
+  editionInstant: string;
+  home?: boolean;
+  current?: SectionId | 'home' | 'latest';
+}
+
+const { title, description, editionInstant, home = false, current } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <UtilityBar editionInstant={editionInstant} />
+      <Masthead home={home} />
+    </header>
+    <PrimaryNav current={current} />
+    <main id="contenido" class="site-main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .site-main {
+    padding-bottom: var(--space-8);
+  }
+</style>

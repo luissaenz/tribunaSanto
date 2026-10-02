@@ -1,0 +1,26 @@
+---
+// Columna lateral estándar de secciones, temas, últimas y artículos.
+import NumberedList from './NumberedList.astro';
+import SectionIndex from './SectionIndex.astro';
+import RailLatest from './RailLatest.astro';
+import FutureSlot from './FutureSlot.astro';
+import type { WebStory } from '../../presentation/story.js';
+import type { SectionId } from '../../presentation/taxonomy.js';
+import { excluding, newestFirst, sectionCounts } from '../../presentation/queries.js';
+import { futureSlots } from '../../presentation/future-modules.js';
+
+interface Props {
+  stories: readonly WebStory[];
+  exclude?: readonly WebStory[];
+  currentSection?: SectionId;
+  withFutureSlot?: boolean;
+}
+
+const { stories, exclude = [], currentSection, withFutureSlot = false } = Astro.props;
+const pool = newestFirst(excluding(stories, exclude));
+---
+
+<NumberedList stories={pool.slice(0, 5)} />
+<SectionIndex counts={sectionCounts(stories)} current={currentSection} />
+<RailLatest stories={pool.slice(5, 9)} />
+{withFutureSlot && <FutureSlot spec={futureSlots.nextMatch} />}

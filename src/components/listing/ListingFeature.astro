@@ -1,0 +1,15 @@
+---
+// Destacada estática de un listado (sin carrusel ni JS).
+import StoryCard from '../story/StoryCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+
+interface Props {
+  story: WebStory;
+}
+
+const { story } = Astro.props;
+---
+
+<section class="listing-feature" aria-label="Nota destacada" data-block="listing-feature">
+  <StoryCard story={story} variant="overlay" level={2} eager />
+</section>

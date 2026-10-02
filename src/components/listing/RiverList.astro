@@ -1,0 +1,35 @@
+---
+import BlockTitle from '../story/BlockTitle.astro';
+import StoryCard from '../story/StoryCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+
+interface Props {
+  stories: readonly WebStory[];
+  title?: string;
+}
+
+const { stories, title } = Astro.props;
+---
+
+<section class="river" aria-labelledby={title ? 'river-title' : undefined} aria-label={title ? undefined : 'Notas'} data-block="river-list">
+  {title && <BlockTitle title={title} id="river-title" />}
+  <ul role="list">
+    {stories.map((story) => (
+      <li><StoryCard story={story} variant="river" level={title ? 3 : 2} /></li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .river li {
+    padding-block: var(--space-5);
+  }
+
+  .river li:first-child {
+    padding-top: 0;
+  }
+
+  .river li + li {
+    border-top: 1px solid var(--color-border);
+  }
+</style>

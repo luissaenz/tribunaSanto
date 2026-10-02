@@ -1,0 +1,54 @@
+---
+import type { WebStory } from '../../presentation/story.js';
+import { formatLongDate } from '../../presentation/format.js';
+import { readingMinutes } from '../../presentation/article-body.js';
+
+interface Props {
+  story: WebStory;
+}
+
+const { story } = Astro.props;
+const { article } = story;
+const updated = article.modifiedAt !== article.publishedAt;
+---
+
+<div class="article-meta" data-block="article-meta">
+  <div class="container article-meta__content">
+    <p class="article-meta__byline">Por <strong>{article.byline}</strong></p>
+    <p>
+      Publicado <time datetime={article.publishedAt}>{formatLongDate(article.publishedAt)}</time>
+    </p>
+    {updated && (
+      <p>
+        Actualizado <time datetime={article.modifiedAt}>{formatLongDate(article.modifiedAt)}</time>
+      </p>
+    )}
+    <p>{readingMinutes(article.body)} min de lectura</p>
+  </div>
+</div>
+
+<style>
+  .article-meta {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .article-meta__content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    padding-block: var(--space-4);
+  }
+
+  .article-meta__content > p + p::before {
+    content: '|';
+    margin-right: var(--space-5);
+    color: var(--color-border);
+  }
+
+  .article-meta__byline strong {
+    color: var(--color-ink);
+  }
+</style>

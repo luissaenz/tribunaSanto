@@ -1,0 +1,37 @@
+---
+import BlockTitle from '../story/BlockTitle.astro';
+import StoryCard from '../story/StoryCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+
+interface Props {
+  title: string;
+  id: string;
+  href?: string;
+  stories: readonly WebStory[];
+}
+
+const { title, id, href, stories } = Astro.props;
+---
+
+<section class="compact-list" aria-labelledby={id} data-block="compact-list">
+  <BlockTitle title={title} id={id} href={href} compact />
+  <ul role="list">
+    {stories.map((story) => (
+      <li><StoryCard story={story} variant="compact" level={3} /></li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .compact-list li {
+    padding-bottom: var(--space-3);
+  }
+
+  .compact-list li + li {
+    padding-top: var(--space-3);
+  }
+
+  .compact-list li:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
+</style>

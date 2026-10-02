@@ -1,0 +1,57 @@
+---
+import { getTopic, type TopicId } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+
+interface Props {
+  topicIds: readonly TopicId[];
+}
+
+const { topicIds } = Astro.props;
+---
+
+<nav class="article-tags" aria-labelledby="article-tags-title" data-block="article-tags">
+  <h2 id="article-tags-title" class="article-tags__label">Temas</h2>
+  <ul role="list" class="article-tags__list">
+    {topicIds.map((id) => (
+      <li><a class="article-tags__tag" href={routes.topic(id)}>{getTopic(id).label}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+    border-bottom: var(--hairline) solid var(--color-border);
+  }
+
+  .article-tags__label {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-muted);
+  }
+
+  .article-tags__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Píldoras redondeadas sobre superficie alternativa. */
+  .article-tags__tag {
+    display: inline-block;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-pill);
+    padding: 0.25rem 0.85rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+
+  .article-tags__tag:hover {
+    background: var(--color-border);
+    text-decoration: none;
+  }
+</style>

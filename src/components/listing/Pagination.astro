@@ -1,0 +1,73 @@
+---
+interface Props {
+  current: number;
+  hrefs: readonly string[];
+  label?: string;
+}
+
+const { current, hrefs, label = 'Paginación' } = Astro.props;
+const total = hrefs.length;
+const prev = current > 1 ? hrefs[current - 2] : undefined;
+const next = current < total ? hrefs[current] : undefined;
+---
+
+<nav class="pagination" aria-label={label} data-block="pagination">
+  <ul role="list" class="pagination__list">
+    {prev && <li><a class="pagination__step" href={prev} rel="prev">← Anterior</a></li>}
+    {hrefs.map((href, i) => (
+      <li>
+        {i + 1 === current ? (
+          <span class="pagination__page pagination__page--current" aria-current="page">{i + 1}</span>
+        ) : (
+          <a class="pagination__page" href={href}>
+            <span class="visually-hidden">Página </span>{i + 1}
+          </a>
+        )}
+      </li>
+    ))}
+    {next && <li><a class="pagination__step" href={next} rel="next">Siguiente →</a></li>}
+  </ul>
+</nav>
+
+<style>
+  .pagination {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: var(--hairline) solid var(--color-border);
+  }
+
+  .pagination__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Paginación textual: números sin cajas, área táctil amplia. */
+  .pagination__page,
+  .pagination__step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    padding-inline: var(--space-2);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .pagination__page:hover,
+  .pagination__step:hover {
+    color: var(--color-brand);
+  }
+
+  .pagination__page--current {
+    color: var(--color-brand);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+</style>

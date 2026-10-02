@@ -1,0 +1,102 @@
+// WEB.2 — Catálogo de bloques propios: tipo de página → bloques → componentes Astro.
+//
+// Sólo contiene bloques de Tribuna Santo. La evidencia del corpus de referencia
+// (qué bloque observado justifica cada uno) vive fuera del producto, en
+// scripts/corpus/block-map.ts. Cada componente marca su raíz con
+// `data-block="<id>"` y las pruebas verifican las secuencias declaradas aquí.
+
+export const OWN_PAGE_FAMILIES = ['home', 'section', 'topic', 'listing', 'article', 'institutional'] as const;
+export type OwnPageFamily = (typeof OWN_PAGE_FAMILIES)[number];
+
+export type BlockSpec = Readonly<{
+  id: string;
+  component: string;
+  purpose: string;
+}>;
+
+export const blockCatalog = [
+  { id: 'utility-bar', component: 'chrome/UtilityBar.astro', purpose: 'Fecha de edición y lugar.' },
+  { id: 'masthead', component: 'chrome/Masthead.astro', purpose: 'Cabecera con marca provisional.' },
+  { id: 'primary-nav', component: 'chrome/PrimaryNav.astro', purpose: 'Secciones; franja desplazable en mobile.' },
+  { id: 'breadcrumb', component: 'chrome/Breadcrumb.astro', purpose: 'Ruta jerárquica.' },
+  { id: 'site-footer', component: 'chrome/SiteFooter.astro', purpose: 'Marca, columnas de enlaces y aviso.' },
+
+  { id: 'lead-story', component: 'home/LeadStory.astro', purpose: 'Historia principal estática.' },
+  { id: 'trending', component: 'home/TrendingList.astro', purpose: 'Lista con miniaturas junto a la principal.' },
+  { id: 'section-block', component: 'home/SectionBlock.astro', purpose: 'Bloque de sección con 4 variantes de composición.' },
+  { id: 'latest-grid', component: 'home/LatestGrid.astro', purpose: 'Grilla cronológica de últimas noticias.' },
+
+  { id: 'rail', component: 'layout/RailLayout.astro', purpose: 'Columna principal + columna lateral.' },
+  { id: 'editor-picks', component: 'rail/EditorPicks.astro', purpose: 'Selección editorial numerada (sin métricas).' },
+  { id: 'compact-list', component: 'rail/CompactList.astro', purpose: 'Titulares con fecha.' },
+  { id: 'visual-stories', component: 'rail/VisualStories.astro', purpose: 'Historias con imagen dominante.' },
+  { id: 'future-slot', component: 'rail/FutureSlot.astro', purpose: 'Hueco reservado para DEP/MET/GRF.' },
+  { id: 'rail-recent-numbered', component: 'rail/NumberedList.astro', purpose: 'Lo último, numerado.' },
+  { id: 'rail-section-index', component: 'rail/SectionIndex.astro', purpose: 'Secciones con cantidad de notas.' },
+  { id: 'rail-latest', component: 'rail/RailLatest.astro', purpose: 'Una destacada y miniaturas.' },
+
+  { id: 'listing-header', component: 'listing/ListingHeader.astro', purpose: 'H1 del listado y conteo.' },
+  { id: 'listing-feature', component: 'listing/ListingFeature.astro', purpose: 'Destacada estática de la sección.' },
+  { id: 'river-list', component: 'listing/RiverList.astro', purpose: 'Río de notas imagen 1/3 + texto 2/3.' },
+  { id: 'pagination', component: 'listing/Pagination.astro', purpose: 'Paginación textual estática.' },
+
+  { id: 'article-hero', component: 'article/ArticleHero.astro', purpose: 'Imagen con antetítulo, H1 y bajada.' },
+  { id: 'article-meta', component: 'article/ArticleMeta.astro', purpose: 'Firma, fechas y tiempo de lectura.' },
+  { id: 'article-body', component: 'article/ArticleBody.astro', purpose: 'Cuerpo con subtítulos y citas.' },
+  { id: 'article-tags', component: 'article/ArticleTags.astro', purpose: 'Temas enlazados.' },
+  { id: 'share-links', component: 'article/ShareLinks.astro', purpose: 'Compartir sin JavaScript.' },
+  { id: 'related-stories', component: 'article/RelatedStories.astro', purpose: 'Tres relacionadas.' },
+
+  { id: 'page-hero', component: 'institutional/PageHero.astro', purpose: 'Banda de título institucional.' },
+  { id: 'prose', component: 'institutional/Prose.astro', purpose: 'Texto institucional angosto.' }
+] as const satisfies readonly BlockSpec[];
+
+export type BlockId = (typeof blockCatalog)[number]['id'];
+
+const chrome = ['utility-bar', 'masthead', 'primary-nav'] as const satisfies readonly BlockId[];
+const standardRail = ['rail-recent-numbered', 'rail-section-index', 'rail-latest'] as const satisfies readonly BlockId[];
+
+/** Secuencia mínima (en orden DOM) de bloques que cada familia debe renderizar. */
+export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
+  home: [
+    ...chrome,
+    'lead-story',
+    'trending',
+    'rail',
+    'section-block',
+    'section-block',
+    'section-block',
+    'section-block',
+    'editor-picks',
+    'future-slot',
+    'future-slot',
+    'compact-list',
+    'rail',
+    'visual-stories',
+    'future-slot',
+    'future-slot',
+    'section-block',
+    'section-block',
+    'latest-grid',
+    'pagination',
+    'site-footer'
+  ],
+  section: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'listing-feature', 'river-list', ...standardRail, 'site-footer'],
+  topic: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', ...standardRail, 'site-footer'],
+  listing: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', 'pagination', ...standardRail, 'site-footer'],
+  article: [
+    ...chrome,
+    'breadcrumb',
+    'article-hero',
+    'article-meta',
+    'rail',
+    'article-body',
+    'article-tags',
+    'share-links',
+    'related-stories',
+    ...standardRail,
+    'future-slot',
+    'site-footer'
+  ],
+  institutional: [...chrome, 'breadcrumb', 'page-hero', 'prose', 'site-footer']
+};
