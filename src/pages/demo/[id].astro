@@ -1,0 +1,32 @@
+---
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import ArticleView from '../../components/ArticleView.astro';
+import { demoStories, type DemoStory } from '../../data/demo-articles.js';
+
+export function getStaticPaths() {
+  return demoStories.map((story) => ({
+    params: {
+      id: story.presentation.demoId
+    },
+    props: {
+      story
+    }
+  }));
+}
+
+interface Props {
+  story: DemoStory;
+}
+
+const { story } = Astro.props;
+---
+
+<EditorialLayout
+  home={false}
+  title={`${story.article.headline} — Tribuna Santo`}
+  description={story.article.dek || 'Artículo editorial de Tribuna Santo'}
+>
+  <main>
+    <ArticleView story={story} />
+  </main>
+</EditorialLayout>
