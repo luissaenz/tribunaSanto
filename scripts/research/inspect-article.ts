@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 
 const html = fs.readFileSync(path.resolve(process.cwd(), 'web', 'sports-football-transfer.html'), 'utf-8');
 const root = parse(html);
@@ -34,7 +34,7 @@ if (articleMain) {
   const rightCol = articleMain.querySelector('aside');
   console.log('  Left Col (article body):', leftCol?.getAttribute('class'));
   console.log('    Direct tags inside left col:');
-  leftCol?.childNodes.filter((n: any) => n.nodeType === 1).forEach((c: any, i) => {
+  leftCol?.childNodes.filter((n): n is HTMLElement => n.nodeType === 1).forEach((c, i) => {
     console.log(`      [${i}] <${c.tagName}> class="${c.getAttribute('class')}" id="${c.getAttribute('id')}"`);
   });
 

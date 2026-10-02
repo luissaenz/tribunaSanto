@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 
 const html = fs.readFileSync(path.resolve(process.cwd(), 'web', 'sports-football-transfer.html'), 'utf-8');
 const root = parse(html);
 
 const postContent = root.querySelector('div.post-content');
 console.log('--- POST CONTENT TAGS ---');
-postContent?.childNodes.filter((n: any) => n.nodeType === 1).forEach((c: any) => {
+postContent?.childNodes.filter((n): n is HTMLElement => n.nodeType === 1).forEach((c) => {
   console.log(`Tag <${c.tagName}> class="${c.getAttribute('class') || ''}": text="${c.text.trim().substring(0, 60)}..."`);
 });
 

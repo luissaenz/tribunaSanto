@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 
 function analyzeDOMHierarchy(filePath: string) {
   const content = fs.readFileSync(filePath, 'utf-8');
@@ -14,13 +14,13 @@ function analyzeDOMHierarchy(filePath: string) {
   }
 
   // Print direct children of main
-  const children = main.childNodes.filter(n => n.nodeType === 1);
+  const children = main.childNodes.filter((n): n is HTMLElement => n.nodeType === 1);
   console.log(`<main> has ${children.length} direct element children:`);
-  children.forEach((c: any, i) => {
+  children.forEach((c, i) => {
     console.log(`  [${i}] <${c.tagName}> class="${c.getAttribute('class') || ''}" id="${c.getAttribute('id') || ''}"`);
     // Inspect child's children
-    const grandChildren = c.childNodes.filter((n: any) => n.nodeType === 1);
-    grandChildren.forEach((gc: any, gi: number) => {
+    const grandChildren = c.childNodes.filter((n): n is HTMLElement => n.nodeType === 1);
+    grandChildren.forEach((gc, gi) => {
       console.log(`      [${i}.${gi}] <${gc.tagName}> class="${gc.getAttribute('class') || ''}"`);
     });
   });

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { parse, HTMLElement } from 'node-html-parser';
+import { parse } from 'node-html-parser';
 
 function inspectPage(filePath: string, label: string) {
   const content = fs.readFileSync(filePath, 'utf-8');
@@ -18,7 +18,6 @@ function inspectPage(filePath: string, label: string) {
     console.log(`  Sub-elements: ${subSections.length}`);
     for (let i = 0; i < subSections.length; i++) {
       const el = subSections[i];
-      const preview = el.rawAttrs || '';
       console.log(`    Level 1 [${i}]: tag=${el.tagName} class="${el.getAttribute('class') || ''}"`);
     }
   }
