@@ -7,16 +7,22 @@ import { pageFamilyBlocks } from '../../src/presentation/blocks.js';
 import { LATEST_PAGE_SIZE, routes } from '../../src/presentation/routes.js';
 import { sections, topics } from '../../src/presentation/taxonomy.js';
 import { familyOf, isSubsequence, readDistPage, readDistPages, walkFiles } from '../support/dist.js';
+import { EXPECTED_PAGE_COUNT, expectedRoutes } from '../support/expected.js';
 
-// Reemplaza la suite estática de WEB.1: conserva sus invariantes (H1, landmarks,
-// principal antes que secundarias, cuerpo desde el payload, vuelta a portada,
-// sin islas, sin set:html, sin NewsArticle, placeholders sin datos) y agrega
-// estructura por familia, densidad y paginación.
+// Suite estática de WEB.3 (heredera de WEB.1/WEB.2): conserva sus invariantes
+// (H1, landmarks, cuerpo desde el payload, vuelta a portada, sin islas, sin
+// set:html, sin NewsArticle) y agrega estructura por familia, densidad y
+// paginación del golden master.
 
 const pages = readDistPages();
 const latestPages = Math.ceil(demoStories.length / LATEST_PAGE_SIZE);
 
-describe('WEB.2 static render', () => {
+describe('WEB.3 static render', () => {
+  it('builds exactly the 92 pages of the closed WEB.3 scope', () => {
+    expect(pages).toHaveLength(EXPECTED_PAGE_COUNT);
+    expect(expectedRoutes()).toHaveLength(EXPECTED_PAGE_COUNT);
+  });
+
   it('builds one static page per family route derived from demo data', () => {
     const counts: Record<string, number> = {};
     for (const page of pages) counts[familyOf(page.route)] = (counts[familyOf(page.route)] ?? 0) + 1;

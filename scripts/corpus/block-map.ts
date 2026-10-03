@@ -1,10 +1,10 @@
-// WEB.2 — Mapa evidencia del corpus → bloques propios.
+// WEB.2/WEB.3 — Mapa evidencia del corpus → bloques propios.
 //
 // Vive en el tooling, no en el producto: puede importar `BlockId` del producto,
 // pero el producto nunca importa este módulo. Cada bloque propio declara qué
 // bloques detectados en el corpus (scripts/corpus/lib/analyze.ts) justifican su
 // estructura, o se marca como extensión propia. Los bloques del corpus que
-// WEB.2 decide no reproducir quedan listados con su motivo.
+// no se reproducen quedan listados con su motivo (en WEB.3, ninguno).
 
 import type { BlockId } from '../../src/presentation/blocks.js';
 import type { CorpusBlockId } from './lib/analyze.js';
@@ -30,11 +30,6 @@ export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
   'photos-rail': ['sticky-rail'],
   photos: ['photo-cards'],
   'latest-grid': ['latest-grid'],
-  rail: ['sticky-rail'],
-  'future-slot': [],
-  'rail-recent-numbered': ['rail-numbered-trending'],
-  'rail-section-index': ['rail-section-index'],
-  'rail-latest': ['rail-latest'],
   'category-header': ['listing-header'],
   'topic-header': ['listing-header'],
   'listing-title': ['section-header'],
@@ -71,8 +66,8 @@ export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
 };
 
 /** Bloques propios sin equivalente en el corpus (extensiones de Tribuna Santo). */
-export const ownExtensions: readonly BlockId[] = ['future-slot'];
+export const ownExtensions: readonly BlockId[] = [];
 
-/** Bloques detectados en el corpus que WEB.2 no reproduce, con motivo. */
+/** Bloques detectados en el corpus que no se reproducen, con motivo (WEB.3: ninguno). */
 export const omittedCorpusBlocks: Readonly<Partial<Record<CorpusBlockId, string>>> = {
 };

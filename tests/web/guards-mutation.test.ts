@@ -16,11 +16,11 @@ import {
   findCorpusAssets,
   findCorpusFingerprints,
   findCorpusReferences,
-  findFabricatedSlotData,
   findIndexingMetadata,
   findMissingBlocks,
   findOffNamespaceRoutes,
   findPayloadContamination,
+  findUncatalogedBlocks,
   findUnescapedHtml,
   findUnexpectedClientScripts
 } from '../support/guards.js';
@@ -154,10 +154,10 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
     expect(findIndexingMetadata([indexable])).toEqual(['/: robots=index,follow']);
   });
 
-  it('M8 fabricated data inside DEP/MET/GRF placeholders', () => {
-    expect(findFabricatedSlotData([page(article)])).toEqual([]);
+  it('M8 a retired WEB.2 block (DEP/MET/GRF placeholder) reappears in the build', () => {
+    expect(findUncatalogedBlocks([page(article)])).toEqual([]);
     const mutant = { route: article.route, html: article.html.replace('</main>', '<section data-block="future-slot" data-slot="standings">Puntos 12 · Posición 3</section></main>') };
-    expect(findFabricatedSlotData([mutant])).not.toEqual([]);
+    expect(findUncatalogedBlocks([mutant])).toEqual([`${article.route}: future-slot`]);
   });
 
   it('M9 unescaped body rendering', () => {

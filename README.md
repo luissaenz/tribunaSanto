@@ -14,7 +14,7 @@ Medio deportivo digital autónomo dedicado a la cobertura de San Martín de Tucu
 
 - Capa de presentación en `src/presentation/`, separada de `PublicationToWebPayload` (que no cambia).
 - Componentes por bloque en `src/components/`; mapa familia → bloques → componentes en `src/presentation/blocks.ts`.
-- Web demo estática: portada en `/` y el resto bajo `/demo/` (provisional, `noindex, nofollow`, sin JS de cliente).
+- Web demo estática: portada en `/` y el resto bajo `/demo/` (provisional, `noindex, nofollow`; una única entrada de cliente: Alpine).
 - `/web` es un corpus de referencia **local y no versionado**; sólo `npm run corpus:inventory` lo requiere. Ver `docs/web2/README.md`.
 
 ## Scripts disponibles

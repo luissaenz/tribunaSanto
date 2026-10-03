@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { demoArticles, demoPresentation, demoStories } from '../../src/data/demo-articles.js';
-import { demoHomeComposition } from '../../src/data/demo-home.js';
+import { replicaHomeComposition } from '../../src/data/demo-home.js';
 import { PublicationToWebPayloadSchema } from '../../src/contracts/index.js';
 import { PRESENTATION_ONLY_KEYS, joinStories } from '../../src/presentation/story.js';
 import { SECTION_IDS, TOPIC_IDS } from '../../src/presentation/taxonomy.js';
-import { resolveHome } from '../../src/presentation/composition.js';
+import { resolveReplicaHome } from '../../src/presentation/composition.js';
 import { demoAuthors } from '../../src/data/demo-authors.js';
 import { storiesByAuthor, storiesInSection, storiesWithTopic } from '../../src/presentation/queries.js';
 import { PAGE_SIZE } from '../../src/presentation/pagination.js';
@@ -97,19 +97,12 @@ describe('WEB.3 demo fixtures', () => {
     expect(counts.reduce((a, b) => a + b, 0)).toBe(demoStories.length);
   });
 
-  it('keeps the temporary WEB.2 home composition resolvable during the migration', () => {
-    const home = resolveHome(demoStories, demoHomeComposition);
-    const reached = new Set(
-      [
-        home.lead,
-        ...home.trending,
-        ...home.picks,
-        ...home.visual,
-        ...home.latest,
-        ...[...home.primaryBand, ...home.secondaryBand].flatMap((b) => b.stories)
-      ].map((s) => s.article.articleRef)
-    );
-    expect(reached.size).toBeGreaterThanOrEqual(24);
-    expect(new Set([...home.primaryBand, ...home.secondaryBand].map((b) => b.variant)).size).toBe(4);
+  it('resolves the replica home composition over the demo fixtures', () => {
+    const home = resolveReplicaHome(demoStories, replicaHomeComposition);
+    const sectionsShown = [...Object.values(home.band2), ...home.band3].map((b) => b.sectionId);
+    expect(new Set(sectionsShown)).toEqual(new Set(SECTION_IDS));
+    expect(home.heroSlides).toHaveLength(3);
+    expect(home.latest).toHaveLength(9);
   });
+
 });

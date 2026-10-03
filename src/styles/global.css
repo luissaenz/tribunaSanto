@@ -8,10 +8,7 @@
  * Cortes responsive (Tailwind por defecto): sm 40rem · md 48rem · lg 64rem · xl 80rem.
  */
 
-/* Orden de capas: lo temporal de WEB.2 nunca pisa utilidades ni componentes nuevos. */
-@layer theme, base, legacy, components, utilities;
 @import "tailwindcss";
-@import "./legacy-web2.css" layer(legacy);
 
 /* Tooling, docs y tests no aportan clases al producto. */
 @source not "../../scripts";
@@ -47,6 +44,12 @@
   button,
   [role="button"] {
     cursor: pointer;
+  }
+
+  /* D3: foco de teclado siempre visible. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 }
 

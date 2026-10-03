@@ -9,7 +9,7 @@ import { parse as parseHtml } from 'node-html-parser';
 import { hashText } from '../../scripts/corpus/lib/analyze.js';
 import { PublicationToWebPayloadSchema } from '../../src/contracts/index.js';
 import { PRESENTATION_ONLY_KEYS } from '../../src/presentation/story.js';
-import { pageFamilyBlocks } from '../../src/presentation/blocks.js';
+import { blockCatalog, pageFamilyBlocks } from '../../src/presentation/blocks.js';
 import { familyOf, isSubsequence } from './dist.js';
 
 export type SourceFile = Readonly<{ path: string; content: string }>;
@@ -197,13 +197,19 @@ export function findIndexingMetadata(pages: readonly HtmlPage[]): string[] {
   });
 }
 
-/** 8 — Datos inventados dentro de los placeholders DEP/MET/GRF. */
-export function findFabricatedSlotData(pages: readonly HtmlPage[]): string[] {
+/**
+ * 8 — Bloques fuera del catálogo: todo `data-block` renderizado debe estar
+ * declarado en src/presentation/blocks.ts (impide que reaparezcan bloques
+ * retirados de WEB.2, como los huecos DEP/MET/GRF o el rail antiguo).
+ */
+export function findUncatalogedBlocks(pages: readonly HtmlPage[]): string[] {
+  const known = new Set<string>(blockCatalog.map((b) => b.id));
   return pages.flatMap((page) =>
     parseHtml(page.html)
-      .querySelectorAll('[data-block="future-slot"]')
-      .filter((slot) => /\d/.test(slot.text))
-      .map((slot) => `${page.route}: ${slot.getAttribute('data-slot')}`)
+      .querySelectorAll('[data-block]')
+      .map((el) => el.getAttribute('data-block') ?? '')
+      .filter((id) => !known.has(id))
+      .map((id) => `${page.route}: ${id}`)
   );
 }
 

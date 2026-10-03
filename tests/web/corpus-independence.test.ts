@@ -15,6 +15,7 @@ import {
   findUnescapedHtml
 } from '../support/guards.js';
 import { distDir, readDistPages, walkFiles } from '../support/dist.js';
+import { EXPECTED_PAGE_COUNT } from '../support/expected.js';
 import { asHtmlPages, productSources, readInventory, repoRoot } from '../support/repo.js';
 
 const inventory = readInventory();
@@ -45,7 +46,7 @@ describe('independence from the /web reference corpus', () => {
   });
 
   it('ships no corpus asset, and only fonts provenanced from @fontsource packages', () => {
-    expect(shippedFiles.length).toBeGreaterThan(45);
+    expect(shippedFiles.length).toBeGreaterThan(EXPECTED_PAGE_COUNT);
     expect(findCorpusAssets(shippedFiles, inventory.assets)).toEqual([]);
     const allowed = fontPackageHashes(path.join(repoRoot, 'node_modules'));
     expect(allowed.size).toBeGreaterThan(0);

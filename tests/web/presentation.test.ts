@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ArticleRefSchema } from '../../src/domain/identity.js';
 import { PublicationToWebPayloadSchema, type PublicationToWebPayload } from '../../src/contracts/index.js';
 import { firstParagraph, parseArticleBody, readingMinutes, slugify } from '../../src/presentation/article-body.js';
-import { HOME_ARITY, resolveHome, variantTake, type HomeComposition } from '../../src/presentation/composition.js';
+import { REPLICA_HOME_ARITY, resolveReplicaHome, type ReplicaHomeComposition } from '../../src/presentation/composition.js';
 import { editionInstant, newestFirst, relatedStories, sectionCounts } from '../../src/presentation/queries.js';
 import { DEMO_NAMESPACE, routes } from '../../src/presentation/routes.js';
 import { joinStories, RESERVED_DEMO_IDS, type StoryPresentation, type WebStory } from '../../src/presentation/story.js';
@@ -26,12 +26,12 @@ function article(n: number, hour: number): PublicationToWebPayload {
 }
 
 const layout: ReadonlyArray<readonly [SectionId, number]> = [
-  ['primera', 5],
-  ['mercado', 4],
-  ['juveniles', 4],
-  ['club', 4],
-  ['ciudadela', 4],
-  ['memoria', 3]
+  ['primera', 6],
+  ['mercado', 6],
+  ['juveniles', 6],
+  ['club', 6],
+  ['ciudadela', 5],
+  ['memoria', 5]
 ];
 
 const articles: PublicationToWebPayload[] = [];
@@ -51,21 +51,14 @@ for (const [sectionId, count] of layout) {
 }
 const stories: readonly WebStory[] = joinStories(articles, presentation);
 
-const composition: HomeComposition = {
-  lead: ref(1),
-  trending: [ref(6), ref(10), ref(14), ref(18)],
-  picks: [ref(7), ref(11), ref(15)],
-  visual: [ref(19), ref(22)],
-  primaryBand: [
-    { sectionId: 'primera', variant: 'feature-list' },
-    { sectionId: 'mercado', variant: 'feature-tiles' },
-    { sectionId: 'juveniles', variant: 'headline-grid' },
-    { sectionId: 'club', variant: 'list-feature' }
-  ],
-  secondaryBand: [
-    { sectionId: 'ciudadela', variant: 'feature-list' },
-    { sectionId: 'memoria', variant: 'feature-list' }
-  ],
+const composition: ReplicaHomeComposition = {
+  heroSlides: [ref(1), ref(7), ref(13)],
+  trending: [ref(2), ref(8), ref(14), ref(20)],
+  band2: { a: 'primera', b: 'mercado', c: 'juveniles', d: 'club' },
+  popular: [ref(3), ref(9), ref(15)],
+  sidebarSection: 'memoria',
+  photos: [ref(4), ref(10)],
+  band3: ['ciudadela', 'memoria'],
   latestCount: 9
 };
 
@@ -121,45 +114,38 @@ describe('story join', () => {
 });
 
 describe('home composition', () => {
-  it('enforces fixed slot arity', () => {
-    expect(HOME_ARITY).toEqual({ trending: 4, picks: 3, visual: 2, primaryBand: 4, secondaryBand: 2, latestCount: 9 });
-    expect(() => resolveHome(stories, { ...composition, picks: [ref(7)] })).toThrow(/picks/);
-    expect(() => resolveHome(stories, { ...composition, latestCount: 3 })).toThrow(/latestCount/);
+  it('enforces the golden-master slot arity', () => {
+    expect(REPLICA_HOME_ARITY).toEqual({
+      heroSlides: 3,
+      trending: 4,
+      popular: 3,
+      photos: 2,
+      latestCount: 9,
+      sectionA: 5,
+      sectionB: 5,
+      sectionC: 6,
+      sectionD: 5,
+      sidebarSection: 4
+    });
+    expect(() => resolveReplicaHome(stories, { ...composition, heroSlides: [ref(1)] })).toThrow(/heroSlides/);
+    expect(() => resolveReplicaHome(stories, { ...composition, popular: [ref(3)] })).toThrow(/popular/);
+    expect(() => resolveReplicaHome(stories, { ...composition, latestCount: 3 })).toThrow(/latestCount/);
   });
 
-  it('rejects unknown references, repeated lead and repeated sections', () => {
-    expect(() => resolveHome(stories, { ...composition, lead: ref(999) })).toThrow(/unknown article/);
-    expect(() =>
-      resolveHome(stories, { ...composition, trending: [ref(1), ref(10), ref(14), ref(18)] })
-    ).toThrow(/Lead story/);
-    expect(() =>
-      resolveHome(stories, {
-        ...composition,
-        secondaryBand: [
-          { sectionId: 'primera', variant: 'feature-list' },
-          { sectionId: 'memoria', variant: 'feature-list' }
-        ]
-      })
-    ).toThrow(/once/);
+  it('rejects unknown references, repeated sections and sections without enough stories', () => {
+    expect(() => resolveReplicaHome(stories, { ...composition, photos: [ref(4), ref(999)] })).toThrow(/unknown article/);
+    expect(() => resolveReplicaHome(stories, { ...composition, band3: ['primera', 'memoria'] })).toThrow(/once/);
+    const thin = stories.filter((s) => ![ref(19), ref(21), ref(22)].includes(s.article.articleRef));
+    expect(() => resolveReplicaHome(thin, composition)).toThrow(/club/);
   });
 
-  it('sizes variants so grids never leave holes', () => {
-    expect(variantTake('feature-tiles', 4)).toBe(3);
-    expect(variantTake('feature-tiles', 5)).toBe(5);
-    expect(variantTake('feature-tiles', 2)).toBe(0);
-    expect(variantTake('headline-grid', 4)).toBe(3);
-    expect(variantTake('headline-grid', 7)).toBe(6);
-    expect(variantTake('feature-list', 3)).toBe(3);
-    expect(variantTake('list-feature', 9)).toBe(5);
-    expect(variantTake('list-feature', 2)).toBe(0);
-  });
-
-  it('never repeats the lead inside section blocks', () => {
-    const home = resolveHome(stories, composition);
-    for (const block of [...home.primaryBand, ...home.secondaryBand]) {
-      expect(block.stories.map((s) => s.article.articleRef)).not.toContain(home.lead.article.articleRef);
+  it('fills every section block from its own section and the latest grid newest first', () => {
+    const home = resolveReplicaHome(stories, composition);
+    const blocks = [...Object.values(home.band2), ...home.band3, home.sidebarSection];
+    for (const block of blocks) {
       expect(block.stories.every((s) => s.presentation.sectionId === block.sectionId)).toBe(true);
     }
+    expect(home.band2.c.stories).toHaveLength(6);
     expect(home.latest).toEqual(newestFirst(stories).slice(0, 9));
   });
 });

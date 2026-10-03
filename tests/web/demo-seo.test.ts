@@ -8,11 +8,11 @@ import { validateInternalLinksInDirectory } from '../../scripts/seo/lib/contract
 import { demoArticles } from '../../src/data/demo-articles.js';
 import {
   findClientEntries,
-  findFabricatedSlotData,
   findIndexingMetadata,
   findMissingBlocks,
   findOffNamespaceRoutes,
   findPayloadContamination,
+  findUncatalogedBlocks,
   findUnexpectedClientScripts
 } from '../support/guards.js';
 import { distDir, readDistPages, walkFiles } from '../support/dist.js';
@@ -52,8 +52,8 @@ describe('demo SEO, namespace and static-first guards on the built site', () => 
     expect(findMissingBlocks(pages)).toEqual([]);
   });
 
-  it('keeps DEP/MET/GRF placeholders free of data', () => {
-    expect(findFabricatedSlotData(pages)).toEqual([]);
+  it('renders only blocks declared in the catalog', () => {
+    expect(findUncatalogedBlocks(pages)).toEqual([]);
   });
 
   it('keeps the canonical payload free of presentation keys', () => {

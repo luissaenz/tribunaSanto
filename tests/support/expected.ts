@@ -1,5 +1,6 @@
 // WEB.3 — Rutas esperadas del build, derivadas de los datos demo y de routes.ts.
-// Ningún test fija el número de páginas a mano: la cuenta sale de los datos.
+// La lista sale de los datos; el alcance cerrado de WEB.3 la fija además en
+// EXPECTED_PAGE_COUNT para que un cambio de fixtures no altere el sitio en silencio.
 
 import { demoStories } from '../../src/data/demo-articles.js';
 import { LATEST_PAGE_SIZE, routes } from '../../src/presentation/routes.js';
@@ -27,3 +28,9 @@ export function expectedRoutes(): string[] {
     routes.terms()
   ].sort();
 }
+
+/**
+ * Alcance cerrado de WEB.3: portada 1 + notas 40 + secciones 6+2 + temas 24+1 +
+ * autores 4+3 + últimas 5 + institucionales 6 (acerca, contacto, empleos y 3 legales).
+ */
+export const EXPECTED_PAGE_COUNT = 92;

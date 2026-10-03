@@ -1,4 +1,4 @@
-// WEB.2 — Catálogo de bloques propios: tipo de página → bloques → componentes Astro.
+// WEB.3 — Catálogo de bloques propios: tipo de página → bloques → componentes Astro.
 //
 // Sólo contiene bloques de Tribuna Santo. La evidencia del corpus de referencia
 // (qué bloque observado justifica cada uno) vive fuera del producto, en
@@ -36,12 +36,6 @@ export const blockCatalog = [
   { id: 'photos-rail', component: 'home/PhotoStories.astro', purpose: 'Rail sticky de fotos.' },
   { id: 'photos', component: 'home/PhotoStories.astro', purpose: 'Notas con imagen dominante.' },
   { id: 'latest-grid', component: 'home/LatestGrid.astro', purpose: 'Grilla de últimas noticias.' },
-
-  { id: 'rail', component: 'layout/RailLayout.astro', purpose: 'Columna principal + columna lateral.' },
-  { id: 'future-slot', component: 'rail/FutureSlot.astro', purpose: 'Hueco reservado para DEP/MET/GRF.' },
-  { id: 'rail-recent-numbered', component: 'rail/NumberedList.astro', purpose: 'Lo último, numerado.' },
-  { id: 'rail-section-index', component: 'rail/SectionIndex.astro', purpose: 'Secciones con cantidad de notas.' },
-  { id: 'rail-latest', component: 'rail/RailLatest.astro', purpose: 'Una destacada y miniaturas.' },
 
   { id: 'category-header', component: 'listing/CategoryHeader.astro', purpose: 'H1 de sección en caja negra y conteo.' },
   { id: 'topic-header', component: 'listing/TopicHeader.astro', purpose: 'H1 de tema centrado y conteo.' },
