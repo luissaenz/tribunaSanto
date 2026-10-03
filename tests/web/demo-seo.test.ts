@@ -1,6 +1,7 @@
 // WEB.2/WEB.3 — SEO provisional: toda página es demo, no indexable y vive en / o /demo/.
 // WEB.3: el cliente admite una única entrada funcional propia (Alpine).
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { validateInternalLinksInDirectory } from '../../scripts/seo/lib/contracts.js';
@@ -35,9 +36,16 @@ describe('demo SEO, namespace and static-first guards on the built site', () => 
     expect(distFiles.filter((f) => /sitemap.*\.xml$/i.test(path.basename(f)))).toEqual([]);
   });
 
-  it('ships at most one functional client entry, with no islands, inline logic or other frameworks', () => {
+  it('ships exactly one functional client entry (Alpine), with no islands, inline logic or other frameworks', () => {
     expect(findUnexpectedClientScripts(pages, distFiles)).toEqual([]);
-    expect(findClientEntries(pages).length).toBeLessThanOrEqual(1);
+    const entries = findClientEntries(pages);
+    expect(entries).toHaveLength(1);
+    for (const page of pages) expect(page.html, page.route).toContain(entries[0]);
+    const bundle = distFiles.filter((f) => /\.m?js$/.test(f)).map((f) => fs.readFileSync(f, 'utf-8')).join('\n');
+    expect(bundle).toContain('Alpine Expression Error');
+    for (const name of ['siteNav', 'carousel', 'backToTop', 'copyLink', 'contactForm', 'faq', 'careers', 'applyForm', 'newsletter', 'topbarDate']) {
+      expect(bundle, name).toMatch(new RegExp(`["'\x60]${name}["'\x60]`));
+    }
   });
 
   it('renders every required block for every page family', () => {

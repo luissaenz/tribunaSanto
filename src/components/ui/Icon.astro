@@ -1,0 +1,28 @@
+---
+// Ícono de Bootstrap Icons (paquete oficial) como SVG inline decorativo.
+import { loadIcon, type IconName } from '../../presentation/icons.js';
+import SvgNode from './SvgNode.astro';
+
+interface Props {
+  name: IconName;
+  class?: string;
+  [key: `x-${string}` | `:${string}`]: string | undefined;
+}
+
+const { name, class: className, ...rest } = Astro.props;
+const icon = loadIcon(name);
+---
+
+<svg
+  width="1em"
+  height="1em"
+  viewBox={icon.viewBox}
+  fill="currentColor"
+  class={className}
+  aria-hidden="true"
+  focusable="false"
+  data-icon={name}
+  {...rest}
+>
+  {icon.nodes.map((node) => <SvgNode node={node} />)}
+</svg>

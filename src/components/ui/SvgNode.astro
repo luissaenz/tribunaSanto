@@ -1,0 +1,13 @@
+---
+// Nodo SVG recursivo (íconos): atributos escapados por Astro, sin HTML crudo.
+import type { SvgNode } from '../../presentation/icons.js';
+
+interface Props {
+  node: SvgNode;
+}
+
+const { node } = Astro.props;
+const Tag = node.tag;
+---
+
+<Tag {...node.attrs}>{node.children.map((child) => <Astro.self node={child} />)}</Tag>

@@ -88,16 +88,14 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
   });
 
   it('M5/M17 a second client entry, island, inline script, inline Alpine logic or another framework', () => {
-    expect(findUnexpectedClientScripts([page(home)], walkFiles(distDir))).toEqual([]);
-    const entry = '<script type="module" src="/_astro/alpine.abc123.js"></script>';
-    const withEntry = { route: '/', html: home.html.replace('</body>', `${entry}</body>`) };
-    expect(findUnexpectedClientScripts([withEntry])).toEqual([]);
-    expect(findClientEntries([withEntry])).toEqual(['/_astro/alpine.abc123.js']);
+    expect(findUnexpectedClientScripts([page(home), page(article)], walkFiles(distDir))).toEqual([]);
+    const [entry] = findClientEntries([page(home)]);
+    expect(entry).toMatch(/^\/_astro\/.+\.js$/);
+    expect(findClientEntries([page(home), page(article), page(section)])).toEqual([entry]);
 
-    const second = { route: '/x/', html: home.html.replace('</body>', '<script type="module" src="/_astro/app2.def.js"></script></body>') };
-    expect(findUnexpectedClientScripts([withEntry, second])).toEqual([
-      'multiple client entries: /_astro/alpine.abc123.js, /_astro/app2.def.js'
-    ]);
+    // Segunda entrada funcional (otra app de cliente) en otra página.
+    const second = { route: '/x/', html: home.html.replace(entry, '/_astro/app2.def.js') };
+    expect(findUnexpectedClientScripts([page(home), second])).toEqual([`multiple client entries: ${[entry, '/_astro/app2.def.js'].sort().join(', ')}`]);
     const withScript = { route: '/', html: home.html.replace('</body>', '<script>alert(1)</script></body>') };
     const withIsland = { route: '/', html: home.html.replace('</body>', '<astro-island></astro-island></body>') };
     const inlineData = { route: '/', html: home.html.replace('</body>', '<div x-data="{ open: false }"></div></body>') };
