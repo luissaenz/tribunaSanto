@@ -79,6 +79,61 @@ Todo sigue `noindex, nofollow`, sin canonical, sitemap ni NewsArticle productivo
 | `@fontsource/pt-serif` | OFL-1.1 | PT Serif 400/700 normal e itálica (latin) |
 | `@playwright/test` 1.56.1 | Apache-2.0 | e2e, fidelidad y regresión visual |
 
+## Implementación
+
+### Stack
+
+- Astro 7 en modo estático (sin adapter SSR). Tailwind CSS v4 vía `@tailwindcss/vite` (`src/styles/global.css`: tokens `@theme`, `.post-content`, `[x-cloak]`, foco visible).
+- Fuentes con la API `fonts` de Astro (`fontProviders.local()` sobre los woff2 de `@fontsource*`): `--font-body` Inter, `--font-heading` PT Serif. Un guard verifica que cada fuente emitida sea byte a byte la del paquete.
+- Íconos de `bootstrap-icons` leídos en build y renderizados como nodos SVG (`ui/Icon.astro`), sin HTML crudo.
+- Cliente: **una sola entrada funcional**, `src/scripts/alpine.ts`, que registra con `Alpine.data` los componentes `siteNav`, `topbarDate`, `carousel`, `backToTop`, `copyLink`, `contactForm`, `faq`, `careers`, `applyForm` y `newsletter`. La lógica pura vive en `src/scripts/interactions/*` y tiene pruebas unitarias. El markup sólo nombra componentes (`x-data="carousel(3)"`), nunca lógica inline.
+- Catálogo de bloques (`src/presentation/blocks.ts`): cada componente marca su raíz con `data-block`, y las partes medidas con `data-slot`/`data-part`. La evidencia de corpus por bloque está en `scripts/corpus/block-map.ts`; no queda ningún bloque del corpus omitido.
+
+### Golden master y contrato de referencia
+
+- El corpus (`881745c:web/`) **no se versiona ni se usa en runtime**: ni el build, ni `dist/`, ni los tests de CI lo leen. Sólo lo usan dos herramientas locales.
+- `docs/web3/reference-contract.json` es el contrato observable versionado. Para cada página muestra × viewport (375, 640, 768, 1024, 1280 y 1440) registra presencia, visibilidad, `display`/`position`/`top`/`z-index`, geometría relativa al viewport, tipografía, colores, fondos, bordes, radio, opacidad, columnas de grilla, gaps y orden DOM/visual. También registra las constantes de interacción (carrusel, nav, búsqueda, volver arriba, copiar enlace, FAQ, empleos, contacto, sidebar sticky y truncados). Son sólo mediciones: ni texto, ni HTML, ni CSS del template.
+- Las muestras y los selectores están en `scripts/reference/spec.ts`. En Tribuna Santo una parte se ubica como `[data-block][data-slot] [data-part]`.
+
+Cómo regenerarlo (requiere una copia local del corpus fuera del árbol):
+
+```bash
+git archive 881745c web | tar -x -C <dir-temporal>
+WEB3_CORPUS_DIR=<dir-temporal>/web npm run reference:contract            # regenera
+WEB3_CORPUS_DIR=<dir-temporal>/web npm run reference:contract -- --check # compara sin escribir
+WEB3_CORPUS_DIR=<dir-temporal>/web npm run reference:shots               # capturas lado a lado en tmp/web3/shots/ (ignorado)
+```
+
+El contrato sólo se corrige si el extractor midió objetivamente mal, y siempre con evidencia en el commit. Ejemplo (D11): `#apply .bg-black` medía el H3 "Apply for a Role" en lugar de la caja de pasos; se corrigió a `.bg-black.p-6` y sólo cambiaron las 6 entradas `hiring-steps`.
+
+### Pruebas
+
+- `npm run test` (Vitest): guards de producto y de corpus, contrato (esquema y comparador, mutantes M11–M15), presentación, fixtures, render estático (**92 páginas exactas**, `EXPECTED_PAGE_COUNT`) y mutantes M1–M10, M16 y M17.
+- `npm run test:e2e` (Playwright 1.56.1, Chromium, `es-AR`, zona `America/Argentina/Buenos_Aires`) corre sobre `dist/` con `astro preview --ignore-lock`. En CI: `npx playwright install --with-deps chromium`.
+  - `tests/e2e/fidelity.spec.ts`: las 15 muestras × 6 viewports con `comparePage`, más las constantes de interacción re-medidas sobre Tribuna Santo con `compareInteractions`. Los truncados se verifican como máximos.
+  - `tests/e2e/{chrome,home,listings,article,author,institutional}.spec.ts`: comportamiento (teclado, Escape, ARIA, swipe, formularios demo, filtros, paginación).
+  - `tests/e2e/visual.spec.ts`: regresión visual **sólo de Tribuna Santo**, con baselines en `tests/e2e/__screenshots__/`. Cubre 9 familias × 375/768/1280 a página completa, más 8 estados: menú, búsqueda, slide 2, flechas en hover, FAQ, empleos filtrado, contacto enviado y volver arriba. Es determinista: reloj pausado, animaciones deshabilitadas, imágenes lazy forzadas, fecha y emoji enmascarados. Para actualizar baselines tras un cambio visual intencional: `npx playwright test tests/e2e/visual.spec.ts --update-snapshots`.
+- Tolerancias (`tests/support/fidelity.ts` y `playwright.config.ts`):
+
+  | Medición | Tolerancia |
+  | --- | --- |
+  | px (posición, tamaños, tipografía, bordes, gaps) | ±1 |
+  | ratios (x/w relativos al viewport, aspecto) | ±0.015 |
+  | opacidad | ±0.01 |
+  | intervalo de autoplay | ±150 ms |
+  | resto de tiempos | exacto |
+  | capturas | `maxDiffPixelRatio` 0.01 |
+
+- `npm run gate` = lint, typecheck, test, build, test:e2e y seo:gate.
+
+### Comportamiento demo
+
+- **Búsqueda**: abre la barra en flujo, enfoca el input, se cierra con el botón o con Escape, y navega a `/demo/ultimas/?q=…` (desviación demo temporal; no filtra).
+- **Newsletter**: no-op (`@submit.prevent`). No envía request, no persiste y no muestra mensaje de éxito.
+- **Contacto y postulación**: estado de envío local y botón para reiniciar. No envían nada a la red.
+- **JavaScript**: no rige ninguna regla de "cero JS". El invariante es una única entrada funcional propia (Alpine), sin islands ni otros frameworks.
+- **Indexación**: las 92 páginas son `noindex, nofollow`, sin canonical, sitemap, OpenGraph ni NewsArticle.
+
 ## Deuda explícita
 
 - Página de resultados de búsqueda (sin golden master de `/search`).
