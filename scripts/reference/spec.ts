@@ -214,7 +214,7 @@ export const SAMPLES: readonly SampleSpec[] = [
   {
     family: 'article',
     ref: 'technology-ai-transportation.html',
-    tribuna: '/demo/la-ciudadela-prepara-su-color/',
+    tribuna: '/demo/juveniles-ganan-espacio/',
     order: ['site-nav', 'breadcrumb', 'article-hero', 'article-meta', 'article-body', 'article-tags', 'share-bar', 'related-articles', 'standard-sidebar', 'site-footer'],
     parts: [
       ...chrome,

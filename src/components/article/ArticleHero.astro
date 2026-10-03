@@ -1,8 +1,10 @@
 ---
-// Imagen a sangre con degradado; antetítulo, H1 y bajada superpuestos.
+// Hero del artículo a sangre: 4:3 → 16:9 (768 px) → 16:5 (1024 px), degradado inferior,
+// etiqueta de sección con bandera y H1. Sin bajada visible (golden master).
+import Icon from '../ui/Icon.astro';
 import type { WebStory } from '../../presentation/story.js';
-import { getSection } from '../../presentation/taxonomy.js';
 import { routes } from '../../presentation/routes.js';
+import { getSection } from '../../presentation/taxonomy.js';
 
 interface Props {
   story: WebStory;
@@ -13,98 +15,28 @@ const { article, presentation } = story;
 const section = getSection(presentation.sectionId);
 ---
 
-<header class="article-hero" data-block="article-hero">
-  <figure class="article-hero__figure">
-    <img
-      class="article-hero__img"
-      src={presentation.image.src}
-      alt={presentation.image.alt}
-      width={presentation.image.width}
-      height={presentation.image.height}
-      loading="eager"
-      decoding="async"
-    />
-    <figcaption class="visually-hidden">{presentation.image.alt}</figcaption>
-  </figure>
-  <div class="article-hero__overlay">
-    <div class="container article-hero__content">
-      <a class="kicker kicker--on-dark" href={routes.section(section.id)}>{section.label}</a>
-      <h1 class="article-hero__headline">{article.headline}</h1>
-      {article.dek && <p class="article-hero__dek">{article.dek}</p>}
+<div data-block="article-hero" class="relative w-full aspect-4/3 md:aspect-video lg:aspect-16/5 overflow-hidden">
+  <img
+    src={presentation.image.src}
+    alt={presentation.image.alt}
+    width={presentation.image.width}
+    height={presentation.image.height}
+    loading="eager"
+    class="w-full h-full object-cover"
+  />
+  <div data-part="overlay" class="absolute inset-0 bg-linear-to-t from-black/95 via-black/60 to-black/20 flex items-end">
+    <div class="max-w-7xl mx-auto px-4 w-full pb-10 pt-16">
+      <a
+        data-part="badge"
+        href={routes.section(section.id)}
+        class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white mb-4 transition-colors"
+      >
+        <Icon name="flag" class="w-3.5 h-3.5" />
+        {section.label}
+      </a>
+      <h1 id="titulo-nota" data-part="title" class="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight max-w-4xl">
+        {article.headline}
+      </h1>
     </div>
   </div>
-</header>
-
-<style>
-  .article-hero {
-    position: relative;
-    background: var(--color-ink);
-    overflow: hidden;
-  }
-
-  .article-hero__figure {
-    aspect-ratio: 16 / 9;
-  }
-
-  .article-hero__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Mobile: texto debajo de la imagen; desde md se superpone con degradado. */
-  .article-hero__overlay {
-    background: var(--color-ink);
-  }
-
-  .article-hero__content {
-    padding-block: var(--space-5) var(--space-6);
-    color: #fff;
-  }
-
-  .article-hero__content .kicker:hover {
-    text-decoration: underline;
-  }
-
-  .article-hero__headline {
-    margin-top: var(--space-3);
-    max-width: 48rem;
-    font-family: var(--font-display);
-    font-size: clamp(1.6rem, 4vw, 3rem);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-  }
-
-  .article-hero__dek {
-    margin-top: var(--space-3);
-    max-width: 44rem;
-    font-size: var(--text-lg);
-    line-height: 1.5;
-    color: var(--color-on-dark);
-  }
-
-  @media (min-width: 48rem) {
-    .article-hero__figure {
-      aspect-ratio: 16 / 9;
-    }
-
-    .article-hero__overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: flex-end;
-      background: linear-gradient(to top, rgb(0 0 0 / 0.95), rgb(0 0 0 / 0.6) 50%, rgb(0 0 0 / 0.2));
-    }
-
-    .article-hero__content {
-      padding-top: var(--space-8);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .article-hero__figure {
-      aspect-ratio: 16 / 5;
-    }
-  }
-</style>
+</div>

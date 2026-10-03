@@ -36,7 +36,7 @@ export const formatShortDate = (iso: string): string => shortDate.format(new Dat
 export const formatTime = (iso: string): string => time.format(new Date(iso));
 export const formatEditionDate = (iso: string): string => editionDate.format(new Date(iso));
 
-// WEB.3 — Fechas de tarjetas ("18 abr 2026") y fecha larga con día ("miércoles, 15 de abril de 2026").
+// WEB.3 — Fechas de tarjetas ("18 abr 2026") y fecha larga de artículo ("15 de abril de 2026").
 const cardDate = new Intl.DateTimeFormat('es-AR', {
   timeZone: TIME_ZONE,
   day: 'numeric',
@@ -48,7 +48,5 @@ export const formatCardDate = (iso: string): string => {
   const parts = Object.fromEntries(cardDate.formatToParts(new Date(iso)).map((p) => [p.type, p.value]));
   return `${parts.day} ${String(parts.month).replace('.', '')} ${parts.year}`;
 };
-export const formatArticleDate = (iso: string): string => {
-  const text = editionDate.format(new Date(iso));
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
+const articleDate = new Intl.DateTimeFormat('es-AR', { timeZone: TIME_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
+export const formatArticleDate = (iso: string): string => articleDate.format(new Date(iso));

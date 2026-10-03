@@ -54,12 +54,12 @@ export const blockCatalog = [
   { id: 'sidebar-latest', component: 'sidebar/SidebarLatest.astro', purpose: 'Una destacada y tres miniaturas.' },
   { id: 'sidebar-ad', component: 'ui/AdSlot.astro', purpose: 'Publicidad 300×250 demo.' },
 
-  { id: 'article-hero', component: 'article/ArticleHero.astro', purpose: 'Imagen con antetítulo, H1 y bajada.' },
-  { id: 'article-meta', component: 'article/ArticleMeta.astro', purpose: 'Firma, fechas y tiempo de lectura.' },
-  { id: 'article-body', component: 'article/ArticleBody.astro', purpose: 'Cuerpo con subtítulos y citas.' },
+  { id: 'article-hero', component: 'article/ArticleHero.astro', purpose: 'Hero a sangre con sección y H1.' },
+  { id: 'article-meta', component: 'article/ArticleMeta.astro', purpose: 'Autor con avatar, fecha y lectura.' },
+  { id: 'article-body', component: 'article/ArticleBody.astro', purpose: 'Cuerpo editorial con subtítulos y citas.' },
   { id: 'article-tags', component: 'article/ArticleTags.astro', purpose: 'Temas enlazados.' },
-  { id: 'share-links', component: 'article/ShareLinks.astro', purpose: 'Compartir sin JavaScript.' },
-  { id: 'related-stories', component: 'article/RelatedStories.astro', purpose: 'Tres relacionadas.' },
+  { id: 'share-bar', component: 'article/ShareBar.astro', purpose: 'Compartir con URL real y copiar enlace.' },
+  { id: 'related-articles', component: 'article/RelatedGrid.astro', purpose: 'Tres relacionadas.' },
 
   { id: 'page-hero', component: 'institutional/PageHero.astro', purpose: 'Banda de título institucional.' },
   { id: 'prose', component: 'institutional/Prose.astro', purpose: 'Texto institucional angosto.' }
@@ -68,7 +68,6 @@ export const blockCatalog = [
 export type BlockId = (typeof blockCatalog)[number]['id'];
 
 const chrome = ['top-bar', 'masthead', 'site-nav'] as const satisfies readonly BlockId[];
-const standardRail = ['rail-recent-numbered', 'rail-section-index', 'rail-latest'] as const satisfies readonly BlockId[];
 const sidebar = ['standard-sidebar', 'sidebar-trending', 'sidebar-categories', 'sidebar-latest', 'sidebar-ad'] as const satisfies readonly BlockId[];
 
 /** Secuencia mínima (en orden DOM) de bloques que cada familia debe renderizar. */
@@ -104,13 +103,12 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
     'breadcrumb',
     'article-hero',
     'article-meta',
-    'rail',
     'article-body',
     'article-tags',
-    'share-links',
-    'related-stories',
-    ...standardRail,
-    'future-slot',
+    'share-bar',
+    'related-articles',
+    'section-header',
+    ...sidebar,
     'site-footer',
     'back-to-top'
   ],

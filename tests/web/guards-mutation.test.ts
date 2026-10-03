@@ -156,7 +156,7 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
 
   it('M8 fabricated data inside DEP/MET/GRF placeholders', () => {
     expect(findFabricatedSlotData([page(article)])).toEqual([]);
-    const mutant = { route: article.route, html: article.html.replace('Datos deportivos disponibles en próximos arcos.', 'Puntos 12 · Posición 3') };
+    const mutant = { route: article.route, html: article.html.replace('</main>', '<section data-block="future-slot" data-slot="standings">Puntos 12 · Posición 3</section></main>') };
     expect(findFabricatedSlotData([mutant])).not.toEqual([]);
   });
 

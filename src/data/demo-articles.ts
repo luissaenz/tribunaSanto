@@ -76,7 +76,14 @@ La definición de nombres queda fuera de esta demostración, pero la estructura 
     dek: 'La estructura formativa aparece cada vez más cerca del trabajo cotidiano del plantel principal.',
     body: `El vínculo entre inferiores y plantel principal ocupa un lugar creciente dentro de esta historia ficticia de demostración. Varios juveniles participan de ejercicios compartidos y encuentran una oportunidad para adaptarse a otra velocidad de juego.
 
+## Entrenamientos compartidos
+
 Para el cuerpo técnico, esos entrenamientos permiten observar respuestas bajo mayor presión y detectar características que puedan resultar útiles en distintos momentos de la temporada.
+
+> Cada práctica con la Primera es una clase acelerada.
+> — Coordinador ficticio de inferiores
+
+## Una identidad que se construye
 
 Para el club, la aparición de futbolistas formados en casa también fortalece una narrativa reconocible: pertenencia, desarrollo y la posibilidad de construir recursos deportivos desde la propia estructura.`,
     publishedAt: '2026-10-02T10:25:00-03:00'

@@ -49,8 +49,8 @@ export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
   'article-meta': ['article-meta'],
   'article-body': ['article-body', 'body-subheading', 'body-quote'],
   'article-tags': ['article-tags'],
-  'share-links': ['share-area'],
-  'related-stories': ['related-articles'],
+  'share-bar': ['share-area'],
+  'related-articles': ['related-articles'],
   'page-hero': ['page-hero-band'],
   prose: ['article-body', 'body-list']
 };

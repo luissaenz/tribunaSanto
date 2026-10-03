@@ -91,7 +91,8 @@ describe('WEB.2 static render', () => {
     for (const story of demoStories) {
       const { html, root } = readDistPage(routes.article(story));
       expect(root.querySelector('h1')?.text.trim()).toBe(story.article.headline);
-      if (story.article.dek) expect(html).toContain(story.article.dek);
+      // Golden master: la bajada no se muestra en el hero; queda en la meta description.
+      if (story.article.dek) expect(root.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(story.article.dek);
       expect(html).toContain(story.article.byline);
       expect(html).toContain(`datetime="${story.article.publishedAt}"`);
       expect(root.querySelector('[data-block="article-body"]')?.text).toContain(firstParagraph(story.article.body));
@@ -112,7 +113,7 @@ describe('WEB.2 static render', () => {
       const { root } = readDistPage(routes.article(story));
       const tagHrefs = root.querySelectorAll('[data-block="article-tags"] a').map((a) => a.getAttribute('href'));
       expect(tagHrefs).toEqual(story.presentation.topicIds.map((t) => routes.topic(t)));
-      const related = root.querySelectorAll('[data-block="related-stories"] h3 a').map((a) => a.getAttribute('href'));
+      const related = root.querySelectorAll('[data-block="related-articles"] h3 a').map((a) => a.getAttribute('href'));
       expect(related.length).toBeGreaterThan(0);
       expect(related).not.toContain(routes.article(story));
     }
