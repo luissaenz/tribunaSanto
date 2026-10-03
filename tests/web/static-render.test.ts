@@ -17,12 +17,17 @@ const pages = readDistPages();
 const latestPages = Math.ceil(demoStories.length / LATEST_PAGE_SIZE);
 
 describe('WEB.2 static render', () => {
-  it('builds exactly 45 static pages: 1 home, 24 articles, 6 sections, 10 topics, 3 latest, 1 about', () => {
-    expect(pages).toHaveLength(45);
+  it('builds one static page per family route derived from demo data', () => {
     const counts: Record<string, number> = {};
     for (const page of pages) counts[familyOf(page.route)] = (counts[familyOf(page.route)] ?? 0) + 1;
-    expect(counts).toEqual({ home: 1, article: 24, section: 6, topic: 10, listing: 3, institutional: 1 });
-    expect(latestPages).toBe(3);
+    expect(counts).toEqual({
+      home: 1,
+      article: demoStories.length,
+      section: sections.length,
+      topic: topics.length,
+      listing: latestPages,
+      institutional: 1
+    });
 
     const built = new Set(pages.map((p) => p.route));
     for (const story of demoStories) expect(built.has(routes.article(story))).toBe(true);

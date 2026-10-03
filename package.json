@@ -17,7 +17,7 @@
     "seo:sitemaps": "tsx scripts/seo/check-sitemaps.ts",
     "seo:links": "tsx scripts/seo/check-links.ts",
     "seo:gate": "npm run seo:policy && npm run seo:jsonld && npm run seo:sitemaps && npm run seo:links",
-    "gate": "npm run lint && npm run typecheck && npm run test && npm run build && npm run seo:gate",
+    "gate": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e && npm run seo:gate",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:check": "docker compose exec postgres pg_isready -U tribuna_santo -d tribuna_santo",

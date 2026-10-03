@@ -22,7 +22,7 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 900 } } }],
   webServer: {
-    command: `npx astro preview --host 127.0.0.1 --port ${PORT}`,
+    command: `npx astro preview --ignore-lock --host 127.0.0.1 --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000

@@ -1,26 +1,29 @@
-// WEB.2 — SEO provisional: toda página es demo, no indexable y vive en / o /demo/.
+// WEB.2/WEB.3 — SEO provisional: toda página es demo, no indexable y vive en / o /demo/.
+// WEB.3: el cliente admite una única entrada funcional propia (Alpine).
 
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { validateInternalLinksInDirectory } from '../../scripts/seo/lib/contracts.js';
 import { demoArticles } from '../../src/data/demo-articles.js';
 import {
-  findClientScripts,
+  findClientEntries,
   findFabricatedSlotData,
   findIndexingMetadata,
   findMissingBlocks,
   findOffNamespaceRoutes,
-  findPayloadContamination
+  findPayloadContamination,
+  findUnexpectedClientScripts
 } from '../support/guards.js';
 import { distDir, readDistPages, walkFiles } from '../support/dist.js';
+import { expectedRoutes } from '../support/expected.js';
 import { asHtmlPages } from '../support/repo.js';
 
 const pages = asHtmlPages(readDistPages());
 const distFiles = walkFiles(distDir);
 
 describe('demo SEO, namespace and static-first guards on the built site', () => {
-  it('builds 45 pages, all under / or /demo/ and linking only inside that namespace', () => {
-    expect(pages).toHaveLength(45);
+  it('builds exactly the routes derived from demo data, all under / or /demo/ and linking only inside it', () => {
+    expect(pages.map((p) => p.route).sort()).toEqual(expectedRoutes());
     expect(findOffNamespaceRoutes(pages)).toEqual([]);
   });
 
@@ -32,8 +35,9 @@ describe('demo SEO, namespace and static-first guards on the built site', () => 
     expect(distFiles.filter((f) => /sitemap.*\.xml$/i.test(path.basename(f)))).toEqual([]);
   });
 
-  it('ships no client JavaScript and no hydration', () => {
-    expect(findClientScripts(pages, distFiles)).toEqual([]);
+  it('ships at most one functional client entry, with no islands, inline logic or other frameworks', () => {
+    expect(findUnexpectedClientScripts(pages, distFiles)).toEqual([]);
+    expect(findClientEntries(pages).length).toBeLessThanOrEqual(1);
   });
 
   it('renders every required block for every page family', () => {
