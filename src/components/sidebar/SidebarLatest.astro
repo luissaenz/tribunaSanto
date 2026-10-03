@@ -1,0 +1,66 @@
+---
+// Últimas del sidebar estándar: una destacada (imagen de 176 px) y tres miniaturas de 80×56.
+import Icon from '../ui/Icon.astro';
+import CardImage from '../story/cards/CardImage.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+const [feature, ...rest] = stories;
+---
+
+<div data-block="sidebar-latest">
+  <h2 class="font-heading uppercase text-lg font-black border-t-4 border-black bg-black text-white px-4 py-2 inline-block">Últimas</h2>
+  <div class="mt-4 space-y-4">
+    <article>
+      <a href={routes.article(feature)} class="block overflow-hidden rounded-sm mb-3" tabindex="-1" aria-hidden="true">
+        <img
+          data-part="feature-media"
+          src={feature.presentation.image.src}
+          alt={feature.presentation.image.alt}
+          width={feature.presentation.image.width}
+          height={feature.presentation.image.height}
+          loading="lazy"
+          class="w-full h-44 object-cover hover:scale-105 transition-transform duration-500"
+        />
+      </a>
+      <span class="text-xs font-bold text-red-600 uppercase tracking-wider">{getSection(feature.presentation.sectionId).label.toLowerCase()}</span>
+      <h3 class="font-heading font-bold text-base leading-snug mt-1">
+        <a href={routes.article(feature)} class="hover:text-red-600 transition-colors">{feature.article.headline}</a>
+      </h3>
+      <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+        <Icon name="clock" class="w-3 h-3" />
+        {formatCardDate(feature.article.publishedAt)}
+      </div>
+    </article>
+    {
+      rest.map((story, i) => (
+        <>
+          <div class="border-t border-gray-200" />
+          <article class="flex items-start gap-3">
+            <div class="w-20 flex-none overflow-hidden rounded-sm">
+              <CardImage story={story} part={i === 0 ? 'thumb' : undefined} class="w-20 h-14 object-cover hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div>
+              <h3 class="font-heading font-bold text-sm leading-snug">
+                <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+                  {story.article.headline}
+                </a>
+              </h3>
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <Icon name="clock" class="w-3 h-3" />
+                {formatCardDate(story.article.publishedAt)}
+              </div>
+            </div>
+          </article>
+        </>
+      ))
+    }
+  </div>
+</div>

@@ -1,0 +1,45 @@
+---
+// Índice de secciones del sidebar estándar: emoji, nombre y conteo; la sección actual en rojo.
+import { routes } from '../../presentation/routes.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+import type { SectionCount } from '../../presentation/queries.js';
+
+interface Props {
+  counts: readonly SectionCount[];
+  current?: SectionId;
+}
+
+const { counts, current } = Astro.props;
+---
+
+<div data-block="sidebar-categories">
+  <h2 class="font-heading uppercase text-lg font-black border-t-4 border-black bg-black text-white px-4 py-2 inline-block">Secciones</h2>
+  <ul data-part="list" class="mt-4 space-y-0 divide-y divide-gray-200 border-t border-gray-200">
+    {
+      counts.map(({ sectionId, count }, i) => {
+        const section = getSection(sectionId);
+        const active = sectionId === current;
+        return (
+          <li>
+            <a
+              data-part={i === 0 ? 'item' : undefined}
+              href={routes.section(sectionId)}
+              aria-current={active ? 'page' : undefined}
+              class:list={['flex items-center justify-between py-2.5 font-medium transition-colors group', active ? 'text-red-600' : 'hover:text-red-600']}
+            >
+              <span class="flex items-center gap-2">
+                <span class:list={['text-sm', active ? 'text-red-600' : 'text-gray-400 group-hover:text-red-600']} aria-hidden="true">
+                  {section.emoji}
+                </span>
+                {section.label}
+              </span>
+              <span data-part={i === 0 ? 'count' : undefined} class="text-xs bg-black text-white px-2 py-0.5 font-bold">
+                {count}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>

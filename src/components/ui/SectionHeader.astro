@@ -9,14 +9,16 @@ interface Props {
   slot?: string;
   level?: 1 | 2 | 3;
   id?: string;
+  /** `data-block` propio del título (p. ej. `listing-title` en listados sin H1 visual propio). */
+  headingBlock?: string;
 }
 
-const { title, href, moreLabel = 'Ver más', slot, level = 2, id } = Astro.props;
+const { title, href, moreLabel = 'Ver más', slot, level = 2, id, headingBlock } = Astro.props;
 const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
 ---
 
 <div data-block="section-header" data-slot={slot} class="flex items-center justify-between gap-2 border-t-4 border-black mb-6">
-  <Heading id={id} data-part="title" class="font-heading uppercase text-xl font-black bg-black text-white px-4 py-2 inline-block">{title}</Heading>
+  <Heading id={id} data-part="title" data-block={headingBlock} class="font-heading uppercase text-xl font-black bg-black text-white px-4 py-2 inline-block">{title}</Heading>
   <slot name="aside" />
   {
     href && (

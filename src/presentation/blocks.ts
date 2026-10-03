@@ -5,7 +5,7 @@
 // scripts/corpus/block-map.ts. Cada componente marca su raíz con
 // `data-block="<id>"` y las pruebas verifican las secuencias declaradas aquí.
 
-export const OWN_PAGE_FAMILIES = ['home', 'section', 'topic', 'listing', 'article', 'institutional'] as const;
+export const OWN_PAGE_FAMILIES = ['home', 'section', 'section-page', 'topic', 'topic-page', 'listing', 'article', 'institutional'] as const;
 export type OwnPageFamily = (typeof OWN_PAGE_FAMILIES)[number];
 
 export type BlockSpec = Readonly<{
@@ -43,10 +43,16 @@ export const blockCatalog = [
   { id: 'rail-section-index', component: 'rail/SectionIndex.astro', purpose: 'Secciones con cantidad de notas.' },
   { id: 'rail-latest', component: 'rail/RailLatest.astro', purpose: 'Una destacada y miniaturas.' },
 
-  { id: 'listing-header', component: 'listing/ListingHeader.astro', purpose: 'H1 del listado y conteo.' },
-  { id: 'listing-feature', component: 'listing/ListingFeature.astro', purpose: 'Destacada estática de la sección.' },
+  { id: 'category-header', component: 'listing/CategoryHeader.astro', purpose: 'H1 de sección en caja negra y conteo.' },
+  { id: 'topic-header', component: 'listing/TopicHeader.astro', purpose: 'H1 de tema centrado y conteo.' },
+  { id: 'listing-title', component: 'ui/SectionHeader.astro', purpose: 'Título H1 de listados paginados.' },
   { id: 'river-list', component: 'listing/RiverList.astro', purpose: 'Río de notas imagen 1/3 + texto 2/3.' },
-  { id: 'pagination', component: 'listing/Pagination.astro', purpose: 'Paginación textual estática.' },
+  { id: 'pagination', component: 'ui/Pagination.astro', purpose: 'Paginación en cajas con anterior/siguiente.' },
+  { id: 'standard-sidebar', component: 'sidebar/StandardSidebar.astro', purpose: 'Sidebar sticky de páginas internas.' },
+  { id: 'sidebar-trending', component: 'sidebar/SidebarTrending.astro', purpose: 'Tendencias numeradas 01–05.' },
+  { id: 'sidebar-categories', component: 'sidebar/SidebarCategories.astro', purpose: 'Secciones con emoji y conteo.' },
+  { id: 'sidebar-latest', component: 'sidebar/SidebarLatest.astro', purpose: 'Una destacada y tres miniaturas.' },
+  { id: 'sidebar-ad', component: 'ui/AdSlot.astro', purpose: 'Publicidad 300×250 demo.' },
 
   { id: 'article-hero', component: 'article/ArticleHero.astro', purpose: 'Imagen con antetítulo, H1 y bajada.' },
   { id: 'article-meta', component: 'article/ArticleMeta.astro', purpose: 'Firma, fechas y tiempo de lectura.' },
@@ -63,6 +69,7 @@ export type BlockId = (typeof blockCatalog)[number]['id'];
 
 const chrome = ['top-bar', 'masthead', 'site-nav'] as const satisfies readonly BlockId[];
 const standardRail = ['rail-recent-numbered', 'rail-section-index', 'rail-latest'] as const satisfies readonly BlockId[];
+const sidebar = ['standard-sidebar', 'sidebar-trending', 'sidebar-categories', 'sidebar-latest', 'sidebar-ad'] as const satisfies readonly BlockId[];
 
 /** Secuencia mínima (en orden DOM) de bloques que cada familia debe renderizar. */
 export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
@@ -87,9 +94,11 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
     'site-footer',
     'back-to-top'
   ],
-  section: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'listing-feature', 'river-list', ...standardRail, 'site-footer', 'back-to-top'],
-  topic: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', ...standardRail, 'site-footer', 'back-to-top'],
-  listing: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', 'pagination', ...standardRail, 'site-footer', 'back-to-top'],
+  section: [...chrome, 'category-header', 'hero-carousel', 'section-header', 'river-list', ...sidebar, 'site-footer', 'back-to-top'],
+  'section-page': [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
+  topic: [...chrome, 'topic-header', 'section-header', 'river-list', ...sidebar, 'site-footer', 'back-to-top'],
+  'topic-page': [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
+  listing: [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
   article: [
     ...chrome,
     'breadcrumb',

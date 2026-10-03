@@ -24,7 +24,9 @@ describe('WEB.2 static render', () => {
       home: 1,
       article: demoStories.length,
       section: sections.length,
+      'section-page': 2,
       topic: topics.length,
+      'topic-page': 1,
       listing: latestPages,
       institutional: 1
     });
@@ -143,7 +145,7 @@ describe('WEB.2 static render', () => {
   it('paginates the latest listing with a single current page', () => {
     for (let n = 1; n <= latestPages; n++) {
       const { root } = readDistPage(routes.latest(n));
-      expect(root.querySelectorAll('[data-block="pagination"] [aria-current="page"]').map((e) => e.text.trim())).toEqual([String(n)]);
+      expect(root.querySelectorAll('[data-block="pagination"] [aria-current="page"]').map((e) => e.text.replace(/\s+/g, ' ').trim())).toEqual([`Página ${n}`]);
       expect(root.querySelectorAll('[data-block="river-list"] article').length).toBeGreaterThan(0);
     }
   });

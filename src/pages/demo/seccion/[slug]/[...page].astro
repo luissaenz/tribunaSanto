@@ -1,0 +1,75 @@
+---
+// Sección (familia category del golden master): cabecera + carrusel + río (6 por página) + sidebar.
+// Página 2+: título de listado como H1 (D3: la referencia no tenía H1) + río + paginación.
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Carousel from '../../../../components/ui/Carousel.astro';
+import SectionHeader from '../../../../components/ui/SectionHeader.astro';
+import Pagination from '../../../../components/ui/Pagination.astro';
+import CategoryHeader from '../../../../components/listing/CategoryHeader.astro';
+import RiverList from '../../../../components/listing/RiverList.astro';
+import StandardSidebar from '../../../../components/sidebar/StandardSidebar.astro';
+import { site } from '../../../../presentation/site.js';
+import { routes } from '../../../../presentation/routes.js';
+import { PAGE_SIZE, pageCount, paginate } from '../../../../presentation/pagination.js';
+import { storiesInSection } from '../../../../presentation/queries.js';
+import { sections, type Section } from '../../../../presentation/taxonomy.js';
+import { CATEGORY_CAROUSEL_SLIDES } from '../../../../data/demo-category.js';
+
+export const getStaticPaths = (() =>
+  sections.flatMap((section) => {
+    const total = storiesInSection(site.stories, section.id).length;
+    return Array.from({ length: pageCount(total, PAGE_SIZE.section) }, (_, i) => ({
+      params: { slug: section.slug, page: i === 0 ? undefined : String(i + 1) },
+      props: { section, page: i + 1 }
+    }));
+  })) satisfies GetStaticPaths;
+
+interface Props {
+  section: Section;
+  page: number;
+}
+
+const { section, page } = Astro.props;
+const all = storiesInSection(site.stories, section.id);
+const paged = paginate(all, PAGE_SIZE.section, page);
+const hrefs = Array.from({ length: paged.pages }, (_, i) => routes.section(section.id, i + 1));
+const slides = all.slice(0, CATEGORY_CAROUSEL_SLIDES[section.id]);
+---
+
+<BaseLayout
+  title={page === 1 ? `${section.label} — Tribuna Santo` : `${section.label}, página ${page} — Tribuna Santo`}
+  description={section.description}
+  editionInstant={site.editionInstant}
+  current={section.id}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div class="lg:col-span-3">
+        {
+          page === 1 ? (
+            <>
+              <div class="flex flex-col mb-10">
+                <CategoryHeader sectionId={section.id} count={all.length} />
+                <div class="relative">
+                  <Carousel stories={slides} variant="category" label={`Destacadas de ${section.label}`} />
+                </div>
+              </div>
+              <section class="mb-10">
+                <SectionHeader title={`Lo último en ${section.label}`} slot="river" />
+                <RiverList stories={paged.items} />
+              </section>
+            </>
+          ) : (
+            <section class="mb-10">
+              <SectionHeader title={`Sección: ${section.label} — Página ${page}`} level={1} headingBlock="listing-title" slot="river" />
+              <RiverList stories={paged.items} level={2} />
+            </section>
+          )
+        }
+        {paged.pages > 1 && <Pagination current={page} hrefs={hrefs} label={`Páginas de ${section.label}`} />}
+      </div>
+      <StandardSidebar stories={site.stories} currentSection={section.id} />
+    </div>
+  </div>
+</BaseLayout>

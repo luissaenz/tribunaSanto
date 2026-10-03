@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse as parseHtml, type HTMLElement } from 'node-html-parser';
+import type { OwnPageFamily } from '../../src/presentation/blocks.js';
 
 export const distDir = path.resolve(process.cwd(), 'dist');
 
@@ -35,9 +36,11 @@ export function readDistPage(route: string): DistPage {
 }
 
 /** Familia de página propia a partir de la ruta construida. */
-export function familyOf(route: string): 'home' | 'section' | 'topic' | 'listing' | 'article' | 'institutional' {
+export function familyOf(route: string): OwnPageFamily {
   if (route === '/') return 'home';
+  if (/^\/demo\/seccion\/[^/]+\/\d+\/$/.test(route)) return 'section-page';
   if (route.startsWith('/demo/seccion/')) return 'section';
+  if (/^\/demo\/tema\/[^/]+\/\d+\/$/.test(route)) return 'topic-page';
   if (route.startsWith('/demo/tema/')) return 'topic';
   if (route.startsWith('/demo/ultimas/')) return 'listing';
   if (route === '/demo/acerca/') return 'institutional';

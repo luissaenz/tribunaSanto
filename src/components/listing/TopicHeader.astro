@@ -1,0 +1,14 @@
+---
+// Cabecera de tema: H1 centrado y conteo de notas etiquetadas.
+interface Props {
+  label: string;
+  count: number;
+}
+
+const { label, count } = Astro.props;
+---
+
+<div data-block="topic-header">
+  <h1 data-part="title" class="font-heading font-bold text-3xl lg:text-5xl text-center mb-4">{label}</h1>
+  <p data-part="count" class="text-sm text-gray-500 mb-6">{count} {count === 1 ? 'nota etiquetada' : 'notas etiquetadas'} con <strong>{label}</strong></p>
+</div>

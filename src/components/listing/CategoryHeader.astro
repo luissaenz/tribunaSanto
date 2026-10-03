@@ -1,0 +1,16 @@
+---
+// Cabecera de sección: H1 en caja negra sobre filete de 4 px y conteo de notas a la derecha.
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+
+interface Props {
+  sectionId: SectionId;
+  count: number;
+}
+
+const { sectionId, count } = Astro.props;
+---
+
+<div data-block="category-header" class="flex items-center justify-between gap-3 border-t-4 border-black mb-6">
+  <h1 data-part="title" class="font-heading uppercase text-2xl font-black bg-black text-white px-5 py-2 inline-block">{getSection(sectionId).label}</h1>
+  <span data-part="count" class="uppercase text-gray-500 font-medium text-sm">{count} {count === 1 ? 'nota' : 'notas'}</span>
+</div>

@@ -61,7 +61,7 @@ const sidebar: PartSpec[] = [
   { id: 'sidebar-trending/title', ref: `main aside h3${c('bg-red-600')}`, fixedH: true },
   { id: 'sidebar-trending/number', ref: `main aside span${c('text-3xl')}`, freeW: true },
   { id: 'sidebar-trending/item-title', ref: `main aside ${c('space-y-3')} h4`, freeW: true },
-  { id: 'sidebar-categories/title', ref: `main aside ul${c('divide-y')}`, noType: true },
+  { id: 'sidebar-categories/list', ref: `main aside ul${c('divide-y')}`, noType: true },
   { id: 'sidebar-categories/item', ref: `main aside ul${c('divide-y')} li a`, fixedH: true },
   { id: 'sidebar-categories/count', ref: `main aside ul${c('divide-y')} span${c('bg-black')}`, fixedH: true, freeX: true, freeW: true },
   { id: 'sidebar-latest/feature-media', ref: `main aside img${c('h-44')}`, fixedH: true },
