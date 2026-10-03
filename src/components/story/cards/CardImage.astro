@@ -1,0 +1,28 @@
+---
+// Imagen de tarjeta enlazada a la nota. `fit` replica los dos recortes del golden master:
+// `top` (ancho completo, recorte inferior dentro del contenedor) y `cover` (centrado).
+import type { WebStory } from '../../../presentation/story.js';
+import { routes } from '../../../presentation/routes.js';
+
+interface Props {
+  story: WebStory;
+  class?: string;
+  eager?: boolean;
+  part?: string;
+}
+
+const { story, class: className = 'w-full', eager = false, part } = Astro.props;
+const { image } = story.presentation;
+---
+
+<a href={routes.article(story)} tabindex="-1" aria-hidden="true">
+  <img
+    data-part={part}
+    src={image.src}
+    alt={image.alt}
+    width={image.width}
+    height={image.height}
+    loading={eager ? 'eager' : 'lazy'}
+    class={className}
+  />
+</a>

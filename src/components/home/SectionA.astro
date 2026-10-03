@@ -1,0 +1,41 @@
+---
+// Bloque de sección A: destacada + cuatro titulares con filete izquierdo (2 columnas desde 768 px).
+import SectionHeader from '../ui/SectionHeader.astro';
+import FeatureCard from './FeatureCard.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+import { formatCardDate } from '../../presentation/format.js';
+import { TRUNCATE, truncateWords } from '../../presentation/text.js';
+
+interface Props {
+  sectionId: SectionId;
+  stories: readonly WebStory[];
+  slot: string;
+}
+
+const { sectionId, stories, slot } = Astro.props;
+const [feature, ...list] = stories;
+---
+
+<section data-block="section-a" data-slot={slot} class="mb-12">
+  <SectionHeader title={getSection(sectionId).label} href={routes.section(sectionId)} slot={slot} />
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <FeatureCard story={feature} />
+    <div class="space-y-4">
+      {
+        list.map((story) => (
+          <article data-part="list-item" class="border-l-4 border-black pl-4">
+            <h3 data-part="list-title" class="font-heading text-base xl:text-lg font-bold mb-2">
+              <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+                {truncateWords(story.article.headline, TRUNCATE.listTitle)}
+              </a>
+            </h3>
+            {story.article.dek && <p class="text-sm text-gray-600">{truncateWords(story.article.dek, TRUNCATE.listExcerpt)}</p>}
+            <div class="text-xs text-gray-500 mt-1">{formatCardDate(story.article.publishedAt)}</div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

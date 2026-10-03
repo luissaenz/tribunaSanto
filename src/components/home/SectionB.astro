@@ -1,0 +1,40 @@
+---
+// Bloque de sección B: destacada + grilla 2×2 de miniaturas 16:9 con titular.
+import SectionHeader from '../ui/SectionHeader.astro';
+import FeatureCard from './FeatureCard.astro';
+import CardImage from '../story/cards/CardImage.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+
+interface Props {
+  sectionId: SectionId;
+  stories: readonly WebStory[];
+}
+
+const { sectionId, stories } = Astro.props;
+const [feature, ...tiles] = stories;
+---
+
+<section data-block="section-b" class="mb-12">
+  <SectionHeader title={getSection(sectionId).label} href={routes.section(sectionId)} slot="b" />
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <FeatureCard story={feature} />
+    <div class="grid grid-cols-2 gap-4">
+      {
+        tiles.map((story) => (
+          <article data-part="tile">
+            <div data-part="tile-media" class="aspect-video overflow-hidden rounded-sm mb-3">
+              <CardImage story={story} class="w-full hover:scale-105 transition-transform duration-500" />
+            </div>
+            <h3 data-part="tile-title" class="font-heading font-bold mb-2 text-sm leading-snug">
+              <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+                {story.article.headline}
+              </a>
+            </h3>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

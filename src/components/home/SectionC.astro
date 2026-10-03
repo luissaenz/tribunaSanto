@@ -1,0 +1,38 @@
+---
+// Bloque de sección C: seis titulares con extracto, 1/2/3 columnas (768 / 1024 px).
+import SectionHeader from '../ui/SectionHeader.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  sectionId: SectionId;
+  stories: readonly WebStory[];
+}
+
+const { sectionId, stories } = Astro.props;
+---
+
+<section data-block="section-c" class="mb-12">
+  <SectionHeader title={getSection(sectionId).label} href={routes.section(sectionId)} slot="c" />
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {
+      stories.map((story) => (
+        <article data-part="item" class="relative">
+          <h3 data-part="item-title" class="font-heading text-base md:text-lg font-bold mb-2">
+            <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+              {story.article.headline}
+            </a>
+          </h3>
+          {story.article.dek && (
+            <p data-part="item-excerpt" class="text-gray-600 text-sm mb-2">
+              {story.article.dek}
+            </p>
+          )}
+          <div class="text-xs text-gray-500">{formatCardDate(story.article.publishedAt)}</div>
+        </article>
+      ))
+    }
+  </div>
+</section>

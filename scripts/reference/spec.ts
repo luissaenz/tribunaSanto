@@ -393,6 +393,8 @@ export function tribunaSelector(part: PartSpec): string {
   const [blockAndSlot, sub] = part.id.split('/');
   const [block, slot] = blockAndSlot.split('@');
   const root = slot ? `[data-block="${block}"][data-slot="${slot}"]` : `[data-block="${block}"]`;
-  const base = sub ? `${root} [data-part="${sub}"]` : root;
+  // Las partes de un bloque nunca se resuelven dentro de un encabezado de sección anidado.
+  const nested = block === 'section-header' ? '' : ':not([data-block="section-header"] *)';
+  const base = sub ? `${root} [data-part="${sub}"]${nested}` : root;
   return part.tribunaSuffix ? `${base}${part.tribunaSuffix}` : base;
 }

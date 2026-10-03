@@ -64,26 +64,25 @@ describe('WEB.2 static render', () => {
     }
   });
 
-  it('makes the home dense and reaches every demo story from it', () => {
+  it('renders the golden-master home: carousel, four section layouts, rails, photos and latest', () => {
     const { root } = readDistPage('/');
-    const linked = new Set(root.querySelectorAll('main a[href^="/demo/"]').map((a) => a.getAttribute('href')));
-    // Migración WEB.3: la portada WEB.2 temporal alcanza las 24 notas originales.
-    for (const story of demoStories.slice(0, 24)) expect(linked.has(routes.article(story)), story.presentation.demoId).toBe(true);
+    const slides = root.querySelectorAll('[data-block="hero-carousel"] [data-part="slide"]');
+    expect(slides).toHaveLength(3);
+    for (const slide of slides) expect(slide.querySelector('h2 a')?.getAttribute('href')).toMatch(/^\/demo\//);
+    expect(root.querySelector('[data-block="hero-carousel"]')?.getAttribute('x-data')).toBe('carousel(3)');
+    for (const block of ['trending', 'section-b', 'section-c', 'section-d', 'popular-news', 'section-headlines', 'home-ad', 'photos', 'latest-grid']) {
+      expect(root.querySelectorAll(`[data-block="${block}"]`), block).toHaveLength(1);
+    }
+    expect(root.querySelectorAll('[data-block="section-a"]').map((b) => b.getAttribute('data-slot'))).toEqual(['band2', 'band3a', 'band3b']);
+    expect(root.querySelectorAll('[data-block="latest-grid"] article')).toHaveLength(9);
     expect(root.querySelectorAll('main article').length).toBeGreaterThanOrEqual(40);
-
-    const blocks = root.querySelectorAll('[data-block="section-block"]');
-    expect(blocks).toHaveLength(6);
-    expect(new Set(blocks.map((b) => b.getAttribute('data-variant')))).toEqual(
-      new Set(['feature-list', 'feature-tiles', 'headline-grid', 'list-feature'])
-    );
   });
 
-  it('renders the lead story before section blocks in DOM order', () => {
+  it('keeps the carousel first and the photos rail before band-3 sections in DOM order', () => {
     const { html } = readDistPage('/');
-    const lead = html.indexOf('data-block="lead-story"');
-    expect(lead).toBeGreaterThan(-1);
-    expect(lead).toBeLessThan(html.indexOf('data-block="section-block"'));
-    expect(html.indexOf(demoStories[0].article.headline)).toBeLessThan(html.indexOf('data-block="section-block"'));
+    expect(html.indexOf('data-block="hero-carousel"')).toBeLessThan(html.indexOf('data-block="section-a"'));
+    expect(html.indexOf('data-block="photos-rail"')).toBeLessThan(html.indexOf('data-slot="band3a"'));
+    expect(html.indexOf(demoStories[0].article.headline)).toBeLessThan(html.indexOf('data-block="section-a"'));
   });
 
   it('renders article headline, dek, byline, time and body from the same payload', () => {
@@ -139,16 +138,6 @@ describe('WEB.2 static render', () => {
 
   it('does not emit NewsArticle structured data', () => {
     for (const page of pages) expect(page.html, page.route).not.toContain('NewsArticle');
-  });
-
-  it('renders DEP, MET and GRF placeholders without values', () => {
-    const { html, root } = readDistPage('/');
-    expect(html).toContain('Próximo partido');
-    expect(html).toContain('Tabla de posiciones');
-    expect(html).toContain('Datos deportivos disponibles en próximos arcos.');
-    const modules = root.querySelectorAll('[data-block="future-slot"]').map((s) => s.getAttribute('data-module'));
-    expect(new Set(modules)).toEqual(new Set(['DEP', 'MET', 'GRF']));
-    for (const slot of root.querySelectorAll('[data-block="future-slot"]')) expect(slot.text).not.toMatch(/\d/);
   });
 
   it('paginates the latest listing with a single current page', () => {

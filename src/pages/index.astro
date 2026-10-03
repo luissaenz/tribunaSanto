@@ -1,24 +1,28 @@
 ---
+// Portada réplica del golden master (WEB.3).
+//   Banda 1: carrusel 2/3 + tendencias 1/3.
+//   Banda 2: secciones A/B/C/D (3/4) + rail sticky (populares, titulares, publicidad).
+//   Banda 3: rail de fotos ANTES en el DOM (en mobile aparece primero) + secciones,
+//            últimas noticias y paginación.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import RailLayout from '../components/layout/RailLayout.astro';
-import LeadStory from '../components/home/LeadStory.astro';
-import TrendingList from '../components/home/TrendingList.astro';
-import SectionBlock from '../components/home/SectionBlock.astro';
+import Carousel from '../components/ui/Carousel.astro';
+import Pagination from '../components/ui/Pagination.astro';
+import AdSlot from '../components/ui/AdSlot.astro';
+import TrendingThumbs from '../components/home/TrendingThumbs.astro';
+import SectionA from '../components/home/SectionA.astro';
+import SectionB from '../components/home/SectionB.astro';
+import SectionC from '../components/home/SectionC.astro';
+import SectionD from '../components/home/SectionD.astro';
+import PopularNews from '../components/home/PopularNews.astro';
+import SectionHeadlines from '../components/home/SectionHeadlines.astro';
+import PhotoStories from '../components/home/PhotoStories.astro';
 import LatestGrid from '../components/home/LatestGrid.astro';
-import EditorPicks from '../components/rail/EditorPicks.astro';
-import CompactList from '../components/rail/CompactList.astro';
-import VisualStories from '../components/rail/VisualStories.astro';
-import FutureSlot from '../components/rail/FutureSlot.astro';
-import Pagination from '../components/listing/Pagination.astro';
 import { site } from '../presentation/site.js';
-import { futureSlots } from '../presentation/future-modules.js';
-import { storiesWithTopic } from '../presentation/queries.js';
 import { LATEST_PAGE_SIZE, routes } from '../presentation/routes.js';
+import { pageCount } from '../presentation/pagination.js';
 
 const { home, stories } = site;
-const agenda = storiesWithTopic(stories, 'agenda').slice(0, 4);
-const latestPages = Math.ceil(stories.length / LATEST_PAGE_SIZE);
-const latestHrefs = Array.from({ length: latestPages }, (_, i) => routes.latest(i + 1));
+const latestHrefs = Array.from({ length: pageCount(stories.length, LATEST_PAGE_SIZE) }, (_, i) => routes.latest(i + 1));
 ---
 
 <BaseLayout
@@ -26,56 +30,50 @@ const latestHrefs = Array.from({ length: latestPages }, (_, i) => routes.latest(
   editionInstant={site.editionInstant}
   current="home"
   title="Tribuna Santo — Diario deportivo de San Martín de Tucumán"
-  description="Primer medio deportivo digital autónomo dedicado a la cobertura integral de San Martín de Tucumán."
+  description="Web demo de Tribuna Santo: medio deportivo dedicado a San Martín de Tucumán. Contenido ficticio de demostración."
 >
-  <div class="container home">
-    <div class="home__top">
-      <LeadStory story={home.lead} />
-      <TrendingList title="En agenda" stories={home.trending} />
+  <section class="relative mb-8 lg:py-6 lg:max-w-7xl lg:mx-auto lg:px-4" aria-label="Destacadas">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <Carousel stories={home.heroSlides} variant="home" label="Notas destacadas" />
+      </div>
+      <TrendingThumbs stories={home.trending} />
     </div>
+  </section>
 
-    <RailLayout railLabel="Recomendadas y datos deportivos">
-      {home.primaryBand.map((block) => <SectionBlock block={block} />)}
-      <Fragment slot="rail">
-        <EditorPicks stories={home.picks} />
-        <FutureSlot spec={futureSlots.nextMatch} />
-        <FutureSlot spec={futureSlots.standings} />
-        <CompactList title="Agenda" id="agenda-title" href={routes.topic('agenda')} stories={agenda} />
-      </Fragment>
-    </RailLayout>
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="lg:col-span-3">
+        <SectionA sectionId={home.band2.a.sectionId} stories={home.band2.a.stories} slot="band2" />
+        <SectionB sectionId={home.band2.b.sectionId} stories={home.band2.b.stories} />
+        <SectionC sectionId={home.band2.c.sectionId} stories={home.band2.c.stories} />
+        <SectionD sectionId={home.band2.d.sectionId} stories={home.band2.d.stories} />
+      </div>
+      <aside class="relative pb-6" aria-label="Populares y titulares">
+        <div data-block="home-rail" class="space-y-8 sticky top-16">
+          <PopularNews stories={home.popular} />
+          <SectionHeadlines sectionId={home.sidebarSection.sectionId} stories={home.sidebarSection.stories} />
+          <AdSlot block="home-ad" tone="gray-200" />
+        </div>
+      </aside>
+    </div>
+  </div>
 
-    <RailLayout railFirst railLabel="Historias visuales y gráficos">
-      <Fragment slot="rail">
-        <VisualStories stories={home.visual} />
-        <FutureSlot spec={futureSlots.matchGraphic} />
-        <FutureSlot spec={futureSlots.squadMetrics} />
-      </Fragment>
-      {home.secondaryBand.map((block) => <SectionBlock block={block} />)}
-      <LatestGrid stories={home.latest}>
-        <Pagination current={1} hrefs={latestHrefs} label="Más noticias" />
-      </LatestGrid>
-    </RailLayout>
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <aside class="relative pb-6" aria-label="Fotos">
+        <div data-block="photos-rail" class="sticky top-16">
+          <PhotoStories stories={home.photos} />
+        </div>
+      </aside>
+      <div class="lg:col-span-3 pb-8">
+        <SectionA sectionId={home.band3[0].sectionId} stories={home.band3[0].stories} slot="band3a" />
+        <SectionA sectionId={home.band3[1].sectionId} stories={home.band3[1].stories} slot="band3b" />
+        <div>
+          <LatestGrid stories={home.latest} />
+          <Pagination current={1} hrefs={latestHrefs} label="Más noticias" />
+        </div>
+      </div>
+    </div>
   </div>
 </BaseLayout>
-
-<style>
-  .home {
-    padding-top: var(--space-5);
-  }
-
-  .home > :global(* + *) {
-    margin-top: var(--space-8);
-  }
-
-  .home__top {
-    display: grid;
-    gap: var(--grid-gap);
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  @media (min-width: 64rem) {
-    .home__top {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    }
-  }
-</style>

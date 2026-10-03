@@ -1,0 +1,32 @@
+---
+// Titulares de una sección en el rail de portada: fecha arriba y filete inferior.
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection, type SectionId } from '../../presentation/taxonomy.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  sectionId: SectionId;
+  stories: readonly WebStory[];
+}
+
+const { sectionId, stories } = Astro.props;
+---
+
+<div data-block="section-headlines" class="relative">
+  <h2 data-part="title" class="font-heading text-lg uppercase font-bold mb-4 border-b-2 border-black pb-2">{getSection(sectionId).label}</h2>
+  <div class="space-y-4">
+    {
+      stories.map((story, i) => (
+        <article data-part={i === 0 ? 'item' : undefined} class:list={['pb-3', { 'border-b border-gray-300': i < stories.length - 1 }]}>
+          <div class="text-xs text-gray-500 mb-1">{formatCardDate(story.article.publishedAt)}</div>
+          <h3 data-part={i === 0 ? 'item-title' : undefined} class="font-bold">
+            <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+              {story.article.headline}
+            </a>
+          </h3>
+        </article>
+      ))
+    }
+  </div>
+</div>

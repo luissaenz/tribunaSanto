@@ -117,6 +117,11 @@ Alpine.data('carousel', (count: number) =>
       if (direction === 'next') this.next();
       if (direction === 'prev') this.prev();
     },
+    // Pausa sólo con foco de teclado: un clic en flechas o indicadores no detiene el autoplay (golden master).
+    onFocusIn(event: FocusEvent) {
+      const target = event.target as Element | null;
+      if (target?.matches(':focus-visible')) this.focused = true;
+    },
     onFocusOut(event: FocusEvent) {
       const root = this.$root;
       if (!root.contains(event.relatedTarget as Node | null)) this.focused = false;
