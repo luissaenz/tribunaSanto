@@ -1,124 +1,78 @@
 ---
-import { sections } from '../../presentation/taxonomy.js';
+// Pie: marca + redes, columnas de secciones e institucional, newsletter (no-op DEMO) y copyright.
+import Icon from '../ui/Icon.astro';
+import { siteChrome } from '../../data/demo-chrome.js';
 import { routes } from '../../presentation/routes.js';
+import { FOOTER_SECTION_ORDER, getSection } from '../../presentation/taxonomy.js';
+
+const { footer, socials, footerPages: pages } = siteChrome;
 ---
 
-<footer class="site-footer" data-block="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div class="site-footer__brand">
-        <p class="site-footer__name">Tribuna Santo</p>
-        <p class="site-footer__desc">
-          Medio digital deportivo dedicado a la cobertura periodística, actualidad institucional y memoria de San Martín de Tucumán.
-        </p>
-        <p class="site-footer__place">San Miguel de Tucumán · República Argentina</p>
+<footer data-block="site-footer" class="bg-black text-white pt-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <div data-part="grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div>
+        <h2 data-part="brand-title" class="font-heading text-2xl font-bold mb-4">{footer.title}</h2>
+        <p class="text-gray-300 text-sm mb-6">{footer.description}</p>
+        <div class="flex gap-4">
+          {
+            socials.map((s) => (
+              <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={`${s.label} (demo)`} class="text-gray-300 hover:text-white transition-colors">
+                <Icon name={s.network} class="w-6 h-6" />
+              </a>
+            ))
+          }
+        </div>
       </div>
-
-      <nav class="site-footer__columns" aria-label="Enlaces del sitio">
+      <nav class="grid grid-cols-2 gap-2" aria-label="Enlaces del sitio">
         <div>
-          <h2 class="site-footer__heading">Secciones</h2>
-          <ul role="list">
-            {sections.map((s) => (
-              <li><a href={routes.section(s.id)}>{s.label}</a></li>
-            ))}
+          <h3 class="font-bold uppercase mb-4">{footer.categoriesTitle}</h3>
+          <ul class="space-y-2 text-sm">
+            {
+              FOOTER_SECTION_ORDER.map((id) => (
+                <li>
+                  <a href={routes.section(id)} class="text-gray-300 hover:text-white transition-colors">
+                    {getSection(id).label}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </div>
         <div>
-          <h2 class="site-footer__heading">Tribuna Santo</h2>
-          <ul role="list">
-            <li><a href={routes.latest()}>Últimas noticias</a></li>
-            <li><a href={routes.about()}>Acerca del proyecto</a></li>
+          <h3 class="font-bold uppercase mb-4">{footer.pagesTitle}</h3>
+          <ul class="space-y-2 text-sm">
+            {
+              pages.map((p) => (
+                <li>
+                  <a href={p.href} class="text-gray-300 hover:text-white transition-colors">
+                    {p.label}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </div>
       </nav>
+      <div>
+        <h3 class="font-heading text-xl font-bold mb-2">{footer.newsletterTitle}</h3>
+        <p class="text-sm text-gray-400 mb-6">{footer.newsletterLead}</p>
+        <form x-data="newsletter" @submit.prevent="submit()">
+          <input
+            data-part="newsletter-input"
+            type="email"
+            placeholder={footer.newsletterPlaceholder}
+            aria-label={footer.newsletterPlaceholder}
+            class="w-full px-3 py-2 border border-gray-600 bg-transparent mb-3 text-white placeholder-gray-400 focus:outline-none focus:border-red-600 transition-colors"
+          />
+          <button data-part="newsletter-button" type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 font-bold uppercase transition-colors">
+            {footer.newsletterButton}
+          </button>
+        </form>
+      </div>
     </div>
-
-    <div class="site-footer__bottom">
-      <p>Experiencia editorial WEB.2 alimentada por contratos intermodulares verificados. Contenido de demostración ficticio.</p>
-      <p>© 2026 Tribuna Santo · <a href="#top">Volver arriba ↑</a></p>
+    <div data-part="copyright" class="border-t border-gray-800 py-8 text-center text-sm text-gray-400">
+      <p>{footer.copyright}</p>
     </div>
   </div>
 </footer>
-
-<style>
-  .site-footer {
-    margin-top: auto;
-    background: var(--color-ink);
-    color: var(--color-on-dark-muted);
-    border-top: 4px solid var(--color-brand);
-    padding-top: var(--space-8);
-    font-size: var(--text-sm);
-  }
-
-  .site-footer__grid {
-    display: grid;
-    gap: var(--space-6);
-    padding-bottom: var(--space-7);
-  }
-
-  .site-footer__name {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    font-weight: 900;
-    color: var(--color-on-dark);
-    margin-bottom: var(--space-3);
-  }
-
-  .site-footer__desc {
-    max-width: 34rem;
-    line-height: 1.6;
-  }
-
-  .site-footer__place {
-    margin-top: var(--space-3);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-brand);
-  }
-
-  .site-footer__columns {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-5);
-  }
-
-  .site-footer__heading {
-    font-size: var(--text-sm);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-on-dark);
-    margin-bottom: var(--space-3);
-  }
-
-  .site-footer__columns li + li {
-    margin-top: var(--space-2);
-  }
-
-  .site-footer a:hover {
-    color: #fff;
-  }
-
-  .site-footer__bottom {
-    border-top: 1px solid #2e2b28;
-    padding-block: var(--space-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    color: #8a857d;
-  }
-
-  @media (min-width: 48rem) {
-    .site-footer__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .site-footer__bottom {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  }
-</style>

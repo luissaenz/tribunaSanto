@@ -15,11 +15,13 @@ export type BlockSpec = Readonly<{
 }>;
 
 export const blockCatalog = [
-  { id: 'utility-bar', component: 'chrome/UtilityBar.astro', purpose: 'Fecha de edición y lugar.' },
-  { id: 'masthead', component: 'chrome/Masthead.astro', purpose: 'Cabecera con marca provisional.' },
-  { id: 'primary-nav', component: 'chrome/PrimaryNav.astro', purpose: 'Secciones; franja desplazable en mobile.' },
+  { id: 'top-bar', component: 'chrome/TopBar.astro', purpose: 'Fecha dinámica y clima demo.' },
+  { id: 'masthead', component: 'chrome/Masthead.astro', purpose: 'Logo, nombre y lema.' },
+  { id: 'site-nav', component: 'chrome/SiteNav.astro', purpose: 'Navegación sticky, hamburguesa y búsqueda.' },
   { id: 'breadcrumb', component: 'chrome/Breadcrumb.astro', purpose: 'Ruta jerárquica.' },
-  { id: 'site-footer', component: 'chrome/SiteFooter.astro', purpose: 'Marca, columnas de enlaces y aviso.' },
+  { id: 'site-footer', component: 'chrome/SiteFooter.astro', purpose: 'Marca, redes, columnas, newsletter demo y copyright.' },
+  { id: 'back-to-top', component: 'chrome/BackToTop.astro', purpose: 'Botón fijo para volver arriba.' },
+  { id: 'section-header', component: 'ui/SectionHeader.astro', purpose: 'Encabezado de bloque en caja negra.' },
 
   { id: 'lead-story', component: 'home/LeadStory.astro', purpose: 'Historia principal estática.' },
   { id: 'trending', component: 'home/TrendingList.astro', purpose: 'Lista con miniaturas junto a la principal.' },
@@ -53,7 +55,7 @@ export const blockCatalog = [
 
 export type BlockId = (typeof blockCatalog)[number]['id'];
 
-const chrome = ['utility-bar', 'masthead', 'primary-nav'] as const satisfies readonly BlockId[];
+const chrome = ['top-bar', 'masthead', 'site-nav'] as const satisfies readonly BlockId[];
 const standardRail = ['rail-recent-numbered', 'rail-section-index', 'rail-latest'] as const satisfies readonly BlockId[];
 
 /** Secuencia mínima (en orden DOM) de bloques que cada familia debe renderizar. */
@@ -79,11 +81,12 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
     'section-block',
     'latest-grid',
     'pagination',
-    'site-footer'
+    'site-footer',
+    'back-to-top'
   ],
-  section: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'listing-feature', 'river-list', ...standardRail, 'site-footer'],
-  topic: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', ...standardRail, 'site-footer'],
-  listing: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', 'pagination', ...standardRail, 'site-footer'],
+  section: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'listing-feature', 'river-list', ...standardRail, 'site-footer', 'back-to-top'],
+  topic: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', ...standardRail, 'site-footer', 'back-to-top'],
+  listing: [...chrome, 'breadcrumb', 'rail', 'listing-header', 'river-list', 'pagination', ...standardRail, 'site-footer', 'back-to-top'],
   article: [
     ...chrome,
     'breadcrumb',
@@ -96,7 +99,8 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
     'related-stories',
     ...standardRail,
     'future-slot',
-    'site-footer'
+    'site-footer',
+    'back-to-top'
   ],
-  institutional: [...chrome, 'breadcrumb', 'page-hero', 'prose', 'site-footer']
+  institutional: [...chrome, 'breadcrumb', 'page-hero', 'prose', 'site-footer', 'back-to-top']
 };

@@ -1,4 +1,8 @@
 ---
+// Migas de pan: banda gris con chevrons; variante angosta (max-w-4xl) en páginas legales.
+import Icon from '../ui/Icon.astro';
+import { TRUNCATE, truncateWords } from '../../presentation/text.js';
+
 export type Crumb = Readonly<{ label: string; href?: string }>;
 
 interface Props {
@@ -10,62 +14,27 @@ const { items, narrow = false } = Astro.props;
 const trail: readonly Crumb[] = [{ label: 'Inicio', href: '/' }, ...items];
 ---
 
-<nav class="breadcrumb" aria-label="Ruta de navegación" data-block="breadcrumb">
-  <ol class:list={['container', 'breadcrumb__list', { 'container--narrow': narrow }]} role="list">
-    {trail.map((crumb, i) => (
-      <li class="breadcrumb__item">
-        {crumb.href && i < trail.length - 1 ? (
-          <a href={crumb.href}>{crumb.label}</a>
+<div data-block="breadcrumb" class="bg-gray-100 border-b border-gray-200">
+  <nav
+    data-part="inner"
+    aria-label="Ruta de navegación"
+    class:list={[narrow ? 'max-w-4xl' : 'max-w-7xl', 'mx-auto px-4 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap']}
+  >
+    {
+      trail.map((crumb, i) =>
+        crumb.href && i < trail.length - 1 ? (
+          <>
+            <a href={crumb.href} data-part={i === 0 ? 'link' : undefined} class:list={['hover:text-red-600 font-medium transition-colors', { capitalize: i > 0 }]}>
+              {crumb.label}
+            </a>
+            <Icon name="chevron-right" class="w-3 h-3 text-gray-400 flex-none" />
+          </>
         ) : (
-          <span aria-current="page">{crumb.label}</span>
-        )}
-      </li>
-    ))}
-  </ol>
-</nav>
-
-<style>
-  .breadcrumb {
-    background: var(--color-surface-alt);
-    border-bottom: 1px solid var(--color-border);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .breadcrumb__list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    padding-block: var(--space-3);
-  }
-
-  .breadcrumb__item + .breadcrumb__item::before {
-    content: '›';
-    margin-right: var(--space-2);
-    color: var(--color-border);
-  }
-
-  .breadcrumb__item {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .breadcrumb__item a {
-    font-weight: 600;
-  }
-
-  .breadcrumb__item a:hover {
-    color: var(--color-brand);
-  }
-
-  .breadcrumb__item [aria-current] {
-    color: var(--color-ink);
-    font-weight: 700;
-    display: inline-block;
-    max-width: min(40ch, 100%);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: bottom;
-  }
-</style>
+          <span data-part="current" aria-current="page" class="text-black font-semibold" title={crumb.label}>
+            {truncateWords(crumb.label, TRUNCATE.breadcrumb)}
+          </span>
+        )
+      )
+    }
+  </nav>
+</div>

@@ -10,11 +10,13 @@ import type { BlockId } from '../../src/presentation/blocks.js';
 import type { CorpusBlockId } from './lib/analyze.js';
 
 export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
-  'utility-bar': ['utility-bar'],
+  'top-bar': ['utility-bar'],
   masthead: ['masthead'],
-  'primary-nav': ['primary-nav'],
+  'site-nav': ['primary-nav', 'mobile-menu-toggle', 'search-toggle'],
   breadcrumb: ['breadcrumb'],
-  'site-footer': ['footer-columns'],
+  'site-footer': ['footer-columns', 'footer-newsletter', 'footer-social'],
+  'back-to-top': ['back-to-top'],
+  'section-header': ['section-header'],
   'lead-story': ['lead-carousel'],
   trending: ['trending-thumbs'],
   'section-block': [
@@ -53,14 +55,9 @@ export const ownExtensions: readonly BlockId[] = ['future-slot'];
 
 /** Bloques detectados en el corpus que WEB.2 no reproduce, con motivo. */
 export const omittedCorpusBlocks: Readonly<Partial<Record<CorpusBlockId, string>>> = {
-  'mobile-menu-toggle': 'Requiere JS; la navegación mobile es una franja desplazable sin JS.',
-  'search-toggle': 'Búsqueda fuera de alcance.',
   'ad-slot': 'Anuncios fuera de alcance.',
   'author-box': 'No existe entidad Person de autor en el payload; se evita una segunda fuente.',
   'stats-band': 'Cifras institucionales serían datos inventados.',
   'team-grid': 'Equipo/staff fuera de alcance; requiere datos reales.',
-  form: 'Formularios (contacto, empleo) requieren backend.',
-  'footer-newsletter': 'Newsletter funcional fuera de alcance.',
-  'footer-social': 'No hay cuentas sociales oficiales definidas.',
-  'back-to-top': 'Reemplazado por un ancla estática en el pie, sin JS.'
+  form: 'Formularios (contacto, empleo) requieren backend.'
 };

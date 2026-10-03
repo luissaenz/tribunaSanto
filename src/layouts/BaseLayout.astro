@@ -1,16 +1,19 @@
 ---
-// Layout base de la web demo (WEB.2).
+// Layout base de la web demo (WEB.3).
 //
-// Todas las páginas de WEB.2 contienen exclusivamente contenido ficticio y
-// rutas provisionales: se emiten siempre como `noindex, nofollow` y sin
-// canonical, OpenGraph ni Twitter Cards. No existe prop para habilitar la
-// indexación; esa decisión corresponde a un ciclo SEO futuro.
+// Todas las páginas contienen exclusivamente contenido ficticio y rutas
+// provisionales: se emiten siempre como `noindex, nofollow` y sin canonical,
+// OpenGraph ni Twitter Cards. No existe prop para habilitar la indexación.
+//
+// Chrome del golden master: topbar → masthead → nav sticky → main → footer →
+// volver arriba. Una única entrada de cliente: src/scripts/alpine.ts.
 import { Font } from 'astro:assets';
 import '../styles/global.css';
-import UtilityBar from '../components/chrome/UtilityBar.astro';
+import TopBar from '../components/chrome/TopBar.astro';
 import Masthead from '../components/chrome/Masthead.astro';
-import PrimaryNav from '../components/chrome/PrimaryNav.astro';
+import SiteNav from '../components/chrome/SiteNav.astro';
 import SiteFooter from '../components/chrome/SiteFooter.astro';
+import BackToTop from '../components/chrome/BackToTop.astro';
 import type { SectionId } from '../presentation/taxonomy.js';
 
 interface Props {
@@ -18,10 +21,12 @@ interface Props {
   description: string;
   editionInstant: string;
   home?: boolean;
+  /** Ítem activo de la navegación (el golden master sólo lo marca en portada y secciones). */
   current?: SectionId | 'home' | 'latest';
 }
 
 const { title, description, editionInstant, home = false, current } = Astro.props;
+const navCurrent = current === 'latest' ? undefined : current;
 ---
 
 <!doctype html>
@@ -35,25 +40,24 @@ const { title, description, editionInstant, home = false, current } = Astro.prop
     <Font cssVariable="--font-pt-serif" preload />
     <Font cssVariable="--font-inter" preload />
   </head>
-  <body id="top">
-    <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <header class="site-header">
-      <UtilityBar editionInstant={editionInstant} />
+  <body id="top" class="bg-white text-black overflow-x-hidden">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-black focus:px-4 focus:py-2"
+      >Saltar al contenido</a
+    >
+    <header class="relative">
+      <TopBar editionInstant={editionInstant} />
       <Masthead home={home} />
     </header>
-    <PrimaryNav current={current} />
-    <main id="contenido" class="site-main">
+    <SiteNav current={navCurrent} />
+    <main id="contenido">
       <slot />
     </main>
     <SiteFooter />
+    <BackToTop />
     <script>
       import '../scripts/alpine.ts';
     </script>
   </body>
 </html>
-
-<style>
-  .site-main {
-    padding-bottom: var(--space-8);
-  }
-</style>

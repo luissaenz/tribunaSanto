@@ -2,13 +2,14 @@
 // (clima, redes, newsletter, publicidad) son ficticios y se rotulan como demo.
 
 import type { StoryImage } from '../presentation/story.js';
+import { routes } from '../presentation/routes.js';
 import type { SocialLink } from './demo-authors.js';
 
 export const siteChrome = {
   name: 'Tribuna Santo',
   tagline: 'Pasión · Identidad · Historia albirroja',
   /** Clima DEMO: valor fijo, no proviene de un servicio meteorológico. */
-  weather: 'Clima (demo): 25 °C, despejado',
+  weather: 'Clima demo: 25 °C',
   logo: { src: '/demo/img/logo.svg', alt: 'Escudo ilustrado de Tribuna Santo', width: 96, height: 96 } satisfies StoryImage,
   footer: {
     title: 'TRIBUNA SANTO',
@@ -19,8 +20,10 @@ export const siteChrome = {
     newsletterLead: 'Recibí cada mañana el resumen de la jornada (demo, sin envío).',
     newsletterPlaceholder: 'Tu correo electrónico',
     newsletterButton: 'Suscribirme',
-    copyright: '© 2026 Tribuna Santo. Web demo con contenido ficticio.'
+    copyright: '© 2026 Tribuna Santo. Contenido demo ficticio.'
   },
+  /** Columna "Institucional" del pie. */
+  footerPages: [{ label: 'Acerca de', href: routes.about() }],
   socials: [
     { network: 'facebook', label: 'Facebook', url: 'https://example.invalid/facebook/tribunasanto' },
     { network: 'twitter-x', label: 'X', url: 'https://example.invalid/twitter-x/tribunasanto' },
