@@ -23,7 +23,14 @@ export const siteChrome = {
     copyright: '© 2026 Tribuna Santo. Contenido demo ficticio.'
   },
   /** Columna "Institucional" del pie. */
-  footerPages: [{ label: 'Acerca de', href: routes.about() }],
+  footerPages: [
+    { label: 'Acerca de', href: routes.about() },
+    { label: 'Contacto', href: routes.contact() },
+    { label: 'Empleos', href: routes.careers() },
+    { label: 'Publicidad', href: routes.advertise() },
+    { label: 'Privacidad', href: routes.privacy() },
+    { label: 'Términos de uso', href: routes.terms() }
+  ],
   socials: [
     { network: 'facebook', label: 'Facebook', url: 'https://example.invalid/facebook/tribunasanto' },
     { network: 'twitter-x', label: 'X', url: 'https://example.invalid/twitter-x/tribunasanto' },

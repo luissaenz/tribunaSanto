@@ -1,0 +1,35 @@
+---
+// Acerca: misión en dos columnas desde 1024 px, imagen con etiqueta roja superpuesta (oculta < 640 px).
+import { about } from '../../data/demo-institutional.js';
+
+const { mission } = about;
+---
+
+<section data-block="mission" class="mb-16">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="border-t-4 border-black mb-5">
+        <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{mission.title}</h2>
+      </div>
+      <div data-part="text" class="space-y-4 text-gray-700 leading-relaxed">
+        {mission.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+    <div class="relative">
+      <div class="rounded-sm overflow-hidden">
+        <img
+          data-part="media"
+          src={mission.image.src}
+          alt={mission.image.alt}
+          width={mission.image.width}
+          height={mission.image.height}
+          loading="lazy"
+          class="w-full h-72 sm:h-96 object-cover"
+        />
+      </div>
+      <div data-part="badge" class="absolute -bottom-4 -left-4 bg-red-600 text-white px-5 py-3 font-heading font-black text-sm uppercase tracking-wider shadow-lg hidden sm:block">
+        {mission.badge}
+      </div>
+    </div>
+  </div>
+</section>

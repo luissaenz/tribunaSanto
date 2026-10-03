@@ -1,0 +1,23 @@
+---
+// Empleos: pasos del proceso (01–04) en caja negra.
+import { careers } from '../../data/demo-institutional.js';
+
+const { apply } = careers;
+---
+
+<div data-block="hiring-steps" class="bg-black text-white p-6 space-y-4">
+  <h3 class="font-heading font-black text-base uppercase border-b border-white/20 pb-3 mb-4">{apply.stepsTitle}</h3>
+  {
+    apply.steps.map((step, i) => (
+      <div class="flex items-start gap-4">
+        <span data-part={i === 0 ? 'number' : undefined} class="font-heading font-black text-2xl text-red-500 leading-none flex-none">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <div>
+          <p class="font-bold text-sm">{step.title}</p>
+          <p class="text-xs text-gray-400">{step.text}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>

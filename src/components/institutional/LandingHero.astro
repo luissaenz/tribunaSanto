@@ -1,0 +1,23 @@
+---
+// Hero de páginas institucionales (acerca, contacto, empleos): fondo con imagen, velo negro 75 %, etiqueta, H1 y bajada.
+import Icon from '../ui/Icon.astro';
+import type { HeroData } from '../../data/demo-institutional.js';
+
+interface Props {
+  hero: HeroData;
+}
+
+const { hero } = Astro.props;
+---
+
+<section data-block="landing-hero" class="bg-black relative overflow-hidden bg-cover bg-center" style={`background-image: url('${hero.background}')`}>
+  <div class="absolute inset-0 bg-black/75"></div>
+  <div class="max-w-7xl mx-auto relative px-4 w-full py-16 lg:py-20">
+    <span data-part="badge" class="inline-flex items-center gap-2 bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white mb-4">
+      <Icon name={hero.icon} class="w-3.5 h-3.5" />
+      {hero.badge}
+    </span>
+    <h1 data-part="title" class="font-heading text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight max-w-3xl">{hero.title}</h1>
+    <p data-part="lead" class="text-gray-300 text-sm sm:text-base mt-3 max-w-xl italic">{hero.lead}</p>
+  </div>
+</section>

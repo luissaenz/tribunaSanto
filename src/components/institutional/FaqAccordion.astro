@@ -1,0 +1,47 @@
+---
+// Contacto: preguntas frecuentes en acordeón (una abierta por vez, signo +/− en rojo al abrir).
+import { contact } from '../../data/demo-institutional.js';
+---
+
+<section data-block="faq-accordion" class="mt-16" x-data="faq">
+  <div class="border-t-4 border-black mb-6">
+    <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{contact.faqTitle}</h2>
+  </div>
+  <div class="divide-y divide-gray-200 border-t border-gray-200">
+    {
+      contact.faq.map((item, i) => {
+        const n = i + 1;
+        return (
+          <div class="relative">
+            <button
+              type="button"
+              data-part={i === 0 ? 'question' : undefined}
+              class="w-full flex items-center justify-between text-left gap-4 group cursor-pointer"
+              aria-controls={`faq-${n}`}
+              aria-expanded="false"
+              :aria-expanded={`isOpen(${n}).toString()`}
+              @click={`toggle(${n})`}
+            >
+              <span data-part={i === 0 ? 'question-text' : undefined} class="font-heading font-black text-base group-hover:text-red-600 transition-colors py-4">
+                {item.q}
+              </span>
+              <span class="flex-none text-xl transition-transform duration-300 font-black select-none" aria-hidden="true" x-text={`isOpen(${n}) ? '−' : '+'`} :class={`isOpen(${n}) ? 'text-red-600' : ''`}>
+                +
+              </span>
+            </button>
+            <div
+              id={`faq-${n}`}
+              data-part="answer"
+              class="text-sm text-gray-600 leading-relaxed max-w-3xl pb-4"
+              x-show={`isOpen(${n})`}
+              x-transition:enter="transition-all duration-300"
+              x-cloak=""
+            >
+              {item.a}
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</section>

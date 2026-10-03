@@ -1,0 +1,73 @@
+---
+// Empleos: formulario de postulación DEMO (sin envío) con estado de éxito. Estado: Alpine `applyForm`.
+import Icon from '../ui/Icon.astro';
+import { careers } from '../../data/demo-institutional.js';
+import { routes } from '../../presentation/routes.js';
+
+const { apply } = careers;
+const field = 'w-full border-2 border-gray-300 focus:border-black px-3 py-2.5 text-sm focus:outline-none transition-colors';
+const label = 'block text-xs font-black uppercase tracking-wider mb-1.5';
+---
+
+<form data-block="apply-form" class="space-y-4" x-data="applyForm" @submit.prevent="submit()">
+  <div data-part="sent" x-show="sent" x-cloak="" class="bg-black text-white p-8 text-center" role="status">
+    <Icon name="check-circle" class="w-12 h-12 text-red-500 mx-auto mb-4" />
+    <h3 class="font-heading text-xl font-black uppercase mb-2">{apply.sentTitle}</h3>
+    <p class="text-gray-400 text-sm">{apply.sentText}</p>
+  </div>
+  <div x-show="!sent">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label for="p-nombre" class={label}>Nombre</label>
+        <input id="p-nombre" type="text" placeholder="Juana" class={field} />
+      </div>
+      <div>
+        <label for="p-apellido" class={label}>Apellido</label>
+        <input id="p-apellido" type="text" placeholder="Pérez" class={field} />
+      </div>
+    </div>
+    <div class="mt-4">
+      <label for="p-email" class={label}>Correo electrónico</label>
+      <input id="p-email" type="email" placeholder="juana@example.com" class={field} />
+    </div>
+    <div class="mt-4">
+      <label for="p-telefono" class={label}>Teléfono</label>
+      <input id="p-telefono" type="tel" placeholder="+54 381 000-0000" class={field} />
+    </div>
+    <div class="mt-4">
+      <label for="p-puesto" class={label}>Búsqueda</label>
+      <select id="p-puesto" class={`${field} bg-white`}>
+        <option value="">Elegí una búsqueda...</option>
+        {careers.jobs.map((j) => <option value={j.id}>{j.title}</option>)}
+      </select>
+    </div>
+    <div class="mt-4">
+      <label for="p-portfolio" class={label}>LinkedIn / portfolio</label>
+      <input id="p-portfolio" type="url" placeholder="https://example.invalid/tu-perfil" class={field} />
+    </div>
+    <div class="mt-4">
+      <label for="p-carta" class={label}>Carta de presentación</label>
+      <textarea id="p-carta" rows="5" placeholder="Contanos por qué querés sumarte a Tribuna Santo..." class={`${field} resize-none`}></textarea>
+    </div>
+    <div class="mt-4">
+      <span class={label}>CV</span>
+      <label class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-black transition-colors px-4 py-6 text-center cursor-pointer">
+        <Icon name="cloud-upload" class="w-8 h-8 text-gray-400 mb-2" />
+        <p class="text-sm text-gray-500">Soltá tu archivo o <span class="font-bold text-black underline">buscalo</span></p>
+        <p class="text-xs text-gray-400 mt-1">PDF o DOCX · Máx. 5 MB (demo: no se envía)</p>
+        <input type="file" class="hidden" accept=".pdf,.docx" />
+      </label>
+    </div>
+    <button
+      data-part="submit"
+      type="submit"
+      class="mt-4 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-sm px-6 py-3 transition-colors"
+    >
+      <Icon name="send" class="w-4 h-4" />
+      {apply.submit}
+    </button>
+    <p class="text-xs text-gray-400 mt-2">
+      {apply.privacy} <a href={routes.privacy()} class="underline hover:text-black">política de privacidad</a>. No compartimos datos con terceros.
+    </p>
+  </div>
+</form>

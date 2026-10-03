@@ -30,10 +30,10 @@ export const about = {
     badge: 'Desde 2026'
   },
   stats: [
-    { value: '40', label: 'Notas demo' },
-    { value: '6', label: 'Secciones' },
-    { value: '24', label: 'Temas' },
-    { value: '4', label: 'Firmas ficticias' }
+    { value: '40', label: 'Notas publicadas' },
+    { value: '6', label: 'Secciones activas' },
+    { value: '24', label: 'Temas cubiertos' },
+    { value: '4', label: 'Periodistas imaginarios' }
   ],
   teamTitle: 'Equipo editorial',
   team: [

@@ -52,8 +52,22 @@ export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
   'article-tags': ['article-tags'],
   'share-bar': ['share-area'],
   'related-articles': ['related-articles'],
-  'page-hero': ['page-hero-band'],
-  prose: ['article-body', 'body-list']
+  'landing-hero': ['page-hero-band'],
+  'legal-hero': ['page-hero-band'],
+  'legal-prose': ['article-body', 'body-list'],
+  mission: ['page-hero-band'],
+  'stats-band': ['stats-band'],
+  'team-grid': ['team-grid'],
+  timeline: ['page-hero-band'],
+  awards: ['stats-band'],
+  'cta-split': ['footer-newsletter'],
+  'contact-form': ['form'],
+  'office-info': ['form'],
+  'follow-us': ['footer-social'],
+  'faq-accordion': ['form'],
+  'job-board': ['form'],
+  'hiring-steps': ['form'],
+  'apply-form': ['form']
 };
 
 /** Bloques propios sin equivalente en el corpus (extensiones de Tribuna Santo). */
@@ -61,7 +75,4 @@ export const ownExtensions: readonly BlockId[] = ['future-slot'];
 
 /** Bloques detectados en el corpus que WEB.2 no reproduce, con motivo. */
 export const omittedCorpusBlocks: Readonly<Partial<Record<CorpusBlockId, string>>> = {
-  'stats-band': 'Cifras institucionales serían datos inventados.',
-  'team-grid': 'Equipo/staff fuera de alcance; requiere datos reales.',
-  form: 'Formularios (contacto, empleo) requieren backend.'
 };

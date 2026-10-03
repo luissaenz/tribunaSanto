@@ -5,7 +5,7 @@
 // scripts/corpus/block-map.ts. Cada componente marca su raíz con
 // `data-block="<id>"` y las pruebas verifican las secuencias declaradas aquí.
 
-export const OWN_PAGE_FAMILIES = ['home', 'section', 'section-page', 'topic', 'topic-page', 'author', 'listing', 'article', 'institutional'] as const;
+export const OWN_PAGE_FAMILIES = ['home', 'section', 'section-page', 'topic', 'topic-page', 'author', 'listing', 'article', 'about', 'contact', 'careers', 'legal'] as const;
 export type OwnPageFamily = (typeof OWN_PAGE_FAMILIES)[number];
 
 export type BlockSpec = Readonly<{
@@ -62,8 +62,22 @@ export const blockCatalog = [
   { id: 'share-bar', component: 'article/ShareBar.astro', purpose: 'Compartir con URL real y copiar enlace.' },
   { id: 'related-articles', component: 'article/RelatedGrid.astro', purpose: 'Tres relacionadas.' },
 
-  { id: 'page-hero', component: 'institutional/PageHero.astro', purpose: 'Banda de título institucional.' },
-  { id: 'prose', component: 'institutional/Prose.astro', purpose: 'Texto institucional angosto.' }
+  { id: 'landing-hero', component: 'institutional/LandingHero.astro', purpose: 'Hero institucional con imagen y velo.' },
+  { id: 'legal-hero', component: 'institutional/LegalHero.astro', purpose: 'Hero legal con fondo fijo.' },
+  { id: 'legal-prose', component: 'institutional/LegalProse.astro', purpose: 'Texto legal post-content.' },
+  { id: 'mission', component: 'institutional/Mission.astro', purpose: 'Misión con imagen y etiqueta.' },
+  { id: 'stats-band', component: 'institutional/StatsBand.astro', purpose: 'Cifras demo.' },
+  { id: 'team-grid', component: 'institutional/TeamGrid.astro', purpose: 'Equipo ficticio.' },
+  { id: 'timeline', component: 'institutional/Timeline.astro', purpose: 'Historia alternada.' },
+  { id: 'awards', component: 'institutional/Awards.astro', purpose: 'Reconocimientos demo.' },
+  { id: 'cta-split', component: 'institutional/CtaSplit.astro', purpose: 'Newsletter demo y empleos.' },
+  { id: 'contact-form', component: 'institutional/ContactForm.astro', purpose: 'Formulario demo con campo condicional.' },
+  { id: 'office-info', component: 'institutional/OfficeInfo.astro', purpose: 'Datos de la redacción demo.' },
+  { id: 'follow-us', component: 'institutional/FollowUs.astro', purpose: 'Redes demo.' },
+  { id: 'faq-accordion', component: 'institutional/FaqAccordion.astro', purpose: 'Preguntas frecuentes en acordeón.' },
+  { id: 'job-board', component: 'institutional/JobBoard.astro', purpose: 'Búsquedas con filtros y acordeón.' },
+  { id: 'hiring-steps', component: 'institutional/HiringSteps.astro', purpose: 'Pasos del proceso.' },
+  { id: 'apply-form', component: 'institutional/ApplyForm.astro', purpose: 'Postulación demo.' }
 ] as const satisfies readonly BlockSpec[];
 
 export type BlockId = (typeof blockCatalog)[number]['id'];
@@ -114,5 +128,8 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
     'site-footer',
     'back-to-top'
   ],
-  institutional: [...chrome, 'breadcrumb', 'page-hero', 'prose', 'site-footer', 'back-to-top']
+  about: [...chrome, 'landing-hero', 'mission', 'stats-band', 'team-grid', 'timeline', 'awards', 'cta-split', 'site-footer', 'back-to-top'],
+  contact: [...chrome, 'landing-hero', 'contact-form', 'office-info', 'follow-us', 'faq-accordion', 'site-footer', 'back-to-top'],
+  careers: [...chrome, 'landing-hero', 'job-board', 'hiring-steps', 'apply-form', 'site-footer', 'back-to-top'],
+  legal: [...chrome, 'breadcrumb', 'legal-hero', 'legal-prose', 'site-footer', 'back-to-top']
 };

@@ -1,0 +1,21 @@
+---
+// Acerca: banda negra de cifras (DEMO), 2×2 hasta 768 px y 4 columnas desde 768 px.
+import { about } from '../../data/demo-institutional.js';
+---
+
+<section data-block="stats-band" class="mb-16 bg-black text-white" aria-label="Cifras de la demo">
+  <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/10 divide-y md:divide-y-0">
+    {
+      about.stats.map((stat, i) => (
+        <div data-part={i === 0 ? 'cell' : undefined} class="px-8 py-10 text-center">
+          <p data-part={i === 0 ? 'value' : undefined} class="font-heading text-5xl font-black text-red-500 mb-2">
+            {stat.value}
+          </p>
+          <div data-part={i === 0 ? 'label' : undefined} class="text-xs uppercase tracking-widest text-gray-400 font-bold">
+            {stat.label}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

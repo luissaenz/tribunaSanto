@@ -29,7 +29,10 @@ describe('WEB.2 static render', () => {
       'topic-page': 1,
       author: 7,
       listing: latestPages,
-      institutional: 1
+      about: 1,
+      contact: 1,
+      careers: 1,
+      legal: 3
     });
 
     const built = new Set(pages.map((p) => p.route));

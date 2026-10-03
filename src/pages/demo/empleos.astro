@@ -1,0 +1,29 @@
+---
+// Empleos (golden master "careers"): hero, búsquedas con filtros y acordeón, pasos y postulación DEMO.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LandingHero from '../../components/institutional/LandingHero.astro';
+import JobBoard from '../../components/institutional/JobBoard.astro';
+import HiringSteps from '../../components/institutional/HiringSteps.astro';
+import ApplyForm from '../../components/institutional/ApplyForm.astro';
+import { site } from '../../presentation/site.js';
+import { careers } from '../../data/demo-institutional.js';
+---
+
+<BaseLayout title="Empleos — Tribuna Santo" description="Búsquedas ficticias de la web demo de Tribuna Santo." editionInstant={site.editionInstant}>
+  <LandingHero hero={careers.hero} />
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <JobBoard />
+    <section id="postulacion" class="relative">
+      <div class="border-t-4 border-black mb-8">
+        <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{careers.apply.title}</h2>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-6">{careers.apply.intro}</p>
+          <HiringSteps />
+        </div>
+        <ApplyForm />
+      </div>
+    </section>
+  </div>
+</BaseLayout>

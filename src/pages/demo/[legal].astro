@@ -1,0 +1,25 @@
+---
+// Páginas legales (golden master "advertise", "privacy", "terms"): migas angostas, hero con fondo fijo y texto.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/chrome/Breadcrumb.astro';
+import LegalHero from '../../components/institutional/LegalHero.astro';
+import LegalProse from '../../components/institutional/LegalProse.astro';
+import { site } from '../../presentation/site.js';
+import { legalDocs, type LegalDoc } from '../../data/demo-institutional.js';
+
+export function getStaticPaths() {
+  return legalDocs.map((doc) => ({ params: { legal: doc.slug }, props: { doc } }));
+}
+
+interface Props {
+  doc: LegalDoc;
+}
+
+const { doc } = Astro.props;
+---
+
+<BaseLayout title={`${doc.hero.title} — Tribuna Santo`} description={doc.hero.lead} editionInstant={site.editionInstant}>
+  <Breadcrumb items={[{ label: doc.hero.title }]} narrow />
+  <LegalHero hero={doc.hero} updated={doc.updated} />
+  <LegalProse blocks={doc.blocks} />
+</BaseLayout>

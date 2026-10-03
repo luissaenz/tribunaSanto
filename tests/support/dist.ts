@@ -44,7 +44,10 @@ export function familyOf(route: string): OwnPageFamily {
   if (route.startsWith('/demo/tema/')) return 'topic';
   if (route.startsWith('/demo/autor/')) return 'author';
   if (route.startsWith('/demo/ultimas/')) return 'listing';
-  if (route === '/demo/acerca/') return 'institutional';
+  if (route === '/demo/acerca/') return 'about';
+  if (route === '/demo/contacto/') return 'contact';
+  if (route === '/demo/empleos/') return 'careers';
+  if (['/demo/publicidad/', '/demo/privacidad/', '/demo/terminos/'].includes(route)) return 'legal';
   return 'article';
 }
 

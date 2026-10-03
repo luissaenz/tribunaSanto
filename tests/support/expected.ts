@@ -19,6 +19,11 @@ export function expectedRoutes(): string[] {
     ...topics.flatMap((t) => pages(storiesWithTopic(demoStories, t.id).length, PAGE_SIZE.topic).map((n) => routes.topic(t.id, n))),
     ...demoAuthors.flatMap((a) => pages(storiesByAuthor(demoStories, a.byline).length, PAGE_SIZE.author).map((n) => routes.author(a.slug, n))),
     ...Array.from({ length: latestPages }, (_, i) => routes.latest(i + 1)),
-    routes.about()
+    routes.about(),
+    routes.contact(),
+    routes.careers(),
+    routes.advertise(),
+    routes.privacy(),
+    routes.terms()
   ].sort();
 }

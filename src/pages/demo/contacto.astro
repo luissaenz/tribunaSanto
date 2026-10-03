@@ -1,0 +1,25 @@
+---
+// Contacto (golden master "contact"): hero, formulario DEMO + redacción y redes, preguntas frecuentes.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LandingHero from '../../components/institutional/LandingHero.astro';
+import ContactForm from '../../components/institutional/ContactForm.astro';
+import OfficeInfo from '../../components/institutional/OfficeInfo.astro';
+import FollowUs from '../../components/institutional/FollowUs.astro';
+import FaqAccordion from '../../components/institutional/FaqAccordion.astro';
+import { site } from '../../presentation/site.js';
+import { contact } from '../../data/demo-institutional.js';
+---
+
+<BaseLayout title="Contacto — Tribuna Santo" description="Contacto de la web demo de Tribuna Santo (formulario sin envío)." editionInstant={site.editionInstant}>
+  <LandingHero hero={contact.hero} />
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <ContactForm />
+      <div class="lg:col-span-1 space-y-8">
+        <OfficeInfo />
+        <FollowUs />
+      </div>
+    </div>
+    <FaqAccordion />
+  </div>
+</BaseLayout>

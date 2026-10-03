@@ -364,8 +364,8 @@ export const SAMPLES: readonly SampleSpec[] = [
       { id: 'job-board/filter', ref: '#open-roles button:nth-child(2)', fixedH: true, freeX: true, freeW: true },
       { id: 'job-board/job', ref: `#open-roles ${c('py-5')}`, noType: true },
       { id: 'job-board/job-title', ref: '#open-roles h3', freeW: true },
-      { id: 'hiring-steps', ref: `#apply ${c('bg-black')}`, noType: true },
-      { id: 'hiring-steps/number', ref: `#apply ${c('bg-black')} span`, freeW: true },
+      { id: 'hiring-steps', ref: `#apply ${c('bg-black p-6')}`, noType: true },
+      { id: 'hiring-steps/number', ref: `#apply ${c('bg-black p-6')} span`, freeW: true },
       { id: 'apply-form', ref: '#apply form', noType: true },
       { id: 'apply-form/submit', ref: '#apply form button[type="submit"]', fixedH: true }
     ]

@@ -1,0 +1,41 @@
+---
+// Contacto: datos de la redacción (DEMO) con íconos en caja negra.
+import Icon from '../ui/Icon.astro';
+import { contact } from '../../data/demo-institutional.js';
+---
+
+<div data-block="office-info">
+  <div class="border-t-4 border-black mb-5">
+    <h2 class="font-heading uppercase text-xl font-black bg-black text-white px-4 py-2 inline-block">{contact.officeTitle}</h2>
+  </div>
+  <div class="space-y-4 text-sm">
+    {
+      contact.office.map((item, i) => (
+        <div class="flex items-start gap-3">
+          <div data-part={i === 0 ? 'icon' : undefined} class="w-8 h-8 bg-black flex items-center justify-center flex-none mt-0.5">
+            <Icon name={item.icon} class="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <p class="font-black text-xs uppercase tracking-wider mb-0.5">{item.label}</p>
+            {'phone' in item && item.phone && (
+              <a href={`tel:${item.phone.replace(/[^+\d]/g, '')}`} class="text-gray-600 hover:text-red-600 transition-colors">
+                {item.phone}
+              </a>
+            )}
+            {'lines' in item && item.lines && (
+              <p class="text-gray-600 leading-relaxed">
+                {item.lines.map((line, j) => (
+                  <>
+                    {j > 0 && <br />}
+                    {line}
+                  </>
+                ))}
+              </p>
+            )}
+            {'note' in item && item.note && <p class="text-xs text-gray-400 mt-0.5">{item.note}</p>}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
