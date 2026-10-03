@@ -195,7 +195,14 @@ describe('queries, routes and catalog', () => {
     expect(routes.latest(1)).toBe('/demo/ultimas/');
     expect(routes.latest(2)).toBe('/demo/ultimas/2/');
     expect(SECTION_IDS).toHaveLength(6);
-    expect(TOPIC_IDS).toHaveLength(10);
+    expect(TOPIC_IDS).toHaveLength(24);
+    expect(routes.section('juveniles', 2)).toBe('/demo/seccion/juveniles/2/');
+    expect(routes.topic('entrenamiento', 2)).toBe('/demo/tema/entrenamiento/2/');
+    expect(routes.author('martina-quiroga')).toBe('/demo/autor/martina-quiroga/');
+    expect(routes.author('martina-quiroga', 2)).toBe('/demo/autor/martina-quiroga/2/');
+    for (const r of [routes.contact(), routes.careers(), routes.advertise(), routes.privacy(), routes.terms()]) {
+      expect(r).toMatch(/^\/demo\/[a-z]+\/$/);
+    }
   });
 
   it('declares block sequences only with catalog blocks', () => {

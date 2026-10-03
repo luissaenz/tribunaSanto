@@ -1,4 +1,4 @@
-// WEB.2 — Taxonomía de presentación PROVISIONAL / DEMO-ONLY.
+// WEB.2/WEB.3 — Taxonomía de presentación PROVISIONAL / DEMO-ONLY.
 //
 // Secciones y temas existen sólo para organizar la navegación y la composición
 // de la web demo bajo /demo/. No forman parte de PublicationToWebPayload ni
@@ -13,41 +13,49 @@ export type Section = Readonly<{
   label: string;
   slug: string;
   description: string;
+  /** Marcador visual del índice lateral de categorías (golden master: emoji por categoría). */
+  emoji: string;
 }>;
 
 export const sections: readonly Section[] = [
   {
     id: 'primera',
+    emoji: '⚽',
     label: 'Primera',
     slug: 'primera',
     description: 'Plantel profesional, entrenamientos y decisiones del cuerpo técnico.'
   },
   {
     id: 'mercado',
+    emoji: '📝',
     label: 'Mercado',
     slug: 'mercado',
     description: 'Altas, bajas y movimientos del mercado de pases.'
   },
   {
     id: 'juveniles',
+    emoji: '🌱',
     label: 'Juveniles',
     slug: 'juveniles',
     description: 'Divisiones formativas y futbolistas que empujan desde abajo.'
   },
   {
     id: 'club',
+    emoji: '🏛',
     label: 'Club',
     slug: 'club',
     description: 'Vida institucional, socios y gestión.'
   },
   {
     id: 'ciudadela',
+    emoji: '🏟',
     label: 'La Ciudadela',
     slug: 'la-ciudadela',
     description: 'Estadio, hinchada y la experiencia de cada partido.'
   },
   {
     id: 'memoria',
+    emoji: '📜',
     label: 'Memoria',
     slug: 'memoria',
     description: 'Historia y relatos del club.'
@@ -64,7 +72,21 @@ export const TOPIC_IDS = [
   'hinchas',
   'socios',
   'agenda',
-  'historia'
+  'historia',
+  'reserva',
+  'pretemporada',
+  'contratos',
+  'prestamos',
+  'arqueros',
+  'mediocampo',
+  'pelota-parada',
+  'infraestructura',
+  'sede',
+  'banderas',
+  'radio',
+  'archivo',
+  'viajes',
+  'salud'
 ] as const;
 export type TopicId = (typeof TOPIC_IDS)[number];
 
@@ -84,8 +106,28 @@ export const topics: readonly Topic[] = [
   { id: 'hinchas', label: 'Hinchas', slug: 'hinchas' },
   { id: 'socios', label: 'Socios', slug: 'socios' },
   { id: 'agenda', label: 'Agenda', slug: 'agenda' },
-  { id: 'historia', label: 'Historia', slug: 'historia' }
+  { id: 'historia', label: 'Historia', slug: 'historia' },
+  { id: 'reserva', label: 'Reserva', slug: 'reserva' },
+  { id: 'pretemporada', label: 'Pretemporada', slug: 'pretemporada' },
+  { id: 'contratos', label: 'Contratos', slug: 'contratos' },
+  { id: 'prestamos', label: 'Préstamos', slug: 'prestamos' },
+  { id: 'arqueros', label: 'Arqueros', slug: 'arqueros' },
+  { id: 'mediocampo', label: 'Mediocampo', slug: 'mediocampo' },
+  { id: 'pelota-parada', label: 'Pelota parada', slug: 'pelota-parada' },
+  { id: 'infraestructura', label: 'Infraestructura', slug: 'infraestructura' },
+  { id: 'sede', label: 'Sede', slug: 'sede' },
+  { id: 'banderas', label: 'Banderas', slug: 'banderas' },
+  { id: 'radio', label: 'Radio', slug: 'radio' },
+  { id: 'archivo', label: 'Archivo', slug: 'archivo' },
+  { id: 'viajes', label: 'Viajes', slug: 'viajes' },
+  { id: 'salud', label: 'Salud', slug: 'salud' }
 ];
+
+/** Orden de la navegación principal y del pie (golden master: orden propio de cada lista). */
+export const NAV_SECTION_ORDER: readonly SectionId[] = ['primera', 'mercado', 'club', 'juveniles', 'ciudadela', 'memoria'];
+export const FOOTER_SECTION_ORDER: readonly SectionId[] = ['primera', 'mercado', 'juveniles', 'club', 'ciudadela', 'memoria'];
+/** Orden del índice lateral de categorías. */
+export const SIDEBAR_SECTION_ORDER: readonly SectionId[] = ['juveniles', 'primera', 'ciudadela', 'club', 'memoria', 'mercado'];
 
 export function getSection(id: SectionId): Section {
   const section = sections.find((s) => s.id === id);

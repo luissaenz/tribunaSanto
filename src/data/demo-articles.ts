@@ -1,5 +1,5 @@
 // DEMO ONLY:
-// All editorial copy in this module is fictional and exists only to evaluate WEB.1/WEB.2.
+// All editorial copy in this module is fictional and exists only to evaluate WEB.1/WEB.2/WEB.3.
 // It must never be treated as factual input, claims, source material, or domain knowledge.
 // People, quotes, matches and transfers mentioned here do not exist.
 
@@ -23,12 +23,18 @@ type DemoArticleInput = Readonly<{
   modifiedAt?: string;
 }>;
 
+/** Firmas DEMO: personas ficticias (ver src/data/demo-authors.ts). */
+export const DEMO_BYLINES = ['Martina Quiroga', 'Lucas Ferreyra', 'Sofía Medina', 'Tomás Albarracín'] as const;
+
+/** 101–132 rotan entre las tres primeras firmas; 133–140 corresponden a la cuarta (11/11/10/8). */
+const bylineFor = (n: number): string => (n >= 133 ? DEMO_BYLINES[3] : DEMO_BYLINES[(n - 101) % 3]);
+
 function demoArticle(n: number, input: DemoArticleInput): PublicationToWebPayload {
   const suffix = String(n).padStart(3, '0');
   return PublicationToWebPayloadSchema.parse({
     articleRef: `018f1000-0000-7000-8000-000000000${suffix}`,
     articleRevisionRef: `018f1000-0000-7000-8000-000000000${String(n + 100).padStart(3, '0')}`,
-    byline: 'Tribuna Santo',
+    byline: bylineFor(n),
     modifiedAt: input.publishedAt,
     ...input
   });
@@ -262,54 +268,342 @@ El texto se utiliza para probar la sección Memoria con un registro más reflexi
 
 Sirve para completar el bloque de sección con una tercera historia de memoria.`,
     publishedAt: '2026-09-28T17:00:00-03:00'
+  }),
+  demoArticle(125, {
+    headline: 'El arquero titular recupera ritmo tras una semana de controles',
+    dek: 'Trabajo diferenciado, controles médicos y una vuelta progresiva a los ejercicios con el grupo.',
+    body: `Esta nota ficticia de demostración presenta "el arquero titular recupera ritmo tras una semana de controles" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Trabajo diferenciado
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+> Volver a sentir la pelota en las manos fue el primer objetivo.
+> — Entrenador de arqueros ficticio
+
+## La vuelta al grupo
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-27T18:30:00-03:00'
+  }),
+  demoArticle(126, {
+    headline: 'Renovaciones en carpeta: el club ordena los contratos que vencen',
+    dek: 'La dirigencia ficticia prioriza continuidad y define plazos para cada conversación.',
+    body: `Esta nota ficticia de demostración presenta "renovaciones en carpeta: el club ordena los contratos que vencen" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Prioridades
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Los plazos
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-27T12:10:00-03:00'
+  }),
+  demoArticle(127, {
+    headline: 'Un delantero llega a prueba para la pretemporada',
+    dek: 'El cuerpo técnico evaluará su adaptación antes de decidir una incorporación.',
+    body: `Esta nota ficticia de demostración presenta "un delantero llega a prueba para la pretemporada" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## El perfil buscado
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Cómo será la evaluación
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-26T19:45:00-03:00'
+  }),
+  demoArticle(128, {
+    headline: 'La Sub-17 cierra su preparación antes del torneo regional',
+    dek: 'Doble turno, trabajo físico y una agenda de viaje para la categoría.',
+    body: `Esta nota ficticia de demostración presenta "la sub-17 cierra su preparación antes del torneo regional" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Doble turno
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+> El grupo llega con hambre y con orden.
+> — Coordinador ficticio de inferiores
+
+## La agenda del viaje
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-26T10:20:00-03:00'
+  }),
+  demoArticle(129, {
+    headline: 'Arqueros de inferiores: una escuela propia en el predio',
+    dek: 'Un programa ficticio de formación específica para los puestos bajo los tres palos.',
+    body: `Esta nota ficticia de demostración presenta "arqueros de inferiores: una escuela propia en el predio" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## El método
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Seguimiento físico
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-25T17:00:00-03:00'
+  }),
+  demoArticle(130, {
+    headline: 'La Cuarta División viaja con una agenda cargada',
+    dek: 'Partidos, entrenamientos y descanso organizados al detalle para el viaje.',
+    body: `Esta nota ficticia de demostración presenta "la cuarta división viaja con una agenda cargada" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## El itinerario
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-25T09:15:00-03:00'
+  }),
+  demoArticle(131, {
+    headline: 'Controles médicos para todas las categorías formativas',
+    dek: 'El área de salud ficticia completa la evaluación anual de los juveniles.',
+    body: `Esta nota ficticia de demostración presenta "controles médicos para todas las categorías formativas" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Qué se evalúa
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Prevención
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-24T16:40:00-03:00'
+  }),
+  demoArticle(132, {
+    headline: 'La Reserva suma minutos y consolida una idea de juego',
+    dek: 'El equipo alternativo sostiene el estilo y le da rodaje a los más jóvenes.',
+    body: `Esta nota ficticia de demostración presenta "la reserva suma minutos y consolida una idea de juego" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Rodaje y continuidad
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+> La Reserva tiene que parecerse a la Primera.
+> — Integrante ficticio del cuerpo técnico
+
+## El mediocampo como eje
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-24T11:30:00-03:00'
+  }),
+  demoArticle(133, {
+    headline: 'Asamblea de socios: el orden del día de la próxima reunión',
+    dek: 'Una convocatoria ficticia para repasar balances, obras y actividades.',
+    body: `Esta nota ficticia de demostración presenta "asamblea de socios: el orden del día de la próxima reunión" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Temas previstos
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-23T19:00:00-03:00'
+  }),
+  demoArticle(134, {
+    headline: 'La sede renueva sus espacios de encuentro',
+    dek: 'Mejoras ficticias en salones, accesos y lugares comunes para los socios.',
+    body: `Esta nota ficticia de demostración presenta "la sede renueva sus espacios de encuentro" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Las obras
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Uso de los espacios
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-23T10:00:00-03:00'
+  }),
+  demoArticle(135, {
+    headline: 'Una caravana acompaña al equipo camino al estadio',
+    dek: 'La previa ficticia se vive en las calles con banderas y cánticos.',
+    body: `Esta nota ficticia de demostración presenta "una caravana acompaña al equipo camino al estadio" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## El recorrido
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+> La caravana es parte del partido.
+> — Hincha ficticio
+
+## Cuidados en la previa
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-22T20:15:00-03:00'
+  }),
+  demoArticle(136, {
+    headline: 'La tribuna estrena banderas para la temporada',
+    dek: 'Telones y trapos nuevos se suman al color de cada partido en casa.',
+    body: `Esta nota ficticia de demostración presenta "la tribuna estrena banderas para la temporada" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Cómo se hicieron
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-22T12:45:00-03:00'
+  }),
+  demoArticle(137, {
+    headline: 'El archivo de fotos del club abre sus cajas',
+    dek: 'Un trabajo ficticio de catalogación recupera imágenes de distintas épocas.',
+    body: `Esta nota ficticia de demostración presenta "el archivo de fotos del club abre sus cajas" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## La catalogación
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Lo que viene
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-21T18:00:00-03:00'
+  }),
+  demoArticle(138, {
+    headline: 'Camisetas de otras décadas, contadas por sus detalles',
+    dek: 'Un repaso ficticio por diseños, escudos y telas que marcaron épocas.',
+    body: `Esta nota ficticia de demostración presenta "camisetas de otras décadas, contadas por sus detalles" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Los diseños
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Detalles que vuelven
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-21T09:30:00-03:00'
+  }),
+  demoArticle(139, {
+    headline: 'La primera pretemporada que todos recuerdan',
+    dek: 'Un relato ficticio de viajes, cerros y entrenamientos que forjaron un grupo.',
+    body: `Esta nota ficticia de demostración presenta "la primera pretemporada que todos recuerdan" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## El viaje
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+> Esa pretemporada nos hizo equipo.
+> — Exjugador ficticio
+
+## El legado
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-20T17:20:00-03:00'
+  }),
+  demoArticle(140, {
+    headline: 'El estadio a través del tiempo',
+    dek: 'Ampliaciones, tribunas y transformaciones en una historia ficticia de La Ciudadela.',
+    body: `Esta nota ficticia de demostración presenta "el estadio a través del tiempo" para completar la densidad editorial de la réplica de la referencia. Ningún dato, nombre ni hecho corresponde a la realidad.
+
+## Las primeras tribunas
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## Las ampliaciones
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+## El estadio de hoy
+
+El desarrollo ficticio describe el contexto, los pasos previstos y las decisiones que acompañan la historia, con la extensión de una nota breve.
+
+El texto sirve sólo para evaluar composición, ritmo de lectura y navegación entre páginas de la web demo.`,
+    publishedAt: '2026-09-20T10:00:00-03:00'
   })
 ];
 
 const IMAGES = {
-  ciudadela: '/demo/ciudadela.svg',
-  entrenamiento: '/demo/entrenamiento.svg',
-  hinchada: '/demo/hinchada.svg',
-  institucional: '/demo/institucional.svg',
-  juveniles: '/demo/juveniles.svg',
-  memoria: '/demo/memoria.svg',
-  mercado: '/demo/mercado.svg',
-  tactica: '/demo/tactica.svg'
+  estadio: '/demo/img/estadio.svg',
+  tactica: '/demo/img/tactica.svg',
+  entrenamiento: '/demo/img/entrenamiento.svg',
+  hinchada: '/demo/img/hinchada.svg',
+  mercado: '/demo/img/mercado.svg',
+  institucional: '/demo/img/institucional.svg',
+  juveniles: '/demo/img/juveniles.svg',
+  memoria: '/demo/img/memoria.svg',
+  radio: '/demo/img/radio.svg',
+  banderas: '/demo/img/banderas.svg',
+  vestuario: '/demo/img/vestuario.svg',
+  arquero: '/demo/img/arquero.svg',
+  ciudad: '/demo/img/ciudad.svg',
+  oficina: '/demo/img/oficina.svg',
+  viaje: '/demo/img/viaje.svg',
+  salud: '/demo/img/salud.svg'
 } as const;
 
+/** Ilustraciones DEMO propias en 3:2 (800×533), la proporción de las fotos del golden master. */
 const image = (key: keyof typeof IMAGES, alt: string): StoryImage => ({
   src: IMAGES[key],
   alt,
   width: 800,
-  height: 450
+  height: 533
 });
 
 const presentationInputs: ReadonlyArray<
   readonly [number, string, SectionId, readonly TopicId[], StoryImage]
 > = [
-  [101, 'semana-clave-en-la-ciudadela', 'primera', ['entrenamiento', 'cuerpo-tecnico', 'agenda'], image('ciudadela', 'Ilustración editorial de La Ciudadela')],
-  [102, 'variantes-en-el-mediocampo', 'primera', ['tactica', 'cuerpo-tecnico'], image('tactica', 'Ilustración de una pizarra táctica con movimientos en el mediocampo')],
-  [103, 'juveniles-ganan-espacio', 'juveniles', ['inferiores', 'entrenamiento'], image('juveniles', 'Ilustración editorial de futbolistas juveniles')],
-  [104, 'la-ciudadela-prepara-su-color', 'ciudadela', ['hinchas', 'estadio'], image('hinchada', 'Ilustración editorial de tribunas con hinchas')],
-  [105, 'trabajo-vespertino-con-pelota', 'primera', ['entrenamiento'], image('entrenamiento', 'Ilustración editorial de una sesión de entrenamiento')],
-  [106, 'agenda-del-club', 'club', ['agenda', 'socios'], image('institucional', 'Ilustración editorial de la sede de un club')],
-  [107, 'claves-de-la-semana-del-santo', 'primera', ['agenda', 'cuerpo-tecnico'], image('ciudadela', 'Ilustración editorial del estadio de San Martín')],
-  [108, 'practica-de-pelota-parada', 'primera', ['entrenamiento', 'tactica'], image('tactica', 'Ilustración de una pizarra con jugadas de pelota parada')],
-  [109, 'refuerzo-para-la-ultima-linea', 'mercado', ['refuerzos'], image('mercado', 'Ilustración de un contrato y una flecha de transferencia')],
-  [110, 'perfiles-para-el-mediocampo', 'mercado', ['refuerzos', 'tactica'], image('mercado', 'Ilustración de documentos de evaluación de jugadores')],
-  [111, 'prestamos-de-ida-y-vuelta', 'mercado', ['refuerzos'], image('mercado', 'Ilustración de un documento de préstamo')],
-  [112, 'como-se-decide-una-incorporacion', 'mercado', ['refuerzos', 'cuerpo-tecnico'], image('institucional', 'Ilustración de la sede donde se decide una incorporación')],
-  [113, 'la-reserva-sostiene-su-idea', 'juveniles', ['inferiores', 'tactica'], image('juveniles', 'Ilustración de futbolistas de la Reserva')],
-  [114, 'jornada-de-captacion', 'juveniles', ['inferiores'], image('juveniles', 'Ilustración de chicos en una prueba de fútbol')],
-  [115, 'mejoras-en-el-predio', 'juveniles', ['inferiores', 'entrenamiento'], image('entrenamiento', 'Ilustración de un campo auxiliar de entrenamiento')],
-  [116, 'nuevo-canal-para-socios', 'club', ['socios'], image('institucional', 'Ilustración de la sede social del club')],
-  [117, 'plan-de-obras', 'club', ['socios', 'estadio'], image('institucional', 'Ilustración de un plan de obras institucional')],
-  [118, 'actividades-sociales-en-la-sede', 'club', ['socios', 'agenda'], image('institucional', 'Ilustración de la sede con actividades sociales')],
-  [119, 'nueva-senalizacion-en-accesos', 'ciudadela', ['estadio', 'hinchas'], image('ciudadela', 'Ilustración de los accesos al estadio')],
-  [120, 'una-bandera-que-recorre-generaciones', 'ciudadela', ['hinchas', 'historia'], image('hinchada', 'Ilustración de una bandera en la tribuna')],
-  [121, 'recomendaciones-para-la-fecha', 'ciudadela', ['estadio', 'agenda'], image('hinchada', 'Ilustración de hinchas llegando al estadio')],
-  [122, 'postales-de-una-tarde-inolvidable', 'memoria', ['historia', 'estadio'], image('memoria', 'Ilustración con los colores del club en clave histórica')],
-  [123, 'los-colores-y-la-identidad', 'memoria', ['historia', 'hinchas'], image('memoria', 'Ilustración de franjas con los colores del club')],
-  [124, 'como-se-contaba-un-partido-en-la-radio', 'memoria', ['historia'], image('memoria', 'Ilustración de archivo con estética histórica')]
+  [101, 'semana-clave-en-la-ciudadela', 'primera', ['entrenamiento', 'cuerpo-tecnico', 'agenda'], image('estadio', 'Ilustración editorial de La Ciudadela')],
+  [102, 'variantes-en-el-mediocampo', 'primera', ['tactica', 'cuerpo-tecnico', 'mediocampo'], image('tactica', 'Ilustración de una pizarra táctica con movimientos en el mediocampo')],
+  [103, 'juveniles-ganan-espacio', 'juveniles', ['inferiores', 'entrenamiento', 'reserva'], image('juveniles', 'Ilustración editorial de futbolistas juveniles')],
+  [104, 'la-ciudadela-prepara-su-color', 'ciudadela', ['hinchas', 'estadio', 'banderas'], image('hinchada', 'Ilustración editorial de tribunas con hinchas')],
+  [105, 'trabajo-vespertino-con-pelota', 'primera', ['entrenamiento', 'pretemporada', 'mediocampo'], image('entrenamiento', 'Ilustración editorial de una sesión de entrenamiento')],
+  [106, 'agenda-del-club', 'club', ['agenda', 'socios', 'sede'], image('institucional', 'Ilustración editorial de la sede de un club')],
+  [107, 'claves-de-la-semana-del-santo', 'primera', ['agenda', 'cuerpo-tecnico', 'entrenamiento'], image('estadio', 'Ilustración editorial del estadio')],
+  [108, 'practica-de-pelota-parada', 'primera', ['entrenamiento', 'tactica', 'pelota-parada'], image('tactica', 'Ilustración de una pizarra con jugadas de pelota parada')],
+  [109, 'refuerzo-para-la-ultima-linea', 'mercado', ['refuerzos', 'contratos', 'cuerpo-tecnico'], image('mercado', 'Ilustración de un contrato y una flecha de transferencia')],
+  [110, 'perfiles-para-el-mediocampo', 'mercado', ['refuerzos', 'tactica', 'mediocampo'], image('mercado', 'Ilustración de documentos de evaluación de jugadores')],
+  [111, 'prestamos-de-ida-y-vuelta', 'mercado', ['prestamos', 'contratos', 'reserva'], image('oficina', 'Ilustración de una oficina donde se firma un préstamo')],
+  [112, 'como-se-decide-una-incorporacion', 'mercado', ['refuerzos', 'cuerpo-tecnico', 'contratos'], image('institucional', 'Ilustración de la sede donde se decide una incorporación')],
+  [113, 'la-reserva-sostiene-su-idea', 'juveniles', ['reserva', 'tactica', 'inferiores'], image('juveniles', 'Ilustración de futbolistas de la Reserva')],
+  [114, 'jornada-de-captacion', 'juveniles', ['inferiores', 'agenda', 'pelota-parada'], image('entrenamiento', 'Ilustración de chicos en una prueba de fútbol')],
+  [115, 'mejoras-en-el-predio', 'juveniles', ['infraestructura', 'entrenamiento', 'inferiores'], image('entrenamiento', 'Ilustración de un campo auxiliar de entrenamiento')],
+  [116, 'nuevo-canal-para-socios', 'club', ['socios', 'sede', 'agenda'], image('oficina', 'Ilustración de una oficina de atención a socios')],
+  [117, 'plan-de-obras', 'club', ['infraestructura', 'estadio', 'socios'], image('institucional', 'Ilustración de un plan de obras institucional')],
+  [118, 'actividades-sociales-en-la-sede', 'club', ['sede', 'socios', 'pelota-parada'], image('institucional', 'Ilustración de la sede con actividades sociales')],
+  [119, 'nueva-senalizacion-en-accesos', 'ciudadela', ['estadio', 'hinchas', 'infraestructura'], image('estadio', 'Ilustración de los accesos al estadio')],
+  [120, 'una-bandera-que-recorre-generaciones', 'ciudadela', ['banderas', 'hinchas', 'historia'], image('banderas', 'Ilustración de banderas en la tribuna')],
+  [121, 'recomendaciones-para-la-fecha', 'ciudadela', ['estadio', 'viajes', 'hinchas'], image('ciudad', 'Ilustración de una ciudad camino al estadio')],
+  [122, 'postales-de-una-tarde-inolvidable', 'memoria', ['historia', 'estadio', 'archivo'], image('memoria', 'Ilustración con los colores del club en clave histórica')],
+  [123, 'los-colores-y-la-identidad', 'memoria', ['historia', 'banderas', 'archivo'], image('memoria', 'Ilustración de franjas con los colores del club')],
+  [124, 'como-se-contaba-un-partido-en-la-radio', 'memoria', ['historia', 'radio', 'archivo'], image('radio', 'Ilustración de una radio antigua')],
+  [125, 'el-arquero-titular-recupera-ritmo', 'primera', ['arqueros', 'entrenamiento', 'salud'], image('arquero', 'Ilustración de un arco con un arquero')],
+  [126, 'renovaciones-en-carpeta', 'mercado', ['contratos', 'refuerzos', 'prestamos'], image('oficina', 'Ilustración de un escritorio con contratos')],
+  [127, 'un-delantero-a-prueba', 'mercado', ['refuerzos', 'pretemporada', 'prestamos'], image('vestuario', 'Ilustración de camisetas en un vestuario')],
+  [128, 'la-sub-17-cierra-su-preparacion', 'juveniles', ['inferiores', 'entrenamiento', 'viajes'], image('juveniles', 'Ilustración de una categoría juvenil entrenando')],
+  [129, 'arqueros-de-inferiores', 'juveniles', ['arqueros', 'inferiores', 'salud'], image('arquero', 'Ilustración de un arco de entrenamiento')],
+  [130, 'viaje-de-la-cuarta-division', 'juveniles', ['viajes', 'pretemporada', 'agenda'], image('viaje', 'Ilustración de un micro de viaje')],
+  [131, 'controles-medicos-en-formativas', 'juveniles', ['salud', 'arqueros', 'tactica'], image('salud', 'Ilustración de una cruz sanitaria')],
+  [132, 'la-reserva-suma-minutos', 'juveniles', ['reserva', 'entrenamiento', 'mediocampo'], image('tactica', 'Ilustración de una pizarra táctica de la Reserva')],
+  [133, 'asamblea-de-socios', 'club', ['socios', 'sede', 'salud'], image('oficina', 'Ilustración de una sala de reuniones')],
+  [134, 'la-sede-renueva-sus-espacios', 'club', ['sede', 'infraestructura', 'prestamos'], image('institucional', 'Ilustración de la fachada de la sede')],
+  [135, 'caravana-hacia-el-estadio', 'ciudadela', ['hinchas', 'viajes', 'banderas'], image('ciudad', 'Ilustración de una ciudad con caravana de hinchas')],
+  [136, 'la-tribuna-estrena-banderas', 'ciudadela', ['banderas', 'pelota-parada', 'tactica'], image('banderas', 'Ilustración de banderas nuevas en la tribuna')],
+  [137, 'el-archivo-de-fotos-del-club', 'memoria', ['archivo', 'historia', 'sede'], image('memoria', 'Ilustración de un archivo histórico')],
+  [138, 'camisetas-de-otras-decadas', 'memoria', ['historia', 'archivo', 'pretemporada'], image('vestuario', 'Ilustración de camisetas históricas')],
+  [139, 'la-primera-pretemporada-recordada', 'memoria', ['pretemporada', 'arqueros', 'viajes'], image('viaje', 'Ilustración de un viaje de pretemporada')],
+  [140, 'el-estadio-a-traves-del-tiempo', 'memoria', ['estadio', 'infraestructura', 'mediocampo'], image('estadio', 'Ilustración del estadio a lo largo del tiempo')]
 ];
 
 const refFor = (n: number) => {
