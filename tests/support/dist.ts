@@ -42,6 +42,7 @@ export function familyOf(route: string): OwnPageFamily {
   if (route.startsWith('/demo/seccion/')) return 'section';
   if (/^\/demo\/tema\/[^/]+\/\d+\/$/.test(route)) return 'topic-page';
   if (route.startsWith('/demo/tema/')) return 'topic';
+  if (route.startsWith('/demo/autor/')) return 'author';
   if (route.startsWith('/demo/ultimas/')) return 'listing';
   if (route === '/demo/acerca/') return 'institutional';
   return 'article';

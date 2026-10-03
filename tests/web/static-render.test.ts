@@ -27,6 +27,7 @@ describe('WEB.2 static render', () => {
       'section-page': 2,
       topic: topics.length,
       'topic-page': 1,
+      author: 7,
       listing: latestPages,
       institutional: 1
     });

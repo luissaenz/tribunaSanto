@@ -4,6 +4,7 @@
 import Icon from '../ui/Icon.astro';
 import type { WebStory } from '../../presentation/story.js';
 import { authorByByline } from '../../data/demo-authors.js';
+import { routes } from '../../presentation/routes.js';
 import { formatArticleDate } from '../../presentation/format.js';
 import { readingMinutes } from '../../presentation/article-body.js';
 
@@ -19,10 +20,10 @@ const author = authorByByline(article.byline);
 <div data-block="article-meta" class="border-b border-gray-200 bg-white">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 text-sm text-gray-500">
-      <div class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      <a href={routes.author(author.slug)} class="flex items-center gap-2 hover:opacity-80 transition-opacity">
         <img data-part="avatar" src={author.avatar.src} alt={author.avatar.alt} width={author.avatar.width} height={author.avatar.height} class="w-8 h-8 rounded-full object-cover" />
         <span data-part="author" class="font-semibold text-black">{article.byline}</span>
-      </div>
+      </a>
       <span data-part="separator" class="hidden sm:block text-gray-300" aria-hidden="true">|</span>
       <div data-part="date" class="flex items-center gap-1.5">
         <Icon name="calendar3" class="w-4 h-4 text-red-600" />

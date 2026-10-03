@@ -38,6 +38,7 @@ export const blockEvidence: Record<BlockId, readonly CorpusBlockId[]> = {
   'category-header': ['listing-header'],
   'topic-header': ['listing-header'],
   'listing-title': ['section-header'],
+  'author-box': ['author-box'],
   'river-list': ['river-list'],
   'standard-sidebar': ['sticky-rail'],
   'sidebar-trending': ['rail-numbered-trending'],
@@ -60,7 +61,6 @@ export const ownExtensions: readonly BlockId[] = ['future-slot'];
 
 /** Bloques detectados en el corpus que WEB.2 no reproduce, con motivo. */
 export const omittedCorpusBlocks: Readonly<Partial<Record<CorpusBlockId, string>>> = {
-  'author-box': 'No existe entidad Person de autor en el payload; se evita una segunda fuente.',
   'stats-band': 'Cifras institucionales serían datos inventados.',
   'team-grid': 'Equipo/staff fuera de alcance; requiere datos reales.',
   form: 'Formularios (contacto, empleo) requieren backend.'

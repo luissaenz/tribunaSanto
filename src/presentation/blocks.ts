@@ -5,7 +5,7 @@
 // scripts/corpus/block-map.ts. Cada componente marca su raíz con
 // `data-block="<id>"` y las pruebas verifican las secuencias declaradas aquí.
 
-export const OWN_PAGE_FAMILIES = ['home', 'section', 'section-page', 'topic', 'topic-page', 'listing', 'article', 'institutional'] as const;
+export const OWN_PAGE_FAMILIES = ['home', 'section', 'section-page', 'topic', 'topic-page', 'author', 'listing', 'article', 'institutional'] as const;
 export type OwnPageFamily = (typeof OWN_PAGE_FAMILIES)[number];
 
 export type BlockSpec = Readonly<{
@@ -46,6 +46,7 @@ export const blockCatalog = [
   { id: 'category-header', component: 'listing/CategoryHeader.astro', purpose: 'H1 de sección en caja negra y conteo.' },
   { id: 'topic-header', component: 'listing/TopicHeader.astro', purpose: 'H1 de tema centrado y conteo.' },
   { id: 'listing-title', component: 'ui/SectionHeader.astro', purpose: 'Título H1 de listados paginados.' },
+  { id: 'author-box', component: 'listing/AuthorBox.astro', purpose: 'Autor ficticio: avatar, rol, bio y redes.' },
   { id: 'river-list', component: 'listing/RiverList.astro', purpose: 'Río de notas imagen 1/3 + texto 2/3.' },
   { id: 'pagination', component: 'ui/Pagination.astro', purpose: 'Paginación en cajas con anterior/siguiente.' },
   { id: 'standard-sidebar', component: 'sidebar/StandardSidebar.astro', purpose: 'Sidebar sticky de páginas internas.' },
@@ -97,6 +98,7 @@ export const pageFamilyBlocks: Record<OwnPageFamily, readonly BlockId[]> = {
   'section-page': [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
   topic: [...chrome, 'topic-header', 'section-header', 'river-list', ...sidebar, 'site-footer', 'back-to-top'],
   'topic-page': [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
+  author: [...chrome, 'author-box', 'section-header', 'river-list', ...sidebar, 'site-footer', 'back-to-top'],
   listing: [...chrome, 'section-header', 'listing-title', 'river-list', 'pagination', ...sidebar, 'site-footer', 'back-to-top'],
   article: [
     ...chrome,

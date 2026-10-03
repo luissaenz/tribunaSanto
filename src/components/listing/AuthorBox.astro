@@ -1,0 +1,55 @@
+---
+// Caja de autor (DEMO: personas ficticias): avatar 80 px, nombre H1, rol, bio y redes.
+// En mobile se apila con el avatar centrado; desde 640 px, en fila.
+import Icon from '../ui/Icon.astro';
+import type { DemoAuthor } from '../../data/demo-authors.js';
+
+interface Props {
+  author: DemoAuthor;
+}
+
+const { author } = Astro.props;
+const hover: Record<string, string> = {
+  facebook: 'hover:text-[#1877F2]',
+  'twitter-x': 'hover:text-black',
+  linkedin: 'hover:text-[#0A66C2]',
+  instagram: 'hover:text-black',
+  youtube: 'hover:text-black'
+};
+---
+
+<div data-block="author-box" class="bg-gray-50 border border-gray-200 p-6 mb-12 flex flex-col sm:flex-row gap-6 items-start">
+  <div class="max-sm:w-full relative max-sm:flex max-sm:items-center">
+    <img
+      data-part="avatar"
+      src={author.avatar.src}
+      alt={author.avatar.alt}
+      width={author.avatar.width}
+      height={author.avatar.height}
+      class="w-20 h-20 rounded-full max-sm:mx-auto object-cover"
+    />
+  </div>
+  <div>
+    <div class="flex items-center gap-2 max-sm:flex-col mb-4 sm:mb-1">
+      <h1 data-part="name" class="font-heading text-lg font-bold">{author.byline}</h1>
+      <span data-part="role" class="text-xs bg-red-600 text-white px-2 py-0.5 font-bold uppercase tracking-wider">{author.role}</span>
+    </div>
+    <p data-part="bio" class="text-sm text-gray-600 mb-3 leading-relaxed">{author.bio}</p>
+    <div class="flex items-center gap-3">
+      {
+        author.socials.map((s, i) => (
+          <a
+            data-part={i === 0 ? 'social' : undefined}
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${s.label} de ${author.byline} (demo)`}
+            class={`text-gray-500 ${hover[s.network]} transition-colors`}
+          >
+            <Icon name={s.network} class="w-5 h-5" />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</div>
