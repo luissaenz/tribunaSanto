@@ -10,7 +10,8 @@ import {
   findCorpusFingerprints,
   findCorpusHeadings,
   findCorpusReferences,
-  findFontFiles,
+  findUnprovenancedFonts,
+  fontPackageHashes,
   findUnescapedHtml
 } from '../support/guards.js';
 import { distDir, readDistPages, walkFiles } from '../support/dist.js';
@@ -43,10 +44,12 @@ describe('independence from the /web reference corpus', () => {
     expect(findCorpusFingerprints(sources)).toEqual([]);
   });
 
-  it('ships no corpus asset or font in public/ or dist/', () => {
+  it('ships no corpus asset, and only fonts provenanced from @fontsource packages', () => {
     expect(shippedFiles.length).toBeGreaterThan(45);
     expect(findCorpusAssets(shippedFiles, inventory.assets)).toEqual([]);
-    expect(findFontFiles(shippedFiles)).toEqual([]);
+    const allowed = fontPackageHashes(path.join(repoRoot, 'node_modules'));
+    expect(allowed.size).toBeGreaterThan(0);
+    expect(findUnprovenancedFonts(shippedFiles, allowed)).toEqual([]);
   });
 
   it('does not reuse corpus headings (hash check; translations are out of its reach)', () => {

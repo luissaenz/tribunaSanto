@@ -58,9 +58,30 @@ export function findCorpusAssets(
   });
 }
 
-/** 3c — Fuentes: el producto usa sólo tipografías del sistema. */
-export function findFontFiles(files: readonly string[]): string[] {
-  return files.filter((f) => /\.(woff2?|ttf|otf|eot)$/i.test(f));
+/** 3c — Fuentes: sólo se publican woff2 con procedencia de paquetes OFL (@fontsource*). */
+export function fontPackageHashes(nodeModules: string): Set<string> {
+  const hashes = new Set<string>();
+  for (const scope of ['@fontsource', '@fontsource-variable']) {
+    const scopeDir = path.join(nodeModules, scope);
+    if (!fs.existsSync(scopeDir)) continue;
+    for (const pkg of fs.readdirSync(scopeDir)) {
+      const filesDir = path.join(scopeDir, pkg, 'files');
+      if (!fs.existsSync(filesDir)) continue;
+      for (const file of fs.readdirSync(filesDir)) {
+        if (/\.(woff2?|ttf|otf|eot)$/i.test(file)) {
+          hashes.add(crypto.createHash('sha256').update(fs.readFileSync(path.join(filesDir, file))).digest('hex'));
+        }
+      }
+    }
+  }
+  return hashes;
+}
+
+/** 3c — Archivos de fuente publicados cuyo contenido no proviene de un paquete permitido. */
+export function findUnprovenancedFonts(files: readonly string[], allowedHashes: ReadonlySet<string>): string[] {
+  return files
+    .filter((f) => /\.(woff2?|ttf|otf|eot)$/i.test(f))
+    .filter((f) => !allowedHashes.has(crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')));
 }
 
 /** 3d — Títulos del corpus reutilizados (hash de títulos de ≥3 palabras; no detecta traducciones). */
