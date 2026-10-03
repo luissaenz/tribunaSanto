@@ -1,20 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { comparePage } from '../support/fidelity.js';
-import { contract, measureTribuna, openPaused, sampleContract } from './support.js';
+import { contract, openPaused, sampleContract } from './support.js';
 
-// WEB.3 — Artículo: fidelidad, compartir, copiar enlace y responsive.
+// WEB.3 — Artículo (la fidelidad vive en fidelity.spec.ts): compartir, copiar enlace y responsive.
 
 const sample = sampleContract('article');
-
-test.describe('article fidelity', () => {
-  for (const vw of VIEWPORTS) {
-    test(`article matches the golden master at ${vw}px`, async ({ page }) => {
-      await openPaused(page, sample.tribuna, vw);
-      expect(comparePage(sample, String(vw), await measureTribuna(page, 'article'))).toEqual([]);
-    });
-  }
-});
 
 test.describe('article behaviour', () => {
   test('copies the link and shows the 2000 ms confirmation', async ({ page, context }) => {

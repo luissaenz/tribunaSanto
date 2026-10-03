@@ -1,21 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { contract, measureTribuna, openPaused, partDiffs, scrollToY } from './support.js';
+import { contract, openPaused, scrollToY } from './support.js';
 
-// WEB.3 — Chrome del golden master: topbar, masthead, nav sticky con
-// hamburguesa y búsqueda, pie y volver arriba.
+// WEB.3 — Chrome del golden master: nav sticky con hamburguesa y búsqueda,
+// pie y volver arriba (la fidelidad geométrica vive en fidelity.spec.ts).
 
-const CHROME = /^(top-bar|masthead|site-nav|site-footer|back-to-top)(\/|$)/;
 const { nav, backToTop } = contract.interactions;
-
-test.describe('chrome fidelity', () => {
-  for (const vw of VIEWPORTS) {
-    test(`home chrome matches the golden master at ${vw}px`, async ({ page }) => {
-      await openPaused(page, '/', vw);
-      expect(partDiffs('home', vw, await measureTribuna(page, 'home'), (id) => CHROME.test(id))).toEqual([]);
-    });
-  }
-});
 
 test.describe('navigation', () => {
   test('shows the hamburger below 1024 px and desktop links from 1024 px', async ({ page }) => {

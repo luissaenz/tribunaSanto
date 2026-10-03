@@ -4,7 +4,7 @@
 import type { Page } from '@playwright/test';
 import { SAMPLES, tribunaSelector, type SampleSpec } from '../../scripts/reference/spec.js';
 import { measureInPage, type PageMeasurement } from '../../scripts/reference/measure.js';
-import { compareMeasurement, readContract } from '../support/fidelity.js';
+import { readContract } from '../support/fidelity.js';
 
 export const contract = readContract();
 export const CLOCK_START = new Date('2026-10-02T12:00:00-03:00');
@@ -31,17 +31,6 @@ export async function measureTribuna(page: Page, family: string): Promise<PageMe
     parts: spec.parts.map((p) => ({ id: p.id, sel: tribunaSelector(p) })),
     order: (spec.order ?? []).map((id) => ({ id, sel: tribunaSelector(spec.parts.find((p) => p.id === id)!) }))
   });
-}
-
-/** Diferencias de un subconjunto de partes (por prefijo de id) contra el contrato. */
-export function partDiffs(family: string, viewport: number, measured: PageMeasurement, include: (id: string) => boolean): string[] {
-  const sample = sampleContract(family);
-  const expected = sample.viewports[String(viewport)];
-  return Object.entries(expected.parts)
-    .filter(([id]) => include(id))
-    .flatMap(([id, m]) =>
-      compareMeasurement(id, m, measured.parts[id] ?? { present: false, visible: false }, sample.flags[id]).map((d) => `${family}@${viewport} ${d}`)
-    );
 }
 
 export async function alpineData<T>(page: Page, selector: string, key: string): Promise<T> {

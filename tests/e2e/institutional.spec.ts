@@ -1,23 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { comparePage } from '../support/fidelity.js';
-import { contract, measureTribuna, openPaused, sampleContract } from './support.js';
+import { contract, openPaused } from './support.js';
 
-// WEB.3 — Institucionales: fidelidad y estados demo (contacto, FAQ, empleos, legales).
+// WEB.3 — Institucionales: estados demo (contacto, FAQ, empleos, legales).
 
 const { contact, faq, careers } = contract.interactions;
-
-test.describe('institutional fidelity', () => {
-  for (const family of ['about', 'contact', 'careers', 'legal']) {
-    for (const vw of VIEWPORTS) {
-      test(`${family} matches the golden master at ${vw}px`, async ({ page }) => {
-        const sample = sampleContract(family);
-        await openPaused(page, sample.tribuna, vw);
-        expect(comparePage(sample, String(vw), await measureTribuna(page, family))).toEqual([]);
-      });
-    }
-  }
-});
 
 test.describe('contact', () => {
   test('shows the organisation field only for organisation subjects', async ({ page }) => {

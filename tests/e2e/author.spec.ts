@@ -1,21 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { comparePage } from '../support/fidelity.js';
-import { measureTribuna, openPaused, sampleContract } from './support.js';
+import { openPaused } from './support.js';
 
-// WEB.3 — Páginas de autor (ficticio): fidelidad, responsive de la caja y paginación.
-
-test.describe('author fidelity', () => {
-  for (const family of ['author', 'author-page']) {
-    for (const vw of VIEWPORTS) {
-      test(`${family} matches the golden master at ${vw}px`, async ({ page }) => {
-        const sample = sampleContract(family);
-        await openPaused(page, sample.tribuna, vw);
-        expect(comparePage(sample, String(vw), await measureTribuna(page, family))).toEqual([]);
-      });
-    }
-  }
-});
+// WEB.3 — Páginas de autor (ficticio): responsive de la caja y paginación.
 
 test.describe('author behaviour', () => {
   test('stacks the author box with a centred avatar below 640 px and uses a row from 640 px', async ({ page }) => {

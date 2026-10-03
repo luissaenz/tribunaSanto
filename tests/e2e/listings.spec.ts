@@ -1,23 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { comparePage } from '../support/fidelity.js';
-import { contract, measureTribuna, openPaused, sampleContract, scrollToY } from './support.js';
+import { contract, openPaused, sampleContract, scrollToY } from './support.js';
 
-// WEB.3 — Secciones, temas y últimas: fidelidad, carrusel de sección, sidebar sticky y paginación.
-
-const FAMILIES = ['section', 'section-two-slides', 'section-page', 'topic', 'topic-page', 'listing', 'listing-last'];
-
-test.describe('listing fidelity', () => {
-  for (const family of FAMILIES) {
-    for (const vw of VIEWPORTS) {
-      test(`${family} matches the golden master at ${vw}px`, async ({ page }) => {
-        const sample = sampleContract(family);
-        await openPaused(page, sample.tribuna, vw);
-        expect(comparePage(sample, String(vw), await measureTribuna(page, family))).toEqual([]);
-      });
-    }
-  }
-});
+// WEB.3 — Secciones, temas y últimas: carrusel de sección, sidebar sticky y paginación.
 
 test.describe('listing behaviour', () => {
   test('section carousels render 3 slides, and 2 for the two-slide variant', async ({ page }) => {

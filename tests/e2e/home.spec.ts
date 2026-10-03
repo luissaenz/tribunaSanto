@@ -1,22 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { VIEWPORTS } from '../../scripts/reference/spec.js';
-import { comparePage } from '../support/fidelity.js';
-import { alpineData, contract, measureTribuna, openPaused, sampleContract } from './support.js';
+import { alpineData, contract, openPaused } from './support.js';
 
-// WEB.3 — Portada: fidelidad completa (partes, orden DOM y visual) y carrusel.
+// WEB.3 — Portada: estructura y carrusel (la fidelidad vive en fidelity.spec.ts).
 
 const { carousel } = contract.interactions;
 const HERO = '[data-block="hero-carousel"]';
 const current = (page: Page) => alpineData<number>(page, HERO, 'current');
 
-test.describe('home fidelity', () => {
-  for (const vw of VIEWPORTS) {
-    test(`home matches the golden master at ${vw}px`, async ({ page }) => {
-      await openPaused(page, '/', vw);
-      expect(comparePage(sampleContract('home'), String(vw), await measureTribuna(page, 'home'))).toEqual([]);
-    });
-  }
-
+test.describe('home structure', () => {
   test('renders every slide server-side and the photos rail before band-3 sections in the DOM', async ({ page }) => {
     await openPaused(page, '/', 375);
     await expect(page.locator(`${HERO} [data-part="slide"]`)).toHaveCount(carousel.homeSlides);
