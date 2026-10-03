@@ -34,3 +34,8 @@ temp/
 
 # Corpus de referencia (WEB.2): sólo copia local de investigación, nunca versionado
 /web/
+
+# Playwright (WEB.3)
+test-results/
+playwright-report/
+tmp/web3/

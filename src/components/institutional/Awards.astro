@@ -1,0 +1,30 @@
+---
+// Acerca: reconocimientos (DEMO, ficticios) en caja gris con borde negro, 1/2/3 columnas.
+import Icon from '../ui/Icon.astro';
+import { about } from '../../data/demo-institutional.js';
+---
+
+<section data-block="awards" class="mb-16 bg-gray-50 border border-black px-8 py-10">
+  <div class="flex items-center gap-3 mb-8">
+    <Icon name="award" class="w-8 h-8 text-red-600" />
+    <h2 class="font-heading uppercase text-2xl font-black">{about.awardsTitle}</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {
+      about.awards.map((award, i) => (
+        <div class="flex items-start gap-4">
+          <div data-part={i === 0 ? 'icon' : undefined} class="w-10 h-10 bg-black flex items-center justify-center flex-none mt-1">
+            <Icon name="trophy-fill" class="w-4 h-4 text-red-500" />
+          </div>
+          <div>
+            <h3 data-part={i === 0 ? 'title' : undefined} class="font-heading font-black text-lg mb-1">
+              {award.title}
+            </h3>
+            <p class="text-xs text-red-600 font-bold uppercase tracking-wider mb-2">{award.org}</p>
+            <p class="text-xs text-gray-500 leading-relaxed">{award.text}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

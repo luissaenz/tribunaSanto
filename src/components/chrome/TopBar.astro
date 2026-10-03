@@ -1,0 +1,20 @@
+---
+// Barra superior: fecha (dinámica en el cliente, es-AR) y clima DEMO.
+import { siteChrome } from '../../data/demo-chrome.js';
+import { formatToday } from '../../scripts/interactions/nav.js';
+
+interface Props {
+  editionInstant: string;
+}
+
+const { editionInstant } = Astro.props;
+// Sin JS se ve la fecha de edición del build; con JS, la del día del lector.
+const fallback = formatToday(new Date(editionInstant));
+---
+
+<div data-block="top-bar" class="bg-gray-100 text-black py-2">
+  <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs sm:text-sm text-gray-600 font-medium">
+    <div data-part="date" x-data="topbarDate" x-text="text">{fallback}</div>
+    <div data-part="weather">{siteChrome.weather}</div>
+  </div>
+</div>

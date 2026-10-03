@@ -1,7 +1,10 @@
 ---
-import BlockTitle from '../story/BlockTitle.astro';
-import StoryCard from '../story/StoryCard.astro';
+// Últimas noticias: grilla 1/2/3 columnas (768 / 1024 px) de tarjetas 16:9; la paginación va en el slot.
+import SectionHeader from '../ui/SectionHeader.astro';
+import CardImage from '../story/cards/CardImage.astro';
 import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { formatCardDate } from '../../presentation/format.js';
 
 interface Props {
   stories: readonly WebStory[];
@@ -10,12 +13,24 @@ interface Props {
 const { stories } = Astro.props;
 ---
 
-<section class="latest-grid" aria-labelledby="ultimas-title" data-block="latest-grid">
-  <BlockTitle title="Últimas noticias" id="ultimas-title" />
-  <ul class="grid grid--3" role="list">
-    {stories.map((story) => (
-      <li><StoryCard story={story} variant="feature" level={3} showDek={false} showKicker /></li>
-    ))}
-  </ul>
-  <slot />
+<section data-block="latest-grid" class="mb-12">
+  <SectionHeader title="Últimas noticias" slot="latest" />
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {
+      stories.map((story, i) => (
+        <article data-part={i === 0 ? 'card' : undefined}>
+          <div data-part={i === 0 ? 'media' : undefined} class="aspect-video overflow-hidden rounded-sm mb-3">
+            <CardImage story={story} class="w-full hover:scale-105 transition-transform duration-500" />
+          </div>
+          <h3 data-part={i === 0 ? 'title' : undefined} class="font-heading text-lg font-bold mb-3">
+            <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+              {story.article.headline}
+            </a>
+          </h3>
+          {story.article.dek && <p class="text-gray-700 mb-3">{story.article.dek}</p>}
+          <div class="text-sm text-gray-500">{formatCardDate(story.article.publishedAt)}</div>
+        </article>
+      ))
+    }
+  </div>
 </section>

@@ -44,9 +44,22 @@ export const PRESENTATION_ONLY_KEYS = [
 
 /**
  * demoIds que colisionarían con rutas estáticas del namespace /demo/
- * (/demo/seccion/, /demo/tema/, /demo/ultimas/, /demo/acerca/).
+ * (/demo/seccion/, /demo/tema/, /demo/ultimas/, /demo/autor/, institucionales) y con los
+ * assets demo (/demo/img/).
  */
-export const RESERVED_DEMO_IDS = ['seccion', 'tema', 'ultimas', 'acerca'] as const;
+export const RESERVED_DEMO_IDS = [
+  'seccion',
+  'tema',
+  'ultimas',
+  'acerca',
+  'autor',
+  'contacto',
+  'empleos',
+  'publicidad',
+  'privacidad',
+  'terminos',
+  'img'
+] as const;
 
 const DEMO_ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 

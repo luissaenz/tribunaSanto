@@ -1,0 +1,34 @@
+---
+// Populares (DEMO: selección de la composición, no métricas reales): caja negra numerada.
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { TRUNCATE, truncateWords } from '../../presentation/text.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+---
+
+<div data-block="popular-news" class="bg-black text-white p-6">
+  <h2 data-part="title" class="font-heading text-lg font-bold mb-4 border-b border-white pb-2 uppercase">Populares</h2>
+  <div class="space-y-4">
+    {
+      stories.map((story, i) => (
+        <article>
+          <h3 data-part="item-title" class="font-bold mb-2">
+            <a href={routes.article(story)} class="hover:text-red-400 transition-colors">
+              {i + 1}. {story.article.headline}
+            </a>
+          </h3>
+          {story.article.dek && (
+            <p data-part="excerpt" class="text-sm text-gray-300">
+              {truncateWords(story.article.dek, TRUNCATE.listExcerpt)}
+            </p>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</div>

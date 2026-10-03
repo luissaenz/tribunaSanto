@@ -1,54 +1,43 @@
 ---
-import type { GetStaticPaths, Page } from 'astro';
+// Últimas (familia listing del golden master): título como H1 (D3) + río (9 por página) + paginación + sidebar.
+import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Breadcrumb from '../../../components/chrome/Breadcrumb.astro';
-import RailLayout from '../../../components/layout/RailLayout.astro';
-import ListingHeader from '../../../components/listing/ListingHeader.astro';
+import SectionHeader from '../../../components/ui/SectionHeader.astro';
+import Pagination from '../../../components/ui/Pagination.astro';
 import RiverList from '../../../components/listing/RiverList.astro';
-import Pagination from '../../../components/listing/Pagination.astro';
-import StandardRail from '../../../components/rail/StandardRail.astro';
+import StandardSidebar from '../../../components/sidebar/StandardSidebar.astro';
 import { site } from '../../../presentation/site.js';
-import type { WebStory } from '../../../presentation/story.js';
+import { routes } from '../../../presentation/routes.js';
+import { PAGE_SIZE, pageCount, paginate } from '../../../presentation/pagination.js';
 import { newestFirst } from '../../../presentation/queries.js';
-import { LATEST_PAGE_SIZE, routes } from '../../../presentation/routes.js';
 
-export const getStaticPaths = (({ paginate }) =>
-  paginate([...newestFirst(site.stories)], { pageSize: LATEST_PAGE_SIZE })) satisfies GetStaticPaths;
+export const getStaticPaths = (() =>
+  Array.from({ length: pageCount(site.stories.length, PAGE_SIZE.listing) }, (_, i) => ({
+    params: { page: i === 0 ? undefined : String(i + 1) },
+    props: { page: i + 1 }
+  }))) satisfies GetStaticPaths;
 
 interface Props {
-  page: Page<WebStory>;
+  page: number;
 }
 
 const { page } = Astro.props;
-const hrefs = Array.from({ length: page.lastPage }, (_, i) => routes.latest(i + 1));
-const suffix = page.currentPage > 1 ? ` — Página ${page.currentPage}` : '';
+const paged = paginate(newestFirst(site.stories), PAGE_SIZE.listing, page);
+const hrefs = Array.from({ length: paged.pages }, (_, i) => routes.latest(i + 1));
+const title = page === 1 ? 'Últimas notas' : `Últimas notas — Página ${page}`;
 ---
 
-<BaseLayout
-  current="latest"
-  title={`Últimas noticias${suffix} — Tribuna Santo`}
-  description="Todas las notas de Tribuna Santo en orden cronológico."
-  editionInstant={site.editionInstant}
->
-  <Breadcrumb items={page.currentPage > 1 ? [{ label: 'Últimas', href: routes.latest() }, { label: `Página ${page.currentPage}` }] : [{ label: 'Últimas' }]} />
-  <div class="container listing-page">
-    <RailLayout railLabel="Más noticias">
-      <ListingHeader title={`Últimas noticias${suffix}`} count={page.total} />
-      <RiverList stories={page.data} />
-      <Pagination current={page.currentPage} hrefs={hrefs} />
-      <Fragment slot="rail">
-        <StandardRail stories={site.stories} exclude={page.data} />
-      </Fragment>
-    </RailLayout>
+<BaseLayout title={`${title} — Tribuna Santo`} description="Todas las notas demo de Tribuna Santo, de la más reciente a la más antigua." editionInstant={site.editionInstant}>
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div class="lg:col-span-3">
+        <section class="mb-10">
+          <SectionHeader title={title} level={1} headingBlock="listing-title" slot="river" />
+          <RiverList stories={paged.items} level={2} />
+        </section>
+        <Pagination current={page} hrefs={hrefs} label="Páginas de últimas notas" />
+      </div>
+      <StandardSidebar stories={site.stories} />
+    </div>
   </div>
 </BaseLayout>
-
-<style>
-  .listing-page {
-    padding-top: var(--space-6);
-  }
-
-  .listing-page :global(.rail-layout__main > * + *) {
-    margin-top: var(--space-6);
-  }
-</style>

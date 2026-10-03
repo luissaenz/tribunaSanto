@@ -1,0 +1,53 @@
+---
+// Autor (familia author del golden master): caja de autor + "Notas de …" (9 por página) + sidebar.
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import SectionHeader from '../../../../components/ui/SectionHeader.astro';
+import Pagination from '../../../../components/ui/Pagination.astro';
+import AuthorBox from '../../../../components/listing/AuthorBox.astro';
+import RiverList from '../../../../components/listing/RiverList.astro';
+import StandardSidebar from '../../../../components/sidebar/StandardSidebar.astro';
+import { site } from '../../../../presentation/site.js';
+import { routes } from '../../../../presentation/routes.js';
+import { PAGE_SIZE, pageCount, paginate } from '../../../../presentation/pagination.js';
+import { storiesByAuthor } from '../../../../presentation/queries.js';
+import { demoAuthors, type DemoAuthor } from '../../../../data/demo-authors.js';
+
+export const getStaticPaths = (() =>
+  demoAuthors.flatMap((author) => {
+    const total = storiesByAuthor(site.stories, author.byline).length;
+    return Array.from({ length: pageCount(total, PAGE_SIZE.author) }, (_, i) => ({
+      params: { slug: author.slug, page: i === 0 ? undefined : String(i + 1) },
+      props: { author, page: i + 1 }
+    }));
+  })) satisfies GetStaticPaths;
+
+interface Props {
+  author: DemoAuthor;
+  page: number;
+}
+
+const { author, page } = Astro.props;
+const paged = paginate(storiesByAuthor(site.stories, author.byline), PAGE_SIZE.author, page);
+const hrefs = Array.from({ length: paged.pages }, (_, i) => routes.author(author.slug, i + 1));
+---
+
+<BaseLayout
+  title={page === 1 ? `${author.byline} — Tribuna Santo` : `${author.byline}, página ${page} — Tribuna Santo`}
+  description={`Notas demo firmadas por ${author.byline} (autor ficticio).`}
+  editionInstant={site.editionInstant}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div class="lg:col-span-3">
+        <AuthorBox author={author} />
+        <section class="mb-10">
+          <SectionHeader title={page === 1 ? `Notas de ${author.byline}` : `Notas de ${author.byline} — Página ${page}`} slot="river" />
+          <RiverList stories={paged.items} />
+        </section>
+        {paged.pages > 1 && <Pagination current={page} hrefs={hrefs} label={`Páginas de ${author.byline}`} />}
+      </div>
+      <StandardSidebar stories={site.stories} />
+    </div>
+  </div>
+</BaseLayout>

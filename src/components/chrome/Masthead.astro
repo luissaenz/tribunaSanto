@@ -1,54 +1,31 @@
 ---
-// Marca provisional en texto: la identidad visual definitiva está fuera de alcance.
+// Cabecera con logo, nombre y lema. En portada el nombre es el único H1 (D3),
+// con las mismas clases visuales que en el resto de las páginas.
+import { siteChrome } from '../../data/demo-chrome.js';
+
 interface Props {
   home?: boolean;
 }
 
 const { home = false } = Astro.props;
+const Name = home ? 'h1' : 'span';
 ---
 
-<div class="masthead" data-block="masthead">
-  <div class="container masthead__content">
-    {home ? (
-      <h1 class="masthead__brand">Tribuna Santo</h1>
-    ) : (
-      <a href="/" class="masthead__brand masthead__link" aria-label="Volver a la portada de Tribuna Santo">
-        Tribuna Santo
-      </a>
-    )}
-    <p class="masthead__tagline">Diario deportivo y actualidad albirroja</p>
+<div data-block="masthead" class="max-w-7xl mx-auto px-4 py-6">
+  <div class="text-center">
+    <a href="/">
+      <div class="inline-flex items-center gap-3 mb-2">
+        <img
+          data-part="logo"
+          src={siteChrome.logo.src}
+          alt={siteChrome.logo.alt}
+          width={siteChrome.logo.width}
+          height={siteChrome.logo.height}
+          class="size-8 md:size-12 rounded-sm"
+        />
+        <Name data-part="name" class="font-heading font-bold text-black text-4xl md:text-5xl lg:text-6xl">{siteChrome.name}</Name>
+      </div>
+    </a>
+    <p data-part="tagline" class="text-sm sm:text-base md:text-lg font-medium text-gray-600">{siteChrome.tagline}</p>
   </div>
 </div>
-
-<style>
-  .masthead {
-    background: var(--color-surface);
-    padding-block: var(--space-5);
-  }
-
-  .masthead__content {
-    text-align: center;
-  }
-
-  .masthead__brand {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 6vw, 3.75rem);
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    color: var(--color-brand);
-  }
-
-  .masthead__link:hover {
-    color: var(--color-brand-dark);
-    text-decoration: none;
-  }
-
-  .masthead__tagline {
-    margin-top: var(--space-2);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--color-muted);
-  }
-</style>

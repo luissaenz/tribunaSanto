@@ -1,4 +1,4 @@
-// WEB.2 — Mutation tests: cada guard es VERDE sobre el repo/build reales y
+// WEB.2/WEB.3 — Mutation tests: cada guard es VERDE sobre el repo/build reales y
 // ROJO sobre un mutante mínimo. Los mutantes se construyen en memoria o en
 // directorios temporales: nunca se escriben en el repositorio.
 
@@ -12,16 +12,17 @@ import { demoArticles } from '../../src/data/demo-articles.js';
 import { routes } from '../../src/presentation/routes.js';
 import { demoStories } from '../../src/data/demo-articles.js';
 import {
-  findClientScripts,
+  findClientEntries,
   findCorpusAssets,
   findCorpusFingerprints,
   findCorpusReferences,
-  findFabricatedSlotData,
   findIndexingMetadata,
   findMissingBlocks,
   findOffNamespaceRoutes,
   findPayloadContamination,
-  findUnescapedHtml
+  findUncatalogedBlocks,
+  findUnescapedHtml,
+  findUnexpectedClientScripts
 } from '../support/guards.js';
 import { distDir, readDistPage, walkFiles } from '../support/dist.js';
 import { productSources, readInventory, repoRoot } from '../support/repo.js';
@@ -72,8 +73,12 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
       expect(findCorpusAssets([byHash], [{ path: 'img/original.jpg', sha256 }])).toEqual([byHash]);
     });
 
-    const mutant = [{ path: 'src/components/Mutant.astro', content: '<div class="max-w-7xl mx-auto"></div>' }];
-    expect(findCorpusFingerprints(mutant)).not.toEqual([]);
+    // WEB.3: las utilidades Tailwind están aprobadas; la marca y la lógica Alpine inline, no.
+    const brand = [{ path: 'src/components/Mutant.astro', content: '<span>Daily Newspaper</span>' }];
+    const inline = [{ path: 'src/components/Mutant.astro', content: '<div x-data="{ current: 0, next() {} }"></div>' }];
+    expect(findCorpusFingerprints(brand)).not.toEqual([]);
+    expect(findCorpusFingerprints(inline)).not.toEqual([]);
+    expect(findCorpusFingerprints([{ path: 'src/x.astro', content: '<div x-data="carousel(3)" class="max-w-7xl"></div>' }])).toEqual([]);
   });
 
   it('M4 disappearance of a required block', () => {
@@ -82,15 +87,42 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
     expect(findMissingBlocks([mutant])).toEqual([`${section.route} (section)`]);
   });
 
-  it('M5 client JavaScript or hydration', () => {
-    expect(findClientScripts([page(home)], walkFiles(distDir))).toEqual([]);
+  it('M5/M17 a second client entry, island, inline script, inline Alpine logic or another framework', () => {
+    expect(findUnexpectedClientScripts([page(home), page(article)], walkFiles(distDir))).toEqual([]);
+    const [entry] = findClientEntries([page(home)]);
+    expect(entry).toMatch(/^\/_astro\/.+\.js$/);
+    expect(findClientEntries([page(home), page(article), page(section)])).toEqual([entry]);
+
+    // Segunda entrada funcional (otra app de cliente) en otra página.
+    const second = { route: '/x/', html: home.html.replace(entry, '/_astro/app2.def.js') };
+    expect(findUnexpectedClientScripts([page(home), second])).toEqual([`multiple client entries: ${[entry, '/_astro/app2.def.js'].sort().join(', ')}`]);
     const withScript = { route: '/', html: home.html.replace('</body>', '<script>alert(1)</script></body>') };
     const withIsland = { route: '/', html: home.html.replace('</body>', '<astro-island></astro-island></body>') };
-    expect(findClientScripts([withScript])).toEqual(['/: <script>']);
-    expect(findClientScripts([withIsland])).toEqual(['/: island']);
-    expect(findClientScripts([], ['dist/_astro/app.js'])).toEqual(['dist/_astro/app.js: js file']);
+    const inlineData = { route: '/', html: home.html.replace('</body>', '<div x-data="{ open: false }"></div></body>') };
+    const handler = { route: '/', html: home.html.replace('</body>', '<button onclick="go()">x</button></body>') };
+    expect(findUnexpectedClientScripts([withScript])).toEqual(['/: unexpected <script>']);
+    expect(findUnexpectedClientScripts([withIsland])).toEqual(['/: island']);
+    expect(findUnexpectedClientScripts([inlineData])).toEqual(['/: inline x-data']);
+    expect(findUnexpectedClientScripts([handler])).toEqual(['/: inline event handler']);
+    const named = { route: '/', html: home.html.replace('</body>', '<div x-data="carousel(3)"></div><div x-data="siteNav"></div></body>') };
+    expect(findUnexpectedClientScripts([named])).toEqual([]);
     const jsonLd = { route: '/', html: home.html.replace('</body>', '<script type="application/ld+json">{}</script></body>') };
-    expect(findClientScripts([jsonLd])).toEqual([]);
+    expect(findUnexpectedClientScripts([jsonLd])).toEqual([]);
+    withTempDir((dir) => {
+      const react = path.join(dir, 'chunk.js');
+      fs.writeFileSync(react, 'import"react-dom";');
+      const vue = path.join(dir, 'vue.js');
+      fs.writeFileSync(vue, 'window.__VUE__=1');
+      expect(findUnexpectedClientScripts([], [react, vue])).toEqual([`${react}: framework runtime`, `${vue}: framework runtime`]);
+    });
+  });
+
+  it('M16 runtime dependency on the /web corpus', () => {
+    expect(findCorpusReferences(sources)).toEqual([]);
+    const importing = [{ path: 'src/scripts/mutant.ts', content: "import '../../web/_astro/MainLayout.js';" }];
+    const fetching = [{ path: 'src/pages/mutant.astro', content: "const html = await fetch('/web/index.html');" }];
+    expect(findCorpusReferences(importing)).not.toEqual([]);
+    expect(findCorpusReferences(fetching)).not.toEqual([]);
   });
 
   it('M6 route or internal link outside /demo/', () => {
@@ -122,10 +154,10 @@ describe('mutation tests (GREEN on the real tree, RED on the mutant)', () => {
     expect(findIndexingMetadata([indexable])).toEqual(['/: robots=index,follow']);
   });
 
-  it('M8 fabricated data inside DEP/MET/GRF placeholders', () => {
-    expect(findFabricatedSlotData([page(home)])).toEqual([]);
-    const mutant = { route: '/', html: home.html.replace('Datos deportivos disponibles en próximos arcos.', 'Puntos 12 · Posición 3') };
-    expect(findFabricatedSlotData([mutant])).not.toEqual([]);
+  it('M8 a retired WEB.2 block (DEP/MET/GRF placeholder) reappears in the build', () => {
+    expect(findUncatalogedBlocks([page(article)])).toEqual([]);
+    const mutant = { route: article.route, html: article.html.replace('</main>', '<section data-block="future-slot" data-slot="standings">Puntos 12 · Posición 3</section></main>') };
+    expect(findUncatalogedBlocks([mutant])).toEqual([`${article.route}: future-slot`]);
   });
 
   it('M9 unescaped body rendering', () => {

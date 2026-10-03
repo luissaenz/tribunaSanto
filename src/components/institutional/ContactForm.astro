@@ -1,0 +1,90 @@
+---
+// Contacto: formulario DEMO (sin envío) con campo "Organización" condicional por asunto,
+// adjunto y estado de éxito con "Enviar otro". Estado: Alpine `contactForm`.
+import Icon from '../ui/Icon.astro';
+import { contact } from '../../data/demo-institutional.js';
+import { routes } from '../../presentation/routes.js';
+
+const field = 'w-full border-2 border-gray-300 focus:border-black px-4 py-2.5 text-sm focus:outline-none transition-colors';
+const label = 'block text-xs font-black uppercase tracking-wider mb-1.5';
+---
+
+<div class="lg:col-span-2" x-data="contactForm">
+  <div class="border-t-4 border-black mb-6">
+    <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{contact.formTitle}</h2>
+  </div>
+  <div data-part="sent" x-show="sent" x-cloak="" class="bg-black text-white p-8 text-center" role="status">
+    <Icon name="check-circle" class="w-12 h-12 text-red-500 mx-auto mb-4" />
+    <h3 class="font-heading text-xl font-black uppercase mb-2">{contact.sent.title}</h3>
+    <p class="text-gray-400 text-sm">{contact.sent.text}</p>
+    <button
+      type="button"
+      class="mt-6 inline-flex items-center gap-2 border-2 border-white hover:bg-white hover:text-black text-white font-black uppercase text-xs px-5 py-2.5 transition-colors"
+      @click="reset()"
+    >
+      <Icon name="arrow-left" class="w-4 h-4" />
+      {contact.sent.again}
+    </button>
+  </div>
+  <form data-block="contact-form" x-show="!sent" @submit.prevent="submit()" class="space-y-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div>
+        <label data-part="label" for="c-nombre" class={label}>Nombre <span class="text-red-600">*</span></label>
+        <input data-part="input" id="c-nombre" type="text" required placeholder="Juana" class={field} />
+      </div>
+      <div>
+        <label for="c-apellido" class={label}>Apellido <span class="text-red-600">*</span></label>
+        <input id="c-apellido" type="text" required placeholder="Pérez" class={field} />
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div>
+        <label for="c-email" class={label}>Correo electrónico <span class="text-red-600">*</span></label>
+        <input id="c-email" type="email" required placeholder="juana@example.com" class={field} />
+      </div>
+      <div>
+        <label for="c-telefono" class={label}>Teléfono <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
+        <input id="c-telefono" type="tel" placeholder="+54 381 000-0000" class={field} />
+      </div>
+    </div>
+    <div>
+      <label for="c-asunto" class={label}>Asunto <span class="text-red-600">*</span></label>
+      <select data-part="select" id="c-asunto" required x-model="subject" class={`${field} bg-white`}>
+        <option value="" disabled selected>Elegí un asunto...</option>
+        {contact.subjects.map((s) => <option data-org={s.org ? '' : undefined}>{s.label}</option>)}
+      </select>
+    </div>
+    <div data-part="organization" x-show="showOrg" x-cloak="">
+      <label for="c-organizacion" class={label}>Organización / empresa</label>
+      <input id="c-organizacion" type="text" placeholder="Nombre de tu organización" class={field} />
+    </div>
+    <div>
+      <label for="c-mensaje" class={label}>Mensaje <span class="text-red-600">*</span></label>
+      <textarea data-part="textarea" id="c-mensaje" required rows="6" placeholder="Escribí tu mensaje..." class={`${field} resize-none`}></textarea>
+    </div>
+    <div>
+      <span class={label}>Adjunto <span class="text-gray-400 font-normal normal-case">(opcional)</span></span>
+      <label
+        data-part="attachment"
+        class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-black transition-colors px-4 py-6 text-center cursor-pointer"
+      >
+        <Icon name="paperclip" class="w-6 h-6 text-gray-400 mb-2" />
+        <span class="text-sm text-gray-500">Soltá un archivo o <span class="font-bold text-black underline">buscalo</span></span>
+        <span class="text-xs text-gray-400 mt-1">PDF, DOC, JPG, PNG · Máx. 10 MB (demo: no se envía)</span>
+        <input type="file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+      </label>
+    </div>
+    <div class="flex items-start gap-3">
+      <input type="checkbox" required id="consent" class="mt-1 w-4 h-4 border-2 border-black accent-black flex-none" />
+      <label for="consent" class="text-xs text-gray-500 leading-relaxed">
+        Acepto la <a href={routes.privacy()} class="text-red-600 underline font-bold">política de privacidad</a> de Tribuna Santo. Este formulario es una demostración y no envía datos.
+      </label>
+    </div>
+    <div class="pt-1">
+      <button data-part="submit" type="submit" class="inline-flex items-center gap-2 bg-black hover:bg-red-600 text-white font-black uppercase text-sm px-8 py-3 transition-colors">
+        <Icon name="send" class="w-4 h-4" />
+        Enviar mensaje
+      </button>
+    </div>
+  </form>
+</div>

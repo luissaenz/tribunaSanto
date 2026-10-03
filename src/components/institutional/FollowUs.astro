@@ -1,0 +1,31 @@
+---
+// Contacto: redes (DEMO) como filas con borde que se invierten al pasar el puntero.
+import Icon from '../ui/Icon.astro';
+import { contact } from '../../data/demo-institutional.js';
+---
+
+<div data-block="follow-us">
+  <div class="border-t-4 border-black mb-5">
+    <h2 class="font-heading uppercase text-xl font-black bg-black text-white px-4 py-2 inline-block">{contact.followTitle}</h2>
+  </div>
+  <div class="space-y-2">
+    {
+      contact.follow.map((s, i) => (
+        <a
+          data-part={i === 0 ? 'item' : undefined}
+          href={s.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-3 p-3 border-2 border-gray-200 hover:border-black hover:bg-black hover:text-white group transition-colors"
+        >
+          <Icon name={s.network} class="w-5 h-5 group-hover:text-white transition-colors" />
+          <div>
+            <p class="text-xs font-black uppercase tracking-wider">{s.label}</p>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">{s.handle}</p>
+          </div>
+          <Icon name="arrow-right" class="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+        </a>
+      ))
+    }
+  </div>
+</div>

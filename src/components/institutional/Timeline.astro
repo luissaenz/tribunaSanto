@@ -1,0 +1,53 @@
+---
+// Acerca: línea de tiempo alternada con eje central desde 640 px; en mobile, una sola columna sin eje.
+import { about } from '../../data/demo-institutional.js';
+
+const last = about.timeline.length - 1;
+---
+
+<section data-block="timeline" class="mb-16">
+  <div class="border-t-4 border-black mb-8">
+    <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{about.historyTitle}</h2>
+  </div>
+  <div class="relative">
+    <div data-part="line" class="absolute left-4 sm:left-1/2 top-0 bottom-0 w-0.5 bg-black -translate-x-1/2 hidden sm:block"></div>
+    <div class="space-y-10">
+      {
+        about.timeline.map((item, i) => {
+          const dot = (
+            <div
+              data-part={i === 0 ? 'dot' : undefined}
+              class:list={['w-4 h-4 rounded-full absolute left-1/2 -translate-x-1/2 mt-2 ring-4 ring-white', i === last ? 'bg-black border-2 border-red-600' : 'bg-red-600']}
+            />
+          );
+          const text = (
+            <>
+              <span data-part={i === 0 ? 'year' : undefined} class="font-heading text-4xl font-black text-gray-300 block leading-none mb-2">
+                {item.year}
+              </span>
+              <h3 class="font-heading font-black text-lg mb-1">{item.title}</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">{item.text}</p>
+            </>
+          );
+          return i % 2 === 0 ? (
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12 relative">
+              <div class="sm:text-right pr-0 sm:pr-10">{text}</div>
+              <div class="hidden sm:flex items-start justify-start pl-10 pt-2">
+                {dot}
+                <p class="text-sm text-gray-500 italic mt-1">{item.aside}</p>
+              </div>
+            </div>
+          ) : (
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12 relative">
+              <div class="hidden sm:flex items-start justify-end pr-10 pt-2">
+                {dot}
+                <p class="text-sm text-gray-500 italic mt-1 text-right">{item.aside}</p>
+              </div>
+              <div class="sm:pl-10">{text}</div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

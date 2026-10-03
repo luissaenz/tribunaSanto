@@ -1,0 +1,60 @@
+---
+// Tema (familia tag del golden master): H1 centrado + conteo + río (6 por página) + sidebar.
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import SectionHeader from '../../../../components/ui/SectionHeader.astro';
+import Pagination from '../../../../components/ui/Pagination.astro';
+import TopicHeader from '../../../../components/listing/TopicHeader.astro';
+import RiverList from '../../../../components/listing/RiverList.astro';
+import StandardSidebar from '../../../../components/sidebar/StandardSidebar.astro';
+import { site } from '../../../../presentation/site.js';
+import { routes } from '../../../../presentation/routes.js';
+import { PAGE_SIZE, pageCount, paginate } from '../../../../presentation/pagination.js';
+import { storiesWithTopic } from '../../../../presentation/queries.js';
+import { topics, type Topic } from '../../../../presentation/taxonomy.js';
+
+export const getStaticPaths = (() =>
+  topics.flatMap((topic) => {
+    const total = storiesWithTopic(site.stories, topic.id).length;
+    return Array.from({ length: pageCount(total, PAGE_SIZE.topic) }, (_, i) => ({
+      params: { slug: topic.slug, page: i === 0 ? undefined : String(i + 1) },
+      props: { topic, page: i + 1 }
+    }));
+  })) satisfies GetStaticPaths;
+
+interface Props {
+  topic: Topic;
+  page: number;
+}
+
+const { topic, page } = Astro.props;
+const all = storiesWithTopic(site.stories, topic.id);
+const paged = paginate(all, PAGE_SIZE.topic, page);
+const hrefs = Array.from({ length: paged.pages }, (_, i) => routes.topic(topic.id, i + 1));
+---
+
+<BaseLayout
+  title={page === 1 ? `${topic.label} — Tribuna Santo` : `${topic.label}, página ${page} — Tribuna Santo`}
+  description={`Notas demo etiquetadas con ${topic.label}.`}
+  editionInstant={site.editionInstant}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div class="lg:col-span-3">
+        {page === 1 && <TopicHeader label={topic.label} count={all.length} />}
+        <section class="mb-10">
+          {
+            page === 1 ? (
+              <SectionHeader title={`Tema: ${topic.label}`} slot="river" />
+            ) : (
+              <SectionHeader title={`${topic.label} — Pág. ${page}`} level={1} headingBlock="listing-title" slot="river" />
+            )
+          }
+          <RiverList stories={paged.items} level={page === 1 ? 3 : 2} />
+        </section>
+        {paged.pages > 1 && <Pagination current={page} hrefs={hrefs} label={`Páginas del tema ${topic.label}`} />}
+      </div>
+      <StandardSidebar stories={site.stories} />
+    </div>
+  </div>
+</BaseLayout>

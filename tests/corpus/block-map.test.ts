@@ -27,7 +27,8 @@ describe('corpus → product block map', () => {
   });
 
   it('never lets the product import corpus tooling or evidence', () => {
-    const importsTooling = /(from\s+|import\s*\(\s*)['"][^'"]*(scripts\/|corpus-inventory|block-map)[^'"]*['"]/;
+    // Tooling del repo (scripts/corpus, scripts/reference, scripts/seo); src/scripts es código de producto.
+    const importsTooling = /(from\s+|import\s*\(\s*)['"][^'"]*(scripts\/(corpus|reference|seo)\/|corpus-inventory|block-map|reference-contract)[^'"]*['"]/;
     for (const file of productSources()) {
       expect(importsTooling.test(file.content), file.path).toBe(false);
     }

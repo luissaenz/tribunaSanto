@@ -7,16 +7,16 @@ Este documento registra los dos sitios web utilizados como referencias analític
 ## 1. Referencia Estructural Editorial
 
 - **URL**: `https://newspaper.madethemes.com/`
+- **Rol desde WEB.3**: **golden master observable** (ver `docs/web3/README.md`). Lo observable por el usuario —estructura, geometría, responsive, tipografía, paleta, decoración, iconografía, interacción, timings y estados— se reproduce con fidelidad, sustituyendo identidad, textos, imágenes, URLs e idioma por los de Tribuna Santo.
 - **Uso Autorizado**:
-  - Estudio de la jerarquía visual de un medio periodístico.
-  - Inventario de tipos de página requeridos (Portada, Categoría, Artículo, Archivo).
-  - Análisis de densidad editorial y equilibrio entre bloques destacados y listados secundarios.
-  - Distribución funcional de bloques (top bar, ticker de última hora, lead story, sidebars informativos).
+  - Reproducir el comportamiento y la apariencia observables mediante una **implementación propia**.
+  - Usar Tailwind CSS, Alpine.js, Bootstrap Icons, Inter y PT Serif obtenidos desde sus paquetes y licencias oficiales.
+  - Derivar mediciones (`docs/web3/reference-contract.json`) del corpus local, sin versionar su código ni sus assets.
 - **Restricciones No Negociables**:
-  - **Prohibido terminantemente** copiar código HTML, CSS, JavaScript o plantillas.
-  - **Prohibido** utilizar tipografías, paletas de colores o estilos gráficos de Newspaper.
-  - **Prohibido** extraer imágenes, logotipos, textos o assets de la demo.
-  - La identidad visual final de Tribuna Santo será 100% propia, orientada a la identidad del club y sus hinchas.
+  - **Prohibido** copiar literalmente código propietario del template (HTML, CSS, JavaScript o plantillas) sin licencia de reutilización.
+  - **Prohibido** extraer imágenes, logotipos, textos o archivos de fuentes de la demo.
+  - **Prohibido** versionar, servir o importar el corpus `/web`.
+  - La revocación de WEB.2 ("geometría sí, ornamentación no") consta en `docs/web3/README.md` (D1).
 
 ---
 

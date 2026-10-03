@@ -1,0 +1,98 @@
+---
+// Empleos (búsquedas ficticias): filtros por área y acordeón de puestos. Los puestos se
+// renderizan en build (D3: contenido indexable); Alpine `careers` filtra y abre.
+import Icon from '../ui/Icon.astro';
+import { careers } from '../../data/demo-institutional.js';
+
+const active = 'bg-black text-white';
+const idle = 'border-2 border-black text-black hover:bg-black hover:text-white';
+const filters = [{ id: 'all', label: careers.allLabel }, ...careers.departments];
+const deptOf = (id: string) => careers.departments.find((d) => d.id === id)!;
+---
+
+<section data-block="job-board" id="busquedas" class="mb-16" x-data="careers">
+  <div class="flex flex-wrap items-center justify-between gap-4 border-t-4 border-black mb-6">
+    <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{careers.title}</h2>
+    <span data-part="count" class="text-sm text-gray-500 font-medium py-2">{careers.countLabel}</span>
+  </div>
+  <div class="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filtrar por área">
+    {
+      filters.map((f, i) => (
+        <button
+          type="button"
+          data-part={i === 0 ? 'filter-active' : i === 1 ? 'filter' : undefined}
+          class="text-xs font-black uppercase px-4 py-2 transition-colors"
+          x-bind:class={`filter === '${f.id}' ? '${active}' : '${idle}'`}
+          :aria-pressed={`(filter === '${f.id}').toString()`}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+          @click={`setFilter('${f.id}')`}
+        >
+          {f.label}
+        </button>
+      ))
+    }
+  </div>
+  <div class="divide-y divide-gray-200 border-t border-gray-200">
+    {
+      careers.jobs.map((job, i) => (
+        <div data-part={i === 0 ? 'job' : undefined} data-dept={job.dept} class="py-5" x-show={`visible('${job.dept}')`}>
+          <button type="button" class="w-full text-left group" aria-controls={`puesto-${job.id}`} aria-expanded="false" :aria-expanded={`isOpen('${job.id}').toString()`} @click={`toggle('${job.id}')`}>
+            <div class="flex flex-wrap items-center gap-3 mb-2">
+              <h3 data-part={i === 0 ? 'job-title' : undefined} class="font-heading font-black text-lg group-hover:text-red-600 transition-colors">
+                {job.title}
+              </h3>
+              <span class={`text-xs text-white px-2 py-0.5 font-bold uppercase tracking-wide ${deptOf(job.dept).color}`}>{deptOf(job.dept).label}</span>
+              <span class={`text-xs text-white px-2 py-0.5 font-bold uppercase tracking-wide ${careers.types[job.type]}`}>{job.type}</span>
+            </div>
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center gap-1.5 text-sm text-gray-500">
+                <Icon name="geo-alt-fill" class="w-3.5 h-3.5" />
+                <span>{job.location}</span>
+              </div>
+              <span class="text-xl font-black transition-colors" aria-hidden="true" x-text={`isOpen('${job.id}') ? '−' : '+'`} :class={`isOpen('${job.id}') ? 'text-red-600' : ''`}>
+                +
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1 text-left">{job.summary}</p>
+          </button>
+          <div id={`puesto-${job.id}`} data-part="detail" class="mt-5 bg-gray-50 border border-gray-200 p-6" x-show={`isOpen('${job.id}')`} x-transition:enter="transition-all duration-300" x-cloak="">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                {'overview' in job && job.overview && (
+                  <div>
+                    <h4 class="font-heading font-black text-base uppercase mb-3">{careers.overviewTitle}</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">{job.overview}</p>
+                  </div>
+                )}
+                <h4 class="font-heading font-black text-base uppercase mb-3">{careers.requirementsTitle}</h4>
+                <ul class="text-sm text-gray-600 space-y-2">
+                  {job.requirements.map((r) => (
+                    <li class="flex items-start gap-2">
+                      <Icon name="check" class="w-4 h-4 text-red-600 mt-0.5 flex-none" />
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-heading font-black text-base uppercase mb-3">{careers.offersTitle}</h4>
+                <ul class="text-sm text-gray-600 space-y-2 mb-6">
+                  {job.offers.map((o) => (
+                    <li class="flex items-start gap-2">
+                      <Icon name="star-fill" class="w-4 h-4 text-red-600 mt-0.5 flex-none" />
+                      <span>{o}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a href="#postulacion" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-sm px-5 py-2.5 transition-colors">
+                  <Icon name="send" class="w-4 h-4" />
+                  {careers.applyLabel}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

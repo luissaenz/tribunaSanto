@@ -1,0 +1,56 @@
+---
+// Texto legal con la tipografía `.post-content` (ancho 56rem). Segmentos escapados, sin HTML crudo.
+import type { LegalBlock, Segment } from '../../data/demo-institutional.js';
+
+interface Props {
+  blocks: readonly LegalBlock[];
+}
+
+const { blocks } = Astro.props;
+const slug = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+const firstH2 = blocks.findIndex((b) => b.type === 'h2');
+const firstUl = blocks.findIndex((b) => b.type === 'ul');
+const kind = (s: Segment) => (typeof s === 'string' ? 'text' : 'strong' in s ? 'strong' : 'link');
+---
+
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div data-block="legal-prose" class="post-content">
+    {
+      blocks.map((block, i) => {
+        const render = (segments: readonly Segment[]) =>
+          segments.map((s) =>
+            kind(s) === 'text' ? (
+              s
+            ) : kind(s) === 'strong' ? (
+              <strong>{(s as { strong: string }).strong}</strong>
+            ) : (
+              <a href={(s as { href: string }).href}>{(s as { link: string }).link}</a>
+            )
+          );
+        if (block.type === 'h2')
+          return (
+            <h2 id={slug(block.text)} data-part={i === firstH2 ? 'h2' : undefined}>
+              {block.text}
+            </h2>
+          );
+        if (block.type === 'h3') return <h3 id={slug(block.text)}>{block.text}</h3>;
+        if (block.type === 'ul')
+          return (
+            <ul>
+              {block.items.map((item, j) => (
+                <li data-part={i === firstUl && j === 0 ? 'li' : undefined}>{render(item)}</li>
+              ))}
+            </ul>
+          );
+        if (block.type === 'p') return <p>{render(block.segments)}</p>;
+        return null;
+      })
+    }
+  </div>
+</div>

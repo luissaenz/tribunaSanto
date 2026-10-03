@@ -1,0 +1,49 @@
+---
+// Paginación en cajas de 36 px: página actual en rojo; anterior/siguiente con flecha.
+import Icon from './Icon.astro';
+
+interface Props {
+  current: number;
+  hrefs: readonly string[];
+  label?: string;
+}
+
+const { current, hrefs, label = 'Paginación' } = Astro.props;
+const total = hrefs.length;
+const step = 'inline-flex items-center gap-1 px-4 h-9 border-2 border-black text-black font-bold hover:bg-black hover:text-white transition-colors text-sm';
+const box = 'inline-flex items-center justify-center w-9 h-9 border-2 border-black font-bold transition-colors text-sm';
+---
+
+<nav data-block="pagination" aria-label={label} class="flex items-center justify-center gap-2 mt-10 border-t-2 border-gray-200 pt-8">
+  {
+    current > 1 && (
+      <a data-part="step" href={hrefs[current - 2]} rel="prev" class={step}>
+        <Icon name="arrow-left" class="w-4 h-4" />
+        Anterior
+      </a>
+    )
+  }
+  {
+    hrefs.map((href, i) =>
+      i + 1 === current ? (
+        <a data-part="current" href={href} aria-current="page" class={`${box} bg-red-600 text-white border-red-600`}>
+          <span class="sr-only">Página </span>
+          {i + 1}
+        </a>
+      ) : (
+        <a data-part="page" href={href} class={`${box} text-black hover:bg-black hover:text-white`}>
+          <span class="sr-only">Página </span>
+          {i + 1}
+        </a>
+      )
+    )
+  }
+  {
+    current < total && (
+      <a data-part="step" href={hrefs[current]} rel="next" class={step}>
+        Siguiente
+        <Icon name="arrow-right" class="w-4 h-4" />
+      </a>
+    )
+  }
+</nav>

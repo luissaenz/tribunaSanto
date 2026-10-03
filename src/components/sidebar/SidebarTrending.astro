@@ -1,0 +1,45 @@
+---
+// Tendencias numeradas 01–05 del sidebar estándar.
+import Icon from '../ui/Icon.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+---
+
+<div data-block="sidebar-trending">
+  <h2 data-part="title" class="flex items-center gap-2 text-lg font-bold font-heading mb-4 border-s-4 border-black px-4 py-2 bg-red-600">
+    <Icon name="fire" class="w-5 h-5 text-white" />
+    <span class="text-white">Tendencias</span>
+  </h2>
+  <div class="space-y-3">
+    {
+      stories.map((story, i) => (
+        <>
+          {i > 0 && <div class="border-t border-gray-100" />}
+          <article class="flex items-start gap-3">
+            <span data-part={i === 0 ? 'number' : undefined} class="text-3xl font-black text-gray-200 leading-none select-none" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h3 data-part={i === 0 ? 'item-title' : undefined} class="font-heading font-bold text-sm leading-snug">
+                <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+                  {story.article.headline}
+                </a>
+              </h3>
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <Icon name="clock" class="w-3 h-3" />
+                {formatCardDate(story.article.publishedAt)}
+              </div>
+            </div>
+          </article>
+        </>
+      ))
+    }
+  </div>
+</div>

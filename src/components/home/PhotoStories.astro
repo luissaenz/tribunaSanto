@@ -1,0 +1,37 @@
+---
+// Fotos: notas con imagen dominante en el rail izquierdo de la banda 3 (1/2/1 columnas).
+import CardImage from '../story/cards/CardImage.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  stories: readonly WebStory[];
+}
+
+const { stories } = Astro.props;
+---
+
+<div data-block="photos" class="relative">
+  <h2 data-part="title" class="font-heading text-lg font-bold mb-4 border-b-2 border-black pb-2 uppercase">Fotos</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+    {
+      stories.map((story, i) => (
+        <article data-part={i === 0 ? 'item' : undefined} class="border-b border-gray-300 pb-4">
+          <CardImage story={story} part={i === 0 ? 'media' : undefined} class="w-full h-auto rounded-sm object-cover mb-3 hover:opacity-90 transition-opacity" />
+          <span data-part={i === 0 ? 'kicker' : undefined} class="text-xs font-bold text-red-600 uppercase">
+            {getSection(story.presentation.sectionId).label.toLowerCase()}
+          </span>
+          <h3 data-part={i === 0 ? 'item-title' : undefined} class="font-heading text-lg font-bold mb-2 mt-1">
+            <a href={routes.article(story)} class="hover:text-red-600 transition-colors">
+              {story.article.headline}
+            </a>
+          </h3>
+          {story.article.dek && <p class="text-gray-600 text-sm">{story.article.dek}</p>}
+          <div class="text-xs text-gray-500 mt-2">{formatCardDate(story.article.publishedAt)}</div>
+        </article>
+      ))
+    }
+  </div>
+</div>

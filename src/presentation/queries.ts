@@ -56,3 +56,13 @@ export function editionInstant(stories: readonly WebStory[]): string {
   if (!newest) throw new Error('Edition requires at least one story');
   return newest.article.publishedAt;
 }
+
+/** Notas de una firma (texto exacto de `byline`), más nuevas primero. */
+export function storiesByAuthor(stories: readonly WebStory[], byline: string): readonly WebStory[] {
+  return newestFirst(stories.filter((s) => s.article.byline === byline));
+}
+
+/** Conteo por sección en el orden indicado (índice lateral). */
+export function sectionCountsInOrder(stories: readonly WebStory[], order: readonly SectionId[]): readonly SectionCount[] {
+  return order.map((sectionId) => ({ sectionId, count: stories.filter((s) => s.presentation.sectionId === sectionId).length }));
+}

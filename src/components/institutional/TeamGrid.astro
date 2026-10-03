@@ -1,0 +1,46 @@
+---
+// Acerca: equipo (personas ficticias) 1/2/4 columnas; foto en escala de grises que recupera color al pasar el puntero.
+import Icon from '../ui/Icon.astro';
+import { about } from '../../data/demo-institutional.js';
+---
+
+<section data-block="team-grid" class="mb-16">
+  <div class="border-t-4 border-black mb-8">
+    <h2 class="font-heading uppercase text-2xl font-black bg-black text-white px-4 py-2 inline-block">{about.teamTitle}</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {
+      about.team.map((person, i) => (
+        <div data-part={i === 0 ? 'card' : undefined} class="group">
+          <div class="overflow-hidden mb-4 relative">
+            <img
+              data-part={i === 0 ? 'photo' : undefined}
+              src={person.image.src}
+              alt={person.image.alt}
+              width={person.image.width}
+              height={person.image.height}
+              loading="lazy"
+              class="w-full aspect-square object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+            />
+            <div class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex items-end p-4">
+              <div class="flex gap-3">
+                {about.teamSocials.map((s) => (
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={`${s.label} de ${person.name} (demo)`} class="text-white hover:text-red-400 transition-colors">
+                    <Icon name={s.network} class="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+          <h3 data-part={i === 0 ? 'name' : undefined} class="font-heading font-black text-lg leading-tight">
+            {person.name}
+          </h3>
+          <span data-part={i === 0 ? 'role' : undefined} class="text-xs font-bold text-red-600 uppercase tracking-wider">
+            {person.role}
+          </span>
+          <p class="text-xs text-gray-500 mt-2 leading-relaxed">{person.bio}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>

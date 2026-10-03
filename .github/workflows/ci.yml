@@ -56,7 +56,10 @@ jobs:
       - name: Verify PostgreSQL connectivity (db:check)
         run: npm run db:check
 
-      - name: Run complete certification gate (lint, typecheck, test, build, seo:gate)
+      - name: Install Playwright Chromium (reproducible e2e browser)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run complete certification gate (lint, typecheck, test, build, test:e2e, seo:gate)
         run: npm run gate
 
       - name: Teardown PostgreSQL service and cleanup

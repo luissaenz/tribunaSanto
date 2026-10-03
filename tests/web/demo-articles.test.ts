@@ -1,13 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { demoArticles, demoPresentation, demoStories } from '../../src/data/demo-articles.js';
-import { demoHomeComposition } from '../../src/data/demo-home.js';
+import { replicaHomeComposition } from '../../src/data/demo-home.js';
 import { PublicationToWebPayloadSchema } from '../../src/contracts/index.js';
 import { PRESENTATION_ONLY_KEYS, joinStories } from '../../src/presentation/story.js';
 import { SECTION_IDS, TOPIC_IDS } from '../../src/presentation/taxonomy.js';
-import { resolveHome } from '../../src/presentation/composition.js';
+import { resolveReplicaHome } from '../../src/presentation/composition.js';
+import { demoAuthors } from '../../src/data/demo-authors.js';
+import { storiesByAuthor, storiesInSection, storiesWithTopic } from '../../src/presentation/queries.js';
+import { PAGE_SIZE } from '../../src/presentation/pagination.js';
 
-// WEB.2 reemplaza las invariantes de WEB.1 "exactamente 7 artículos" y
-// "1 lead / 3 secondary / 3 latest" por 24 fixtures y reglas de composición.
+// WEB.3 amplía las fixtures de WEB.2 a 40 notas (la densidad del golden master):
+// refs 101–124 estables, 125–140 nuevas, 4 firmas ficticias y 24 temas.
 
 const WEB1_STORIES = [
   'semana-clave-en-la-ciudadela',
@@ -19,9 +22,10 @@ const WEB1_STORIES = [
   'claves-de-la-semana-del-santo'
 ];
 
-describe('WEB.2 demo fixtures', () => {
-  it('contains exactly 24 contract-valid demo articles', () => {
-    expect(demoArticles).toHaveLength(24);
+describe('WEB.3 demo fixtures', () => {
+  it('contains exactly 40 contract-valid demo articles with stable refs 101-140', () => {
+    expect(demoArticles).toHaveLength(40);
+    expect(demoArticles.map((a) => a.articleRef.slice(-3))).toEqual(Array.from({ length: 40 }, (_, i) => String(101 + i)));
     for (const article of demoArticles) {
       expect(PublicationToWebPayloadSchema.safeParse(article).success).toBe(true);
     }
@@ -44,8 +48,8 @@ describe('WEB.2 demo fixtures', () => {
   });
 
   it('joins articles and presentation one-to-one with unique ids', () => {
-    expect(new Set(demoStories.map((s) => s.article.articleRef)).size).toBe(24);
-    expect(new Set(demoStories.map((s) => s.presentation.demoId)).size).toBe(24);
+    expect(new Set(demoStories.map((s) => s.article.articleRef)).size).toBe(40);
+    expect(new Set(demoStories.map((s) => s.presentation.demoId)).size).toBe(40);
     for (const story of demoStories) {
       expect(story.article.articleRef).toBe(story.presentation.articleRef);
     }
@@ -54,36 +58,51 @@ describe('WEB.2 demo fixtures', () => {
 
   it('uses only local demo images with dimensions and alt text', () => {
     for (const { presentation } of demoStories) {
-      expect(presentation.image.src.startsWith('/demo/')).toBe(true);
+      expect(presentation.image.src.startsWith('/demo/img/')).toBe(true);
+      expect(presentation.image.width / presentation.image.height).toBeCloseTo(800 / 533, 3);
       expect(presentation.image.alt.trim()).not.toBe('');
       expect(presentation.image.width).toBeGreaterThan(0);
       expect(presentation.image.height).toBeGreaterThan(0);
     }
   });
 
-  it('assigns every story a provisional section and at least one topic', () => {
+  it('assigns every story a section and exactly three distinct topics', () => {
     for (const { presentation } of demoStories) {
       expect(SECTION_IDS).toContain(presentation.sectionId);
-      expect(presentation.topicIds.length).toBeGreaterThan(0);
+      expect(new Set(presentation.topicIds).size).toBe(3);
       for (const topic of presentation.topicIds) expect(TOPIC_IDS).toContain(topic);
     }
-    expect(new Set(demoStories.map((s) => s.presentation.sectionId)).size).toBe(6);
-    expect(new Set(demoStories.flatMap((s) => s.presentation.topicIds)).size).toBe(10);
   });
 
-  it('resolves a home composition that reaches all 24 stories', () => {
-    const home = resolveHome(demoStories, demoHomeComposition);
-    const reached = new Set(
-      [
-        home.lead,
-        ...home.trending,
-        ...home.picks,
-        ...home.visual,
-        ...home.latest,
-        ...[...home.primaryBand, ...home.secondaryBand].flatMap((b) => b.stories)
-      ].map((s) => s.article.articleRef)
-    );
-    expect(reached.size).toBe(24);
-    expect(new Set([...home.primaryBand, ...home.secondaryBand].map((b) => b.variant)).size).toBe(4);
+  it('distributes sections like the golden master (9/7/6/6/6/6, two paginated)', () => {
+    const counts = Object.fromEntries(SECTION_IDS.map((id) => [id, storiesInSection(demoStories, id).length]));
+    expect(counts).toEqual({ primera: 6, mercado: 6, juveniles: 9, club: 6, ciudadela: 6, memoria: 7 });
+    expect(SECTION_IDS.filter((id) => counts[id] > PAGE_SIZE.section)).toEqual(['juveniles', 'memoria']);
   });
+
+  it('distributes 24 topics: one paginated (>= 9), one with a single story, the rest 2-6', () => {
+    const counts = TOPIC_IDS.map((id) => storiesWithTopic(demoStories, id).length);
+    expect(TOPIC_IDS).toHaveLength(24);
+    expect(counts.filter((c) => c >= 9)).toHaveLength(1);
+    expect(counts.filter((c) => c === 1)).toHaveLength(1);
+    expect(counts.filter((c) => c > 1 && c < 9).every((c) => c >= 2 && c <= 6)).toBe(true);
+    expect(TOPIC_IDS.filter((id) => storiesWithTopic(demoStories, id).length > PAGE_SIZE.topic)).toEqual(['entrenamiento']);
+  });
+
+  it('signs every story with one of four fictitious authors (11/11/10/8)', () => {
+    expect(demoAuthors).toHaveLength(4);
+    const counts = demoAuthors.map((a) => storiesByAuthor(demoStories, a.byline).length);
+    expect(counts).toEqual([11, 11, 10, 8]);
+    expect(counts.filter((c) => c > PAGE_SIZE.author)).toHaveLength(3);
+    expect(counts.reduce((a, b) => a + b, 0)).toBe(demoStories.length);
+  });
+
+  it('resolves the replica home composition over the demo fixtures', () => {
+    const home = resolveReplicaHome(demoStories, replicaHomeComposition);
+    const sectionsShown = [...Object.values(home.band2), ...home.band3].map((b) => b.sectionId);
+    expect(new Set(sectionsShown)).toEqual(new Set(SECTION_IDS));
+    expect(home.heroSlides).toHaveLength(3);
+    expect(home.latest).toHaveLength(9);
+  });
+
 });

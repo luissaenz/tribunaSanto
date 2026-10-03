@@ -1,14 +1,15 @@
 ---
+// Artículo (golden master): migas → hero → datos → cuerpo, temas, compartir y relacionadas
+// (3/4) + sidebar estándar sticky (1/4). La navegación no marca ítem activo, como la referencia.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/chrome/Breadcrumb.astro';
-import RailLayout from '../../components/layout/RailLayout.astro';
 import ArticleHero from '../../components/article/ArticleHero.astro';
 import ArticleMeta from '../../components/article/ArticleMeta.astro';
 import ArticleBody from '../../components/article/ArticleBody.astro';
 import ArticleTags from '../../components/article/ArticleTags.astro';
-import ShareLinks from '../../components/article/ShareLinks.astro';
-import RelatedStories from '../../components/article/RelatedStories.astro';
-import StandardRail from '../../components/rail/StandardRail.astro';
+import ShareBar from '../../components/article/ShareBar.astro';
+import RelatedGrid from '../../components/article/RelatedGrid.astro';
+import StandardSidebar from '../../components/sidebar/StandardSidebar.astro';
 import { site } from '../../presentation/site.js';
 import type { WebStory } from '../../presentation/story.js';
 import { getSection } from '../../presentation/taxonomy.js';
@@ -33,36 +34,19 @@ const related = relatedStories(site.stories, story, 3);
 const shareUrl = new URL(routes.article(story), Astro.site).href;
 ---
 
-<BaseLayout
-  current={presentation.sectionId}
-  title={`${article.headline} — Tribuna Santo`}
-  description={article.dek || 'Artículo editorial de Tribuna Santo'}
-  editionInstant={site.editionInstant}
->
+<BaseLayout title={`${article.headline} — Tribuna Santo`} description={article.dek || 'Nota demo de Tribuna Santo'} editionInstant={site.editionInstant}>
   <Breadcrumb items={[{ label: section.label, href: routes.section(section.id) }, { label: article.headline }]} />
-  <article class="article-page">
-    <ArticleHero story={story} />
-    <ArticleMeta story={story} />
-    <div class="container article-page__columns">
-      <RailLayout railLabel="Más noticias">
+  <ArticleHero story={story} />
+  <ArticleMeta story={story} />
+  <div class="max-w-7xl mx-auto px-4 py-8 sm:py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <article class="lg:col-span-3" aria-labelledby="titulo-nota">
         <ArticleBody body={article.body} />
         <ArticleTags topicIds={presentation.topicIds} />
-        <ShareLinks url={shareUrl} title={article.headline} />
-        {related.length > 0 && <RelatedStories stories={related} />}
-        <Fragment slot="rail">
-          <StandardRail stories={site.stories} exclude={[story]} currentSection={section.id} withFutureSlot />
-        </Fragment>
-      </RailLayout>
+        <ShareBar url={shareUrl} title={article.headline} />
+        {related.length > 0 && <RelatedGrid stories={related} />}
+      </article>
+      <StandardSidebar stories={site.stories} currentSection={section.id} />
     </div>
-  </article>
+  </div>
 </BaseLayout>
-
-<style>
-  .article-page__columns {
-    padding-top: var(--space-7);
-  }
-
-  .article-page__columns :global(.rail-layout__main > * + *) {
-    margin-top: var(--space-6);
-  }
-</style>

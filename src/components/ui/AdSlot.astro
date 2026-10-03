@@ -1,0 +1,16 @@
+---
+// Espacio publicitario 300×250 (DEMO): conserva bloque, posición y dimensiones del golden master.
+import { siteChrome } from '../../data/demo-chrome.js';
+
+interface Props {
+  block: 'home-ad' | 'sidebar-ad';
+  tone?: 'gray-100' | 'gray-200';
+}
+
+const { block, tone = 'gray-100' } = Astro.props;
+const { ad } = siteChrome;
+---
+
+<div data-block={block} class:list={[tone === 'gray-200' ? 'bg-gray-200' : 'bg-gray-100']}>
+  <img src={ad.src} alt={ad.alt} width={ad.width} height={ad.height} loading="lazy" class="w-full" />
+</div>

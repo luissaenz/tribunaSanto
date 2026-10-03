@@ -1,0 +1,150 @@
+---
+// Carrusel de notas destacadas (portada y secciones).
+// Autoplay 5000 ms con loop, pausa con hover o foco, fade de 700 ms,
+// anterior/siguiente, indicadores, arrastre/swipe ≥ 50 px y flechas del teclado.
+// Estado: Alpine `carousel(n)` (src/scripts/alpine.ts). Sin JS se ve el slide 1.
+import Icon from './Icon.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { getSection } from '../../presentation/taxonomy.js';
+import { routes } from '../../presentation/routes.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  stories: readonly WebStory[];
+  variant: 'home' | 'category';
+  label: string;
+}
+
+const { stories, variant, label } = Astro.props;
+const count = stories.length;
+const home = variant === 'home';
+const enter = {
+  'x-transition:enter': 'transition-opacity duration-700 ease-in-out',
+  'x-transition:enter-start': 'opacity-0',
+  'x-transition:enter-end': 'opacity-100',
+  'x-transition:leave': 'transition-opacity duration-700 ease-in-out',
+  'x-transition:leave-start': 'opacity-100',
+  'x-transition:leave-end': 'opacity-0'
+};
+const arrow =
+  'absolute top-1/2 -translate-y-1/2 z-10 bg-black/40 hover:bg-red-600 text-white w-9 h-9 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-300';
+---
+
+<div
+  data-block="hero-carousel"
+  class:list={[
+    'relative overflow-hidden aspect-4/3.5 sm:aspect-4/2.5 group select-none',
+    home ? 'lg:rounded-sm bg-gray-200' : 'rounded-sm'
+  ]}
+  role="region"
+  aria-roledescription="carrusel"
+  aria-label={label}
+  x-data={`carousel(${count})`}
+  @mouseenter="hovered = true"
+  @mouseleave="hovered = false"
+  @mousedown="onDragStart($event)"
+  @mouseup="onDragEnd($event)"
+  @touchstart.passive="onDragStart($event)"
+  @touchend.passive="onDragEnd($event)"
+  @focusin="onFocusIn($event)"
+  @focusout="onFocusOut($event)"
+  @keydown="onKeydown($event)"
+>
+  {
+    stories.map((story, i) => {
+      const section = getSection(story.presentation.sectionId);
+      const { article, presentation } = story;
+      return (
+        <div
+          data-part="slide"
+          class="absolute inset-0"
+          role="group"
+          aria-roledescription="diapositiva"
+          aria-label={`${i + 1} de ${count}`}
+          x-show={`isActive(${i})`}
+          x-cloak={i > 0 ? '' : undefined}
+          {...enter}
+        >
+          <img
+            src={presentation.image.src}
+            alt={presentation.image.alt}
+            width={presentation.image.width}
+            height={presentation.image.height}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            draggable="false"
+            class="h-full w-full object-cover pointer-events-none"
+          />
+          {home ? (
+            <div data-part="overlay" class="absolute inset-0 bg-black/60 flex items-end">
+              <div class="text-white p-6 pb-14">
+                <span data-part="badge" class="inline-flex items-center gap-2 px-3 py-1 text-sm font-bold uppercase bg-red-600">
+                  <Icon name="newspaper" class="w-4 h-4 text-white" />
+                  {section.label}
+                </span>
+                <h2 data-part="title" class="font-heading text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-3">
+                  <a href={routes.article(story)} class="hover:text-white" draggable="false">
+                    {article.headline}
+                  </a>
+                </h2>
+                {article.dek && (
+                  <p data-part="excerpt" class="text-lg opacity-90 max-sm:hidden">
+                    {article.dek}
+                  </p>
+                )}
+                <div data-part="meta" class="mt-3 text-sm opacity-75">
+                  Por {article.byline} • {formatCardDate(article.publishedAt)}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div data-part="overlay" class="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent flex items-end">
+              <div class="text-white p-6 pb-14 max-w-3xl">
+                <span data-part="badge" class="inline-flex items-center gap-2 bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+                  {section.label}
+                </span>
+                <h2 data-part="title" class="font-heading text-xl sm:text-2xl md:text-3xl font-bold mt-2 mb-2 leading-tight">
+                  <a href={routes.article(story)} draggable="false">
+                    {article.headline}
+                  </a>
+                </h2>
+                {article.dek && (
+                  <p data-part="excerpt" class="text-sm opacity-80 max-sm:hidden">
+                    {article.dek}
+                  </p>
+                )}
+                <div data-part="meta" class="mt-3 text-xs opacity-70 flex items-center gap-2">
+                  <Icon name="person-circle" class="w-3.5 h-3.5" />
+                  <span>Por {article.byline}</span>
+                  <span class="opacity-50">•</span>
+                  <Icon name="clock" class="w-3.5 h-3.5" />
+                  <span>{formatCardDate(article.publishedAt)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    })
+  }
+  <button type="button" data-part="prev" class={`${arrow} left-3`} aria-label="Nota anterior" @click="manualPrev()">
+    <Icon name="chevron-left" class="w-4 h-4" />
+  </button>
+  <button type="button" data-part="next" class={`${arrow} right-3`} aria-label="Nota siguiente" @click="manualNext()">
+    <Icon name="chevron-right" class="w-4 h-4" />
+  </button>
+  <div data-part="dots" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10" x-cloak="">
+    {
+      stories.map((_, i) => (
+        <button
+          type="button"
+          data-part={i === 0 ? 'dot-active' : i === 1 ? 'dot' : undefined}
+          class="h-2 rounded-full transition-all duration-300"
+          aria-label={`Ir a la nota ${i + 1}`}
+          :class={`isActive(${i}) ? 'w-6 bg-red-600' : 'w-2 bg-white/60 hover:bg-white'`}
+          :aria-current={`isActive(${i}) ? 'true' : 'false'`}
+          @click={`goTo(${i})`}
+        />
+      ))
+    }
+  </div>
+</div>

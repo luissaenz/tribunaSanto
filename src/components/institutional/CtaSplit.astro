@@ -1,0 +1,51 @@
+---
+// Acerca: llamados finales en dos columnas desde 768 px: newsletter (no-op DEMO) y empleos/contacto.
+import Icon from '../ui/Icon.astro';
+import { about } from '../../data/demo-institutional.js';
+import { routes } from '../../presentation/routes.js';
+
+const { cta } = about;
+---
+
+<section data-block="cta-split" class="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden">
+  <div data-part="newsletter" class="bg-black text-white p-10">
+    <Icon name="envelope-paper" class="w-10 h-10 text-red-500 mb-4" />
+    <h2 class="font-heading text-2xl font-black uppercase mb-2">{cta.newsletterTitle}</h2>
+    <p class="text-gray-400 text-sm mb-6 leading-relaxed">{cta.newsletterText}</p>
+    <form class="flex flex-col sm:flex-row gap-2" x-data="newsletter" @submit.prevent="submit()">
+      <input
+        data-part="input"
+        type="email"
+        placeholder={cta.newsletterPlaceholder}
+        aria-label={cta.newsletterPlaceholder}
+        class="flex-1 px-4 py-2.5 bg-white text-black text-sm focus:outline-none border-2 border-transparent focus:border-red-600 transition-colors"
+      />
+      <button data-part="button" type="submit" class="bg-red-600 hover:bg-red-500 text-white font-black uppercase text-sm px-5 py-2.5 transition-colors whitespace-nowrap">
+        {cta.newsletterButton}
+      </button>
+    </form>
+  </div>
+  <div data-part="careers" class="bg-red-600 text-white p-10 flex flex-col justify-between">
+    <div>
+      <Icon name="pencil-square" class="w-10 h-10 text-white mb-4" />
+      <h2 class="font-heading text-2xl font-black uppercase mb-2">{cta.careersTitle}</h2>
+      <p class="text-red-100 text-sm mb-6 leading-relaxed">{cta.careersText}</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a
+        href={routes.careers()}
+        class="max-sm:w-full inline-flex items-center justify-center gap-2 bg-white text-red-600 hover:bg-gray-100 font-black uppercase text-xs px-4 py-2.5 transition-colors"
+      >
+        <Icon name="briefcase" class="w-4 h-4" />
+        {cta.careersButton}
+      </a>
+      <a
+        href={routes.contact()}
+        class="max-sm:w-full inline-flex items-center justify-center gap-2 border-2 border-white text-white hover:bg-white hover:text-red-600 font-black uppercase text-xs px-4 py-2.5 transition-colors"
+      >
+        <Icon name="send" class="w-4 h-4" />
+        {cta.contactButton}
+      </a>
+    </div>
+  </div>
+</section>

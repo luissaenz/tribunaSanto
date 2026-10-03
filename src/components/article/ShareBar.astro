@@ -1,0 +1,50 @@
+---
+// Compartir: Facebook, X, WhatsApp y LinkedIn con la URL real de la nota (D3: la referencia
+// omitía la URL) + copiar enlace con confirmación de 2 s. Por debajo de 640 px sólo íconos y
+// sin "Copiar enlace", como el golden master.
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const targets = [
+  { id: 'facebook', label: 'Facebook', icon: 'facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}`, cls: 'bg-[#1877F2] hover:bg-[#0d65d8]' },
+  { id: 'x', label: 'X', icon: 'twitter-x', href: `https://x.com/intent/post?url=${u}&text=${t}`, cls: 'bg-black hover:bg-gray-800' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp', href: `https://wa.me/?text=${t}%20${u}`, cls: 'bg-[#25D366] hover:bg-[#1ebe5a]' },
+  { id: 'linkedin', label: 'LinkedIn', icon: 'linkedin', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`, cls: 'bg-[#0A66C2] hover:bg-[#0959ab]' }
+] as const;
+---
+
+<div data-block="share-bar" class="flex flex-wrap items-center gap-3 mb-10 pb-10 border-b border-gray-200" x-data="copyLink">
+  <span data-part="label" class="text-sm font-bold uppercase text-gray-500 mr-1">Compartir:</span>
+  {
+    targets.map((target) => (
+      <a
+        data-part={target.id}
+        href={target.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Compartir en ${target.label}`}
+        class={`inline-flex items-center gap-2 ${target.cls} text-white text-sm font-bold px-4 py-2 transition-colors`}
+      >
+        <Icon name={target.icon} class="w-4 h-4" />
+        <span class="hidden sm:inline">{target.label}</span>
+      </a>
+    ))
+  }
+  <button
+    type="button"
+    data-part="copy"
+    class="hidden sm:inline-flex items-center gap-2 border-2 border-black hover:bg-black hover:text-white text-sm font-bold px-4 py-2 transition-colors ml-auto"
+    @click="copy()"
+  >
+    <Icon name="check-lg" class="w-4 h-4 text-green-500" x-show="copied" x-cloak="" />
+    <Icon name="link-45deg" class="w-4 h-4" x-show="!copied" />
+    <span x-text="copied ? '¡Copiado!' : 'Copiar enlace'" aria-live="polite">Copiar enlace</span>
+  </button>
+</div>

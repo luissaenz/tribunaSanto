@@ -1,6 +1,11 @@
 ---
+// Barra de datos del artículo: avatar y autor enlazado, fecha larga y tiempo de lectura
+// (separadores y lectura ocultos por debajo de 640 px).
+import Icon from '../ui/Icon.astro';
 import type { WebStory } from '../../presentation/story.js';
-import { formatLongDate } from '../../presentation/format.js';
+import { authorByByline } from '../../data/demo-authors.js';
+import { routes } from '../../presentation/routes.js';
+import { formatArticleDate } from '../../presentation/format.js';
 import { readingMinutes } from '../../presentation/article-body.js';
 
 interface Props {
@@ -9,46 +14,26 @@ interface Props {
 
 const { story } = Astro.props;
 const { article } = story;
-const updated = article.modifiedAt !== article.publishedAt;
+const author = authorByByline(article.byline);
 ---
 
-<div class="article-meta" data-block="article-meta">
-  <div class="container article-meta__content">
-    <p class="article-meta__byline">Por <strong>{article.byline}</strong></p>
-    <p>
-      Publicado <time datetime={article.publishedAt}>{formatLongDate(article.publishedAt)}</time>
-    </p>
-    {updated && (
-      <p>
-        Actualizado <time datetime={article.modifiedAt}>{formatLongDate(article.modifiedAt)}</time>
-      </p>
-    )}
-    <p>{readingMinutes(article.body)} min de lectura</p>
+<div data-block="article-meta" class="border-b border-gray-200 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 text-sm text-gray-500">
+      <a href={routes.author(author.slug)} class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img data-part="avatar" src={author.avatar.src} alt={author.avatar.alt} width={author.avatar.width} height={author.avatar.height} class="w-8 h-8 rounded-full object-cover" />
+        <span data-part="author" class="font-semibold text-black">{article.byline}</span>
+      </a>
+      <span data-part="separator" class="hidden sm:block text-gray-300" aria-hidden="true">|</span>
+      <div data-part="date" class="flex items-center gap-1.5">
+        <Icon name="calendar3" class="w-4 h-4 text-red-600" />
+        <time datetime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time>
+      </div>
+      <span class="hidden sm:block text-gray-300" aria-hidden="true">|</span>
+      <div data-part="reading" class="max-sm:hidden flex items-center gap-1.5">
+        <Icon name="clock" class="w-4 h-4 text-red-600" />
+        <span>{readingMinutes(article.body)} min de lectura</span>
+      </div>
+    </div>
   </div>
 </div>
-
-<style>
-  .article-meta {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .article-meta__content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
-    padding-block: var(--space-4);
-  }
-
-  .article-meta__content > p + p::before {
-    content: '|';
-    margin-right: var(--space-5);
-    color: var(--color-border);
-  }
-
-  .article-meta__byline strong {
-    color: var(--color-ink);
-  }
-</style>

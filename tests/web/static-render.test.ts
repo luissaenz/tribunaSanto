@@ -7,22 +7,39 @@ import { pageFamilyBlocks } from '../../src/presentation/blocks.js';
 import { LATEST_PAGE_SIZE, routes } from '../../src/presentation/routes.js';
 import { sections, topics } from '../../src/presentation/taxonomy.js';
 import { familyOf, isSubsequence, readDistPage, readDistPages, walkFiles } from '../support/dist.js';
+import { EXPECTED_PAGE_COUNT, expectedRoutes } from '../support/expected.js';
 
-// Reemplaza la suite estática de WEB.1: conserva sus invariantes (H1, landmarks,
-// principal antes que secundarias, cuerpo desde el payload, vuelta a portada,
-// sin islas, sin set:html, sin NewsArticle, placeholders sin datos) y agrega
-// estructura por familia, densidad y paginación.
+// Suite estática de WEB.3 (heredera de WEB.1/WEB.2): conserva sus invariantes
+// (H1, landmarks, cuerpo desde el payload, vuelta a portada, sin islas, sin
+// set:html, sin NewsArticle) y agrega estructura por familia, densidad y
+// paginación del golden master.
 
 const pages = readDistPages();
 const latestPages = Math.ceil(demoStories.length / LATEST_PAGE_SIZE);
 
-describe('WEB.2 static render', () => {
-  it('builds exactly 45 static pages: 1 home, 24 articles, 6 sections, 10 topics, 3 latest, 1 about', () => {
-    expect(pages).toHaveLength(45);
+describe('WEB.3 static render', () => {
+  it('builds exactly the 92 pages of the closed WEB.3 scope', () => {
+    expect(pages).toHaveLength(EXPECTED_PAGE_COUNT);
+    expect(expectedRoutes()).toHaveLength(EXPECTED_PAGE_COUNT);
+  });
+
+  it('builds one static page per family route derived from demo data', () => {
     const counts: Record<string, number> = {};
     for (const page of pages) counts[familyOf(page.route)] = (counts[familyOf(page.route)] ?? 0) + 1;
-    expect(counts).toEqual({ home: 1, article: 24, section: 6, topic: 10, listing: 3, institutional: 1 });
-    expect(latestPages).toBe(3);
+    expect(counts).toEqual({
+      home: 1,
+      article: demoStories.length,
+      section: sections.length,
+      'section-page': 2,
+      topic: topics.length,
+      'topic-page': 1,
+      author: 7,
+      listing: latestPages,
+      about: 1,
+      contact: 1,
+      careers: 1,
+      legal: 3
+    });
 
     const built = new Set(pages.map((p) => p.route));
     for (const story of demoStories) expect(built.has(routes.article(story))).toBe(true);
@@ -59,32 +76,33 @@ describe('WEB.2 static render', () => {
     }
   });
 
-  it('makes the home dense and reaches every demo story from it', () => {
+  it('renders the golden-master home: carousel, four section layouts, rails, photos and latest', () => {
     const { root } = readDistPage('/');
-    const linked = new Set(root.querySelectorAll('main a[href^="/demo/"]').map((a) => a.getAttribute('href')));
-    for (const story of demoStories) expect(linked.has(routes.article(story)), story.presentation.demoId).toBe(true);
+    const slides = root.querySelectorAll('[data-block="hero-carousel"] [data-part="slide"]');
+    expect(slides).toHaveLength(3);
+    for (const slide of slides) expect(slide.querySelector('h2 a')?.getAttribute('href')).toMatch(/^\/demo\//);
+    expect(root.querySelector('[data-block="hero-carousel"]')?.getAttribute('x-data')).toBe('carousel(3)');
+    for (const block of ['trending', 'section-b', 'section-c', 'section-d', 'popular-news', 'section-headlines', 'home-ad', 'photos', 'latest-grid']) {
+      expect(root.querySelectorAll(`[data-block="${block}"]`), block).toHaveLength(1);
+    }
+    expect(root.querySelectorAll('[data-block="section-a"]').map((b) => b.getAttribute('data-slot'))).toEqual(['band2', 'band3a', 'band3b']);
+    expect(root.querySelectorAll('[data-block="latest-grid"] article')).toHaveLength(9);
     expect(root.querySelectorAll('main article').length).toBeGreaterThanOrEqual(40);
-
-    const blocks = root.querySelectorAll('[data-block="section-block"]');
-    expect(blocks).toHaveLength(6);
-    expect(new Set(blocks.map((b) => b.getAttribute('data-variant')))).toEqual(
-      new Set(['feature-list', 'feature-tiles', 'headline-grid', 'list-feature'])
-    );
   });
 
-  it('renders the lead story before section blocks in DOM order', () => {
+  it('keeps the carousel first and the photos rail before band-3 sections in DOM order', () => {
     const { html } = readDistPage('/');
-    const lead = html.indexOf('data-block="lead-story"');
-    expect(lead).toBeGreaterThan(-1);
-    expect(lead).toBeLessThan(html.indexOf('data-block="section-block"'));
-    expect(html.indexOf(demoStories[0].article.headline)).toBeLessThan(html.indexOf('data-block="section-block"'));
+    expect(html.indexOf('data-block="hero-carousel"')).toBeLessThan(html.indexOf('data-block="section-a"'));
+    expect(html.indexOf('data-block="photos-rail"')).toBeLessThan(html.indexOf('data-slot="band3a"'));
+    expect(html.indexOf(demoStories[0].article.headline)).toBeLessThan(html.indexOf('data-block="section-a"'));
   });
 
   it('renders article headline, dek, byline, time and body from the same payload', () => {
     for (const story of demoStories) {
       const { html, root } = readDistPage(routes.article(story));
       expect(root.querySelector('h1')?.text.trim()).toBe(story.article.headline);
-      if (story.article.dek) expect(html).toContain(story.article.dek);
+      // Golden master: la bajada no se muestra en el hero; queda en la meta description.
+      if (story.article.dek) expect(root.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(story.article.dek);
       expect(html).toContain(story.article.byline);
       expect(html).toContain(`datetime="${story.article.publishedAt}"`);
       expect(root.querySelector('[data-block="article-body"]')?.text).toContain(firstParagraph(story.article.body));
@@ -105,7 +123,7 @@ describe('WEB.2 static render', () => {
       const { root } = readDistPage(routes.article(story));
       const tagHrefs = root.querySelectorAll('[data-block="article-tags"] a').map((a) => a.getAttribute('href'));
       expect(tagHrefs).toEqual(story.presentation.topicIds.map((t) => routes.topic(t)));
-      const related = root.querySelectorAll('[data-block="related-stories"] h3 a').map((a) => a.getAttribute('href'));
+      const related = root.querySelectorAll('[data-block="related-articles"] h3 a').map((a) => a.getAttribute('href'));
       expect(related.length).toBeGreaterThan(0);
       expect(related).not.toContain(routes.article(story));
     }
@@ -135,20 +153,10 @@ describe('WEB.2 static render', () => {
     for (const page of pages) expect(page.html, page.route).not.toContain('NewsArticle');
   });
 
-  it('renders DEP, MET and GRF placeholders without values', () => {
-    const { html, root } = readDistPage('/');
-    expect(html).toContain('Próximo partido');
-    expect(html).toContain('Tabla de posiciones');
-    expect(html).toContain('Datos deportivos disponibles en próximos arcos.');
-    const modules = root.querySelectorAll('[data-block="future-slot"]').map((s) => s.getAttribute('data-module'));
-    expect(new Set(modules)).toEqual(new Set(['DEP', 'MET', 'GRF']));
-    for (const slot of root.querySelectorAll('[data-block="future-slot"]')) expect(slot.text).not.toMatch(/\d/);
-  });
-
   it('paginates the latest listing with a single current page', () => {
     for (let n = 1; n <= latestPages; n++) {
       const { root } = readDistPage(routes.latest(n));
-      expect(root.querySelectorAll('[data-block="pagination"] [aria-current="page"]').map((e) => e.text.trim())).toEqual([String(n)]);
+      expect(root.querySelectorAll('[data-block="pagination"] [aria-current="page"]').map((e) => e.text.replace(/\s+/g, ' ').trim())).toEqual([`Página ${n}`]);
       expect(root.querySelectorAll('[data-block="river-list"] article').length).toBeGreaterThan(0);
     }
   });

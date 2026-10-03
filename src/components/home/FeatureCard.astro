@@ -1,0 +1,24 @@
+---
+// Nota destacada de bloque de sección: imagen 16:9 (recorte superior), titular, extracto y fecha.
+import CardImage from '../story/cards/CardImage.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { routes } from '../../presentation/routes.js';
+import { formatCardDate } from '../../presentation/format.js';
+
+interface Props {
+  story: WebStory;
+}
+
+const { story } = Astro.props;
+---
+
+<article class="relative">
+  <div data-part="feature-media" class="aspect-video overflow-hidden rounded-sm mb-3">
+    <CardImage story={story} class="w-full hover:scale-105 transition-transform duration-500" />
+  </div>
+  <h3 data-part="feature-title" class="font-heading text-lg sm:text-xl md:text-2xl font-bold mb-3">
+    <a href={routes.article(story)} class="hover:text-red-600 transition-colors">{story.article.headline}</a>
+  </h3>
+  {story.article.dek && <p data-part="feature-excerpt" class="text-gray-700 mb-3">{story.article.dek}</p>}
+  <div class="text-sm text-gray-500">{formatCardDate(story.article.publishedAt)}</div>
+</article>

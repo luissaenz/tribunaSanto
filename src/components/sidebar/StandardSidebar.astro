@@ -1,0 +1,27 @@
+---
+// Sidebar estándar (secciones, temas, autores, listados y artículos): sticky a 64 px desde 1024 px.
+import SidebarTrending from './SidebarTrending.astro';
+import SidebarCategories from './SidebarCategories.astro';
+import SidebarLatest from './SidebarLatest.astro';
+import AdSlot from '../ui/AdSlot.astro';
+import type { WebStory } from '../../presentation/story.js';
+import { newestFirst, sectionCountsInOrder } from '../../presentation/queries.js';
+import { SIDEBAR_SECTION_ORDER, type SectionId } from '../../presentation/taxonomy.js';
+
+interface Props {
+  stories: readonly WebStory[];
+  currentSection?: SectionId;
+}
+
+const { stories, currentSection } = Astro.props;
+const newest = newestFirst(stories);
+---
+
+<aside class="lg:col-span-1" aria-label="Tendencias, secciones y últimas">
+  <div data-block="standard-sidebar" class="sticky top-16 space-y-8">
+    <SidebarTrending stories={newest.slice(0, 5)} />
+    <SidebarCategories counts={sectionCountsInOrder(stories, SIDEBAR_SECTION_ORDER)} current={currentSection} />
+    <SidebarLatest stories={newest.slice(0, 4)} />
+    <AdSlot block="sidebar-ad" />
+  </div>
+</aside>

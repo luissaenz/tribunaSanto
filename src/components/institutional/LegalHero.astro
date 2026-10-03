@@ -1,0 +1,30 @@
+---
+// Hero de páginas legales: fondo fijo (bg-fixed), velo 75 %, etiqueta, H1, bajada y fecha de actualización.
+import Icon from '../ui/Icon.astro';
+import type { HeroData } from '../../data/demo-institutional.js';
+
+interface Props {
+  hero: HeroData;
+  updated: string;
+}
+
+const { hero, updated } = Astro.props;
+---
+
+<div data-block="legal-hero" class="bg-black relative overflow-hidden bg-cover bg-center bg-fixed" style={`background-image: url('${hero.background}')`}>
+  <div class="absolute inset-0 bg-black/75"></div>
+  <div class="max-w-4xl mx-auto relative px-4 py-12">
+    <span data-part="badge" class="inline-flex items-center gap-2 bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white mb-5">
+      <Icon name={hero.icon} class="w-3.5 h-3.5" />
+      {hero.badge}
+    </span>
+    <h1 data-part="title" class="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-4">{hero.title}</h1>
+    <p class="text-gray-200 text-sm sm:text-base leading-relaxed max-w-2xl">{hero.lead}</p>
+    <div data-part="updated" class="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-gray-700 text-xs text-gray-200">
+      <span class="flex items-center gap-1.5">
+        <Icon name="calendar3" class="w-3.5 h-3.5 text-red-600" />
+        {updated}
+      </span>
+    </div>
+  </div>
+</div>

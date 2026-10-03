@@ -1,4 +1,4 @@
-// WEB.2 — Guards puros. Cada uno devuelve la lista de violaciones encontradas
+// WEB.2/WEB.3 — Guards puros. Cada uno devuelve la lista de violaciones encontradas
 // (vacía = OK). Se aplican sobre el repo/dist reales y sobre mutantes sintéticos
 // en tests/web/guards-mutation.test.ts.
 
@@ -9,7 +9,7 @@ import { parse as parseHtml } from 'node-html-parser';
 import { hashText } from '../../scripts/corpus/lib/analyze.js';
 import { PublicationToWebPayloadSchema } from '../../src/contracts/index.js';
 import { PRESENTATION_ONLY_KEYS } from '../../src/presentation/story.js';
-import { pageFamilyBlocks } from '../../src/presentation/blocks.js';
+import { blockCatalog, pageFamilyBlocks } from '../../src/presentation/blocks.js';
 import { familyOf, isSubsequence } from './dist.js';
 
 export type SourceFile = Readonly<{ path: string; content: string }>;
@@ -21,24 +21,17 @@ export function findCorpusReferences(files: readonly SourceFile[]): string[] {
   return files.flatMap((f) => patterns.filter((p) => p.test(f.content)).map((p) => `${f.path}: ${p}`));
 }
 
-/** 3a — Huellas del template: marca, frameworks y clases utilitarias del corpus. */
+/**
+ * 3a — Huellas del template: marca de la referencia y lógica Alpine inline
+ * (`x-data="{ … }"`). WEB.3 usa Tailwind y Alpine (aprobados), pero los
+ * componentes Alpine se registran en src/scripts/alpine.ts y el markup sólo
+ * los referencia por nombre: nunca se copia lógica inline del template.
+ */
 export const CORPUS_FINGERPRINTS: readonly RegExp[] = [
   /madethemes/i,
   /daily newspaper/i,
-  /\bx-data\b/,
-  /\balpine/i,
-  /tailwind/i,
-  /\bmax-w-7xl\b/,
-  /\bfont-heading\b/,
-  /\bpost-content\b/,
-  /\blg:col-span-\d/,
-  /\blg:grid-cols-\d/,
-  /\bborder-t-4\b/,
-  /\bborder-s-4\b/,
-  /\bbg-red-600\b/,
-  /\btext-gray-\d{3}\b/,
-  /\bspace-y-\d\b/,
-  /\bhover:text-red-\d{3}\b/
+  /x-data\s*=\s*(["'`{])\s*\{/,
+  /x-data\s*=\s*\{\s*`\s*\{/
 ];
 
 export function findCorpusFingerprints(files: readonly SourceFile[]): string[] {
@@ -58,9 +51,30 @@ export function findCorpusAssets(
   });
 }
 
-/** 3c — Fuentes: el producto usa sólo tipografías del sistema. */
-export function findFontFiles(files: readonly string[]): string[] {
-  return files.filter((f) => /\.(woff2?|ttf|otf|eot)$/i.test(f));
+/** 3c — Fuentes: sólo se publican woff2 con procedencia de paquetes OFL (@fontsource*). */
+export function fontPackageHashes(nodeModules: string): Set<string> {
+  const hashes = new Set<string>();
+  for (const scope of ['@fontsource', '@fontsource-variable']) {
+    const scopeDir = path.join(nodeModules, scope);
+    if (!fs.existsSync(scopeDir)) continue;
+    for (const pkg of fs.readdirSync(scopeDir)) {
+      const filesDir = path.join(scopeDir, pkg, 'files');
+      if (!fs.existsSync(filesDir)) continue;
+      for (const file of fs.readdirSync(filesDir)) {
+        if (/\.(woff2?|ttf|otf|eot)$/i.test(file)) {
+          hashes.add(crypto.createHash('sha256').update(fs.readFileSync(path.join(filesDir, file))).digest('hex'));
+        }
+      }
+    }
+  }
+  return hashes;
+}
+
+/** 3c — Archivos de fuente publicados cuyo contenido no proviene de un paquete permitido. */
+export function findUnprovenancedFonts(files: readonly string[], allowedHashes: ReadonlySet<string>): string[] {
+  return files
+    .filter((f) => /\.(woff2?|ttf|otf|eot)$/i.test(f))
+    .filter((f) => !allowedHashes.has(crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')));
 }
 
 /** 3d — Títulos del corpus reutilizados (hash de títulos de ≥3 palabras; no detecta traducciones). */
@@ -97,19 +111,57 @@ export function findMissingBlocks(pages: readonly HtmlPage[]): string[] {
   });
 }
 
-/** 5 — JS de cliente o hidratación. */
-export function findClientScripts(pages: readonly HtmlPage[], files: readonly string[] = []): string[] {
+/** 5 — Entradas de cliente: `<script type="module" src="/_astro/…">` referenciados por las páginas. */
+export function findClientEntries(pages: readonly HtmlPage[]): string[] {
+  const entries = new Set<string>();
+  for (const page of pages) {
+    for (const s of parseHtml(page.html).querySelectorAll('script')) {
+      const src = s.getAttribute('src');
+      if (s.getAttribute('type') === 'module' && src && ENTRY_SRC.test(src)) entries.add(src);
+    }
+  }
+  return [...entries].sort();
+}
+
+const ENTRY_SRC = /^\/_astro\/[\w.-]+\.js$/;
+const NAMED_X_DATA = /^[A-Za-z_$][\w$]*(\([^{}]*\))?$/;
+const FRAMEWORK_SIGNATURES = /react-dom|__REACT_DEVTOOLS|__VUE__|createApp\(|svelte\/internal|from"svelte|preact/;
+
+/**
+ * 5 — Arquitectura de cliente WEB.3: a lo sumo UNA entrada funcional propia
+ * (la inicialización Alpine) compartida por todas las páginas. Los chunks
+ * físicos que genere el bundler no son normativos. Prohibidos: islands,
+ * directivas client:*, scripts inline o clásicos, manejadores on*,
+ * `x-data` con lógica inline y runtimes de otros frameworks.
+ */
+export function findUnexpectedClientScripts(pages: readonly HtmlPage[], files: readonly string[] = []): string[] {
   const inPages = pages.flatMap((page) => {
     const root = parseHtml(page.html);
-    const scripts = root
-      .querySelectorAll('script')
-      .filter((s) => s.getAttribute('type') !== 'application/ld+json')
-      .map(() => `${page.route}: <script>`);
-    const islands = /<astro-island|client:(load|idle|visible|media|only)/.test(page.html) ? [`${page.route}: island`] : [];
-    return [...scripts, ...islands];
+    const violations: string[] = [];
+    for (const s of root.querySelectorAll('script')) {
+      const type = s.getAttribute('type');
+      const src = s.getAttribute('src');
+      if (type === 'application/ld+json') continue;
+      if (type === 'module' && src && ENTRY_SRC.test(src) && s.innerHTML.trim() === '') continue;
+      violations.push(`${page.route}: unexpected <script>`);
+    }
+    if (/<astro-island|client:(load|idle|visible|media|only)/.test(page.html)) violations.push(`${page.route}: island`);
+    for (const el of root.querySelectorAll('[x-data]')) {
+      const value = (el.getAttribute('x-data') ?? '').trim();
+      if (!NAMED_X_DATA.test(value)) violations.push(`${page.route}: inline x-data`);
+    }
+    if (root.querySelectorAll('*').some((el) => Object.keys(el.attributes).some((a) => /^on[a-z]+$/i.test(a)))) {
+      violations.push(`${page.route}: inline event handler`);
+    }
+    return violations;
   });
-  const jsFiles = files.filter((f) => /\.(m?js)$/.test(f)).map((f) => `${f}: js file`);
-  return [...inPages, ...jsFiles];
+  const entries = findClientEntries(pages);
+  const multiple = entries.length > 1 ? [`multiple client entries: ${entries.join(', ')}`] : [];
+  const frameworks = files
+    .filter((f) => /\.(m?js)$/.test(f))
+    .filter((f) => FRAMEWORK_SIGNATURES.test(fs.readFileSync(f, 'utf-8')))
+    .map((f) => `${f}: framework runtime`);
+  return [...inPages, ...multiple, ...frameworks];
 }
 
 const NON_NAVIGABLE = /^(#|mailto:|tel:|https?:\/\/|\/\/)/i;
@@ -145,13 +197,19 @@ export function findIndexingMetadata(pages: readonly HtmlPage[]): string[] {
   });
 }
 
-/** 8 — Datos inventados dentro de los placeholders DEP/MET/GRF. */
-export function findFabricatedSlotData(pages: readonly HtmlPage[]): string[] {
+/**
+ * 8 — Bloques fuera del catálogo: todo `data-block` renderizado debe estar
+ * declarado en src/presentation/blocks.ts (impide que reaparezcan bloques
+ * retirados de WEB.2, como los huecos DEP/MET/GRF o el rail antiguo).
+ */
+export function findUncatalogedBlocks(pages: readonly HtmlPage[]): string[] {
+  const known = new Set<string>(blockCatalog.map((b) => b.id));
   return pages.flatMap((page) =>
     parseHtml(page.html)
-      .querySelectorAll('[data-block="future-slot"]')
-      .filter((slot) => /\d/.test(slot.text))
-      .map((slot) => `${page.route}: ${slot.getAttribute('data-slot')}`)
+      .querySelectorAll('[data-block]')
+      .map((el) => el.getAttribute('data-block') ?? '')
+      .filter((id) => !known.has(id))
+      .map((id) => `${page.route}: ${id}`)
   );
 }
 
